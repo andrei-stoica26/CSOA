@@ -7,11 +7,12 @@
 featureWes(
   seuratObj,
   feature,
-  title,
+  title = feature,
   titleSize = 12,
   wesPal = "Royal1",
   wesLow = 3,
-  wesHigh = 2
+  wesHigh = 2,
+  ...
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ featureWes(
 \item{wesLow}{Index of color marking low expression}
 
 \item{wesHigh}{Index of color marking high expression}
+
+\item{...}{Other arguments passed to FeaturePlot}
 }
 \value{
 A ggplot object

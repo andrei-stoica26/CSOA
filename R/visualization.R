@@ -34,13 +34,14 @@ titlePlot <- function(p, title, titleSize=12)
 #' @param wesPal Wes Anderson palette
 #' @param wesLow Index of color marking low expression
 #' @param wesHigh Index of color marking high expression
+#' @param ... Other arguments passed to FeaturePlot
 #'
 #' @return A ggplot object
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title, titleSize=12, wesPal='Royal1', wesLow=3, wesHigh=2){
-  p <- FeaturePlot(seuratObj, feature)
+featureWes <- function(seuratObj, feature, title = feature, titleSize = 12, wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
+  p <- FeaturePlot(seuratObj, feature, ...)
   p <- titlePlot(p, title, titleSize)
   p <- p + scale_colour_gradientn(colours = wes_palette(wesPal)[c(wesLow, wesHigh)])
   return(p)
