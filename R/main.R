@@ -1,8 +1,8 @@
 #' @importClassesFrom Seurat Seurat
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom SingleCellExperiment altExp
+#' @importFrom SummarizedExperiment assay
 #' @importFrom kerntools minmax
 #' @include quantile_sets.R
 #' @include generics.R
@@ -37,7 +37,7 @@ generateOverlaps <- function(scObj, genes, nQuantiles, pairs=NULL, overlapFileNa
 #' This function filters, ranks and scores previously generated overlaps of cell
 #' sets
 #'
-#' @param overlapDF A data frame created with generateOverlaps
+#' @inheritParams rankOverlaps
 #' @param nPairs Number of overlaps that will be retained
 #'
 #' @return A data frame consisting of filtered, ranked and scored cell sets
@@ -50,7 +50,7 @@ processOverlaps <- function(overlapDF, nPairs=100){
   overlapDF <- rankOverlaps(overlapDF)
   if (!is.null(nPairs)){
     if(nPairs > nrow(overlapDF))
-      message(str_c('Will return only ', nrow(overlapDF), ' significant overlaps. More are not available.'))
+      message(paste0('Will return only ', nrow(overlapDF), ' significant overlaps. More are not available.'))
     overlapDF <- overlapDF[1:min(nPairs, nrow(overlapDF)), ]
   }
   overlapDF <- scoreOverlaps(overlapDF)
@@ -62,7 +62,7 @@ processOverlaps <- function(overlapDF, nPairs=100){
 #' This function uses the scored data frame of overlaps to compute a CSOA score
 #' for each cell in a Seurat object
 #'
-#' @inheritParams processOverlaps
+#' @param overlapDF Processed overlap dataframe generated using processOverlaps
 #' @param normExp A minmax-normalized by rows matrix of gene expression
 #' @param cellNames Cell names
 #' @param colStr The name of the column where CSOA results will be stored
@@ -142,7 +142,7 @@ runCSOA <- function(scObj, genes, nQuantiles=10, nPairs=100, colStr='CSOA', over
   overlapDF <- processOverlaps(overlapDF, nPairs)
   message('Normalizing expression matrix by rows...')
   normExp <- kerntools::minmax(expression[genes, ], rows=T)
-  scoreDF <- computeScore(overlapDF, normExp, colnames(expression), colStr)
+  scoreDF <- computeScore(overlapDF, normExp, colnames(scObj), colStr)
   scoredObj <- storeScore(scObj, scoreDF)
   return(scoredObj)
 }

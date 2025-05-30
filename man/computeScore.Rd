@@ -7,7 +7,7 @@
 computeScore(overlapDF, normExp, cellNames, colStr = "CSOA")
 }
 \arguments{
-\item{overlapDF}{A data frame created with generateOverlaps}
+\item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
 
 \item{normExp}{A minmax-normalized by rows matrix of gene expression}
 

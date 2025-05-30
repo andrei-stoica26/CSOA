@@ -7,7 +7,7 @@
 processOverlaps(overlapDF, nPairs = 100)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generateOverlaps}
+\item{overlapDF}{A data frame created with generate_overlaps}
 
 \item{nPairs}{Number of overlaps that will be retained}
 }

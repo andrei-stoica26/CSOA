@@ -25,7 +25,7 @@ rankOverlaps <- function(overlapDF){
 #' filtered data frame (i.e., if the filtered data frame contains 100 overlaps,
 #' the 101st overlap corresponds to a score of 0)
 #'
-#' @param overlapDF A data frame created with generate_overlaps
+#' @inheritParams rankOverlaps
 #'
 #' @return A data frame with ranked overlaps
 #'
