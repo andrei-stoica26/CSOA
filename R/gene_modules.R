@@ -3,7 +3,7 @@
 #' This function finds the connected components of the graph having the filtered
 #' overlaps as edges
 #'
-#' @inheritParams computeScore
+#' @inheritParams computeCellScores
 #' @param raiseWarning If the data frame contains more overlaps than this number,
 #' users will be warned that they may have introduced the raw overlap data frame
 #' as input
@@ -52,22 +52,24 @@ connectedComponents <- function(overlapDF, raiseWarning = 2000){
 #' @inheritParams runCSOA
 #' @param overlapDF An overlap data frame with connected component indices added
 #' to the "component" column
-#' @inheritParams computeScore
+#' @inheritParams computeCellScores
 #'
 #' @return An overlap data frame with a column indicated the number of the
 #' connected component
 #'
 #' @export
 #'
-scoreModules <- function(scObj, overlapDF, normExp, colStr = 'Module'){
+scoreModules <- function(scObj, overlapDF, colStr = 'Module'){
+  expression <- expMat(scObj)
   scoredComponents <- lapply(seq_len(max(overlapDF$component)), function(i){
     message(str_c('Scoring ', colStr, i, '...'))
     overlapComp <- subset(overlapDF, component == i)
     overlapComp <- scoreOverlaps(overlapDF)
-    scoreDF <- computeScore(overlapDF, normExp, colnames(scObj), colStr)
+    genes <- unique(union(overlapComp[, 1], overlapComp[, 2]))
+    message('Normalizing expression matrix by rows...')
+    normExp <- kerntools::minmax(expression[genes, ], rows=T)
+    scoreDF <- computeCellScores(overlapDF, normExp, colnames(scObj), colStr)
     return(scoreDF)
   })
-  allScoresDF <- Reduce(cbind, scoredComponents)
-  scoredObj <- storeScore(scObj, allScoresDF)
-  return(scoredObj)
+  return(joinCellScores(scObj, scoredComponents))
 }

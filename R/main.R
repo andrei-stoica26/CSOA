@@ -71,7 +71,7 @@ processOverlaps <- function(overlapDF, nPairs=100){
 #'
 #' @export
 #'
-computeScore <- function(overlapDF, normExp, cellNames, colStr='CSOA'){
+computeCellScores <- function(overlapDF, normExp, cellNames, colStr='CSOA'){
   message('Computing per-cell scores for gene pairs...')
   pairsScores <- lapply(1:nrow(overlapDF), function(i) overlapDF[i, 'score'] *
                           normExp[overlapDF[i, 'gene1'], ] * normExp[overlapDF[i, 'gene2'], ])
@@ -89,39 +89,61 @@ computeScore <- function(overlapDF, normExp, cellNames, colStr='CSOA'){
 
 #' @param scoreDF Dataframe of CSOA scores
 #'
-#' @rdname storeScore
+#' @rdname storeCellScores
 #' @export
 #'
-storeScore.default <- function(scObj, scoreDF, ...)
+storeCellScores.default <- function(scObj, scoreDF, ...)
   stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay or an expression matrix.')
 
-#' @rdname storeScore
+#' @rdname storeCellScores
 #' @export
 #'
-storeScore.Seurat <- function(scObj, scoreDF, ...){
+storeCellScores.Seurat <- function(scObj, scoreDF, ...){
   scObj@meta.data <- cbind(scObj@meta.data, scoreDF)
   return(scObj)
 }
 
 #' @param altExpName Name of the matrix storing CSOA scores
 #'
-#' @rdname storeScore
+#' @rdname storeCellScores
 #' @export
 #'
-storeScore.SingleCellExperiment <- function(scObj, scoreDF, altExpName = 'CSOA', ...){
+storeCellScores.SingleCellExperiment <- function(scObj, scoreDF, altExpName = 'CSOA', ...){
   SingleCellExperiment::altExp(scObj, altExpName) <- SummarizedExperiment::SummarizedExperiment(t(scoreDF))
   return(scObj)
 }
 
-#' @rdname storeScore
+#' @rdname storeCellScores
 #' @export
 #'
-storeScore.matrix <- function(scObj, scoreDF, ...){
+storeCellScores.matrix <- function(scObj, scoreDF, ...){
   return(scoreDF)
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' Generate CSOA scores from overlap data frame
+#'
+#' This function generates per-cell CSOA scores after the overlap data frame has
+#' been generated.
+#'
+#' @param expression Expression matrix
+#' @inheritParams processOverlaps
+#' @inheritParams generateOverlaps
+#' @inheritParams computeCellScores
+#'
+#' @return A data frame with a column corresponding to the CSOA scores
+#'
+#' @export
+#'
+scoreCells <- function(expression, overlapDF, genes, nPairs=100, colStr='CSOA'){
+  overlapDF <- processOverlaps(overlapDF, nPairs)
+  message('Normalizing expression matrix by rows...')
+  normExp <- kerntools::minmax(expression[genes, ], rows=T)
+  scoreDF <- computeCellScores(overlapDF, normExp, colnames(expression), colStr)
+  return(scoreDF)
+}
 
 #' Run the CSOA pipeline
 #'
@@ -129,20 +151,17 @@ storeScore.matrix <- function(scObj, scoreDF, ...){
 #' quantiles of gene expression and retaining the top quantile genes.
 #'
 #' @inheritParams generateOverlaps
-#' @inheritParams processOverlaps
-#' @inheritParams computeScore
+#' @inheritParams scoreCells
 #'
-#' @return A Seurat object with a CSOA score assigned for each cell
+#' @return An object of the same class as scObj with a CSOA score assigned for each cell
 #'
 #' @export
 #'
 runCSOA <- function(scObj, genes, nQuantiles=10, nPairs=100, colStr='CSOA', overlapFileName=NULL){
   expression <- expMat(scObj)
   overlapDF <- generateOverlaps(expression, genes, nQuantiles, overlapFileName)
-  overlapDF <- processOverlaps(overlapDF, nPairs)
-  message('Normalizing expression matrix by rows...')
-  normExp <- kerntools::minmax(expression[genes, ], rows=T)
-  scoreDF <- computeScore(overlapDF, normExp, colnames(scObj), colStr)
-  scoredObj <- storeScore(scObj, scoreDF)
-  return(scoredObj)
+  scoreDF <- scoreCells(expression, overlapDF, genes, nPairs, colStr)
+  return(storeCellScores(scObj, scoreDF))
 }
+
+

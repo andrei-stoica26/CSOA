@@ -4,15 +4,13 @@
 \alias{scoreModules}
 \title{Run CSOA separately on the connected components of the overlap graph}
 \usage{
-scoreModules(scObj, overlapDF, normExp, colStr = "Module")
+scoreModules(scObj, overlapDF, colStr = "Module")
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
 
 \item{overlapDF}{An overlap data frame with connected component indices added
 to the "component" column}
-
-\item{normExp}{A minmax-normalized by rows matrix of gene expression}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 }

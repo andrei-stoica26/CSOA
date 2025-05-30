@@ -23,6 +23,6 @@ expMat <- function(scObj)
 #'
 #' @export
 #'
-storeScore <- function(scObj, ...)
-  UseMethod(generic='storeScore', object=scObj)
+storeCellScores <- function(scObj, ...)
+  UseMethod(generic='storeCellScores', object=scObj)
 

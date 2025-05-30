@@ -34,3 +34,5 @@ scoreOverlaps <- function(overlapDF){
   overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[1:nrow(overlapDF)])
   return(overlapDF)
 }
+
+

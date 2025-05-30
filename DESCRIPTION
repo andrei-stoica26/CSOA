@@ -30,5 +30,6 @@ Collate:
     'process_overlaps_tools.R'
     'quantile_sets.R'
     'main.R'
+    'multiple_gene_sets.R'
     'utils.R'
     'visualization.R'

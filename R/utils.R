@@ -23,6 +23,18 @@ byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
   return(df)
 }
 
+#' Get all unorderded pairs of two elements from a vector
+#'
+#' This function returns all unorderded pairs of two elements from a vector as
+#' a list of vectors of length 2
+#'
+#' @param v A vector
+#'
+#' @return A list of vectors of length 2
+#'
+getPairs <- function(v)
+  return(utils::combn(v, 2, simplify = F))
+
 #' Run LayerData from Seurat and return an error when the requested layer does
 #' not exist
 #'

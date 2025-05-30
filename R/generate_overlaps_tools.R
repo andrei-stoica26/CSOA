@@ -44,7 +44,7 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL)
   message('Assessing gene overlaps...')
   genes <- names(cellSets)
   if(is.null(pairs))
-    pairs <- utils::combn(genes, 2, simplify = F)
+    pairs <- getPairs(genes)
   df <- lapply(pairs, function(x) pairOverlap(cellSets[x], nCells))
     #pairOverlap(cellSets[x], nCells))
   df <- data.frame(Reduce(rbind, df))
@@ -59,3 +59,10 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL)
     qsave(df, str_c(overlapFileName, '.qs'))
   return(df)
 }
+
+overlapList <- function(overlapDF)
+  return(as.list(data.table::transpose(overlapDF[, c(1, 2)])))
+
+overlapSlice <- function(overlapDF, pairs)
+  return(overlapDF[which(overlapList(overlapDF) %in% pairs),])
+
