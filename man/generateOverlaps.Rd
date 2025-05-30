@@ -4,17 +4,26 @@
 \alias{generateOverlaps}
 \title{Generate overlaps of cell sets for input genes}
 \usage{
-generateOverlaps(expObj, genes, nQuantiles, overlapFileName = NULL)
+generateOverlaps(
+  scObj,
+  genes,
+  nQuantiles,
+  pairs = NULL,
+  overlapFileName = NULL
+)
 }
 \arguments{
-\item{expObj}{A Seurat object or expression matrix of matrix class}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
 
 \item{genes}{Vector of genes. Must include at least two genes}
 
 \item{nQuantiles}{An integer between 2 and 10}
 
-\item{overlapFileName}{A character used to save the overlap data frame.
-Default is NULL (the overlap data frame will not be saved)}
+\item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
+pairs will be assessed}
+
+\item{overlapFileName}{The name of the file where the overlap data frame
+will be saved. Default is NULL (the overlap data frame will not be saved)}
 }
 \value{
 A data frame listing statistics for all cell set overlaps

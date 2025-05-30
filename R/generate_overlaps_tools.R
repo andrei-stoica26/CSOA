@@ -33,15 +33,18 @@ pairOverlap <- function(pairCellSets, nCells){
 #'
 #' @param cellSets A list of character arrays
 #' @param nCells The total number of cells in the Seurat object
+#' @param pairs Pairs of cell sets to be assessed. If NULL (as default), all
+#' pairs will be assessed
 #' @param overlapFileName The name of the file where the overlap data frame
 #' will be saved. Default is NULL (the overlap data frame will not be saved)
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
-cellSetsOverlaps <- function(cellSets, nCells, overlapFileName=NULL){
+cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL){
   message('Assessing gene overlaps...')
   genes <- names(cellSets)
-  pairs <- utils::combn(genes, 2, simplify = F)
+  if(is.null(pairs))
+    pairs <- utils::combn(genes, 2, simplify = F)
   df <- lapply(pairs, function(x) pairOverlap(cellSets[x], nCells))
     #pairOverlap(cellSets[x], nCells))
   df <- data.frame(Reduce(rbind, df))

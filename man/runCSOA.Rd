@@ -5,7 +5,7 @@
 \title{Run the CSOA pipeline}
 \usage{
 runCSOA(
-  seuratObj,
+  scObj,
   genes,
   nQuantiles = 10,
   nPairs = 100,
@@ -14,7 +14,7 @@ runCSOA(
 )
 }
 \arguments{
-\item{seuratObj}{A Seurat object}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
 
 \item{genes}{Vector of genes. Must include at least two genes}
 

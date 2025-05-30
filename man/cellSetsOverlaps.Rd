@@ -4,12 +4,15 @@
 \alias{cellSetsOverlaps}
 \title{Calculates the significance of overlaps of pairs of cells sets}
 \usage{
-cellSetsOverlaps(cellSets, nCells, overlapFileName = NULL)
+cellSetsOverlaps(cellSets, nCells, pairs = NULL, overlapFileName = NULL)
 }
 \arguments{
 \item{cellSets}{A list of character arrays}
 
 \item{nCells}{The total number of cells in the Seurat object}
+
+\item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
+pairs will be assessed}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}

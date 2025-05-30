@@ -9,8 +9,8 @@ NULL
 #' with a non-zero expression detected for the gene are selected and grouped
 #' into quantiles based on the expression of the gene.
 #'
-#' @param expObj A Seurat object or expression matrix of matrix class
-#' @param genes A character array of length > 1
+#' @inheritParams expMat
+#' @param genes Vector of genes. Must include at least two genes
 #' @param nQuantiles An integer between 2 and 10
 #'
 #' @return A named list of length equal to the length of the genes array.
@@ -18,16 +18,15 @@ NULL
 #'
 #' @export
 #'
-fullQuantileSets <- function(expObj, genes, nQuantiles=10){
+fullQuantileSets <- function(scObj, genes, nQuantiles=10){
   if (length(genes) < 2)
     stop('genes must be a character array of length >= 2')
   if (!nQuantiles %in% seq(2, 10))
     stop('nQuantiles must be an integer between 2 and 10.')
-  if (class(expObj)[1] == 'Seurat')
-    expObj <- expMat(expObj)
+  expression <- expMat(scObj)
   message('Computing quantiles...')
   expList <- lapply(genes, function(x){
-    geneExp <- expObj[x, ]
+    geneExp <- expression[x, ]
     geneExp <- geneExp[geneExp > 0]
     quantiles <- fabricatr::split_quantile(geneExp, nQuantiles)
     return(lapply(1:nQuantiles, function(y) return(names(geneExp[which(quantiles == y)]))))

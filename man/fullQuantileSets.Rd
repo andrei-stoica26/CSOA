@@ -4,12 +4,12 @@
 \alias{fullQuantileSets}
 \title{Generates cell quantiles of gene expression for input genes}
 \usage{
-fullQuantileSets(expObj, genes, nQuantiles = 10)
+fullQuantileSets(scObj, genes, nQuantiles = 10)
 }
 \arguments{
-\item{expObj}{A Seurat object or expression matrix of matrix class}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
 
-\item{genes}{A character array of length > 1}
+\item{genes}{Vector of genes. Must include at least two genes}
 
 \item{nQuantiles}{An integer between 2 and 10}
 }
