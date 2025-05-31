@@ -41,5 +41,5 @@ Collate:
     'main.R'
     'multiple_gene_sets.R'
     'utils.R'
-    'visualization.R'
     'visualization_aux.R'
+    'visualization.R'

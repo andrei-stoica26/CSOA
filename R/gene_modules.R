@@ -9,8 +9,8 @@
 #'
 #' @export
 #'
-connectedComponents <- function(overlapDF, raiseWarning = 1000){
-  warnUnfiltered(overlapDF, raiseWarning)
+connectedComponents <- function(overlapDF){
+  warnUnfiltered(overlapDF)
   if(!nrow(overlapDF))
     stop('Error: The dataframe has no rows.')
   overlapDF$component <- -1
@@ -66,4 +66,52 @@ scoreModules <- function(scObj, overlapDF, colStr = 'Module'){
     return(scoreDF)
   })
   return(joinCellScores(scObj, scoredComponents))
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Methods for CSOA-defined generics
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' @rdname edgeLists
+#' @export
+#'
+edgeLists.default <- function(overlapObj, ...)
+  stop('Unrecognized input type: overlapObj must be a data frame or a list of data frames.')
+
+#' @rdname edgeLists
+#' @export
+#'
+edgeLists.data.frame <- function(overlapObj, ...){
+  if (!'component' %in% colnames(overlapObj))
+    overlapObj <- connectedComponents(overlapObj)
+  components <- unique(overlapObj$component)
+  overlapObj <- lapply(components, function(i) {
+    df <- subset(overlapObj, component == i)
+    df <- df[, c('gene1', 'gene2', 'component')]
+    colnames(df)[3] <- 'group'
+    return(df)
+    })
+  names(overlapObj) <- components
+  return(overlapObj)
+}
+
+#' @param groupNames Names of groups. If provided, must be a vector of the same
+#' length as the list of overlap data frames
+#' @param cutoff Number of retained edges from each overlap data frame after
+#' refiltering. If NULL (as default), no refiltering will be performed
+#'
+#' @rdname edgeLists
+#' @export
+#'
+edgeLists.list <- function(overlapObj, groupNames, cutoff = NULL, ...){
+  overlapObj <- lapply(seq_along(groupNames), function(i) {
+    df <- overlapObj[[i]]
+    if (!is.null(cutoff))
+      df <- df[seq_len(cutoff), ]
+    df$group <- groupNames[[i]]
+    df <- df[, c('gene1', 'gene2', 'group')]
+    return(df)
+  })
+  names(overlapObj) <- groupNames
+  return(overlapObj)
 }

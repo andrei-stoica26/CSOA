@@ -37,8 +37,18 @@ byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify = F))
 
+#' Generate the coordinates of points on a circle centered at origin
+#'
+#' This function generates nPoints on a circle of radius r centered at origin
+#'
+#' @param r Radius
+#' @param nPoints Number of points
+#'
+#' @return A data frame with the coordinates of the points
+#'
+#' @export
+#'
 pointsOnCircle <- function(r, nPoints){
-  #Points on circle centered at origin
   angleOffset <- runif(n = 1, min = 0, max = 2 * pi)
   theta <- 2 * pi / nPoints
   points <- lapply(1:nPoints, function(k) c(r * cos(k * theta + angleOffset), r * sin(k * theta + angleOffset)))
@@ -64,9 +74,10 @@ safeLayerData <- function(seuratObj, layer){
     stop(paste0('The Seurat object has no ', layer, ' layer.'))
   return(layerData)
 }
+
 #' Raise a warning that the overlap data frame may have been not filtered
 #'
-#' This functions raises a warning that the overlap data frame may have been not
+#' This function raises a warning that the overlap data frame may have been not
 #' filtered based on the number of overlaps
 #'
 #' @inheritParams computeCellScores
@@ -74,12 +85,10 @@ safeLayerData <- function(seuratObj, layer){
 #' users will be warned that they may have introduced the raw overlap data frame
 #' as input
 #'
-warnUnfiltered <- function(overlapDF, raiseWarning)
+warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
   if (nrow(overlapDF) > raiseWarning)
     warning(paste0('The number of overlaps in the data frame is very large (', nrow(overlapDF),
                    '). Are you sure you filtered the overlap data frame?'))
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics
@@ -110,3 +119,6 @@ expMat.SingleCellExperiment <- function(scObj)
 expMat.matrix <- function(scObj)
   return(scObj)
 
+#' @rdname edgeLists
+#' @export
+#'

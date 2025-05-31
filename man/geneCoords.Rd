@@ -4,14 +4,16 @@
 \alias{geneCoords}
 \title{Compute the coordinates of genes on the figure made from concentric circles}
 \usage{
-geneCoords(overlapDFs, datasets, cutoffs = NULL)
+geneCoords(overlapObj, groupNames = NULL, cutoff = NULL)
 }
 \arguments{
-\item{overlapDFs}{List of overlap data frames}
+\item{overlapObj}{An overlap data frame or list of overlap data frames}
 
-\item{datasets}{Character vector containing the names used for the datasets}
+\item{groupNames}{Names of groups. If provided, must be a vector of the same
+length as the list of overlap data frames}
 
-\item{cutoffs}{Numeric vector allowing further filtering of the data frames}
+\item{cutoff}{Number of retained edges from each overlap data frame after
+refiltering. If NULL (as default), no refiltering will be performed}
 }
 \value{
 A data frame containing the coordinates of the genes

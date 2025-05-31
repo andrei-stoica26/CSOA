@@ -4,7 +4,7 @@
 \alias{warnUnfiltered}
 \title{Raise a warning that the overlap data frame may have been not filtered}
 \usage{
-warnUnfiltered(overlapDF, raiseWarning)
+warnUnfiltered(overlapDF, raiseWarning = 1000)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
@@ -14,6 +14,6 @@ users will be warned that they may have introduced the raw overlap data frame
 as input}
 }
 \description{
-This functions raises a warning that the overlap data frame may have been not
+This function raises a warning that the overlap data frame may have been not
 filtered based on the number of overlaps
 }

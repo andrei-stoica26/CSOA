@@ -2,21 +2,17 @@
 % Please edit documentation in R/visualization_aux.R
 \name{geneDegrees}
 \alias{geneDegrees}
-\title{Compute the gene degrees in several filtered overlap data frame}
+\title{Calculate gene degrees from multiple data frames of edges}
 \usage{
-geneDegrees(overlapDFs, datasets, cutoffs = NULL)
+geneDegrees(edgesDFs)
 }
 \arguments{
-\item{overlapDFs}{List of overlap data frames}
-
-\item{datasets}{Character vector containing the names used for the datasets}
-
-\item{cutoffs}{Numeric vector allowing further filtering of the data frames}
+\item{edgesDFs}{A list of data frames of edges generated with edgeLists}
 }
 \value{
-A data frame showcasing the degrees of genes from multiple overlap
-data frames
+A gene degrees data frame
 }
 \description{
-This function computes the gene degrees several filtered overlap data frames.
+This function calculates gene degrees from the list of data frames of edges
+generated with edgeLists
 }

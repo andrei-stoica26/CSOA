@@ -2,24 +2,17 @@
 % Please edit documentation in R/visualization_aux.R
 \name{geneDegreesCore}
 \alias{geneDegreesCore}
-\title{Compute the gene degrees in a filtered overlap data frame}
+\title{Calculate gene degrees from edges data frame}
 \usage{
-geneDegreesCore(overlapDF, dataset = NULL, cutoff = NULL, raiseWarning = 1000)
+geneDegreesCore(edgesDF)
 }
 \arguments{
-\item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
-
-\item{dataset}{Used when analyzing multiple datasets}
-
-\item{cutoff}{Allows further filtering of the overlap data frame}
-
-\item{raiseWarning}{If the data frame contains more overlaps than this number,
-users will be warned that they may have introduced the raw overlap data frame
-as input}
+\item{edgesDF}{A data frame of edges generated with edgeLists}
 }
 \value{
-A data frame showcasing the gene degrees
+A gene degrees data frame
 }
 \description{
-This function computes the gene degrees in a filtered overlap data frame.
+This function calculates gene degrees from a data frame with columns gene1,
+gene2 and group
 }

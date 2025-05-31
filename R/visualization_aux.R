@@ -1,4 +1,5 @@
 #'@importFrom dplyr count
+#'@include utils.R
 #'
 NULL
 
@@ -12,7 +13,7 @@ NULL
 #'
 #' @return A data frame ready to serve as input to networkPlot
 #'
-#'
+#' @export
 #'
 networkPlotDF <- function(overlapDF, weightFactor = 2, raiseWarning = 1000){
   warnUnfiltered(overlapDF, raiseWarning)
@@ -22,54 +23,40 @@ networkPlotDF <- function(overlapDF, weightFactor = 2, raiseWarning = 1000){
   return(df)
 }
 
-#' Compute the gene degrees in a filtered overlap data frame
+#' Calculate gene degrees from edges data frame
 #'
-#' This function computes the gene degrees in a filtered overlap data frame.
+#' This function calculates gene degrees from a data frame with columns gene1,
+#' gene2 and group
+#' @param edgesDF A data frame of edges generated with edgeLists
 #'
-#' @inheritParams warnUnfiltered
-#' @param dataset Used when analyzing multiple datasets
-#' @param cutoff Allows further filtering of the overlap data frame
-#'
-#' @return A data frame showcasing the gene degrees
+#' @return A gene degrees data frame
 #'
 #' @export
 #'
-geneDegreesCore <- function(overlapDF, dataset = NULL, cutoff = NULL, raiseWarning = 1000){
-  warnUnfiltered(overlapDF, raiseWarning)
-  if(!is.null(cutoff))
-    overlapDF <- overlapDF[1:cutoff, ]
-  genes <- union(overlapDF$gene1, overlapDF$gene2)
-  df <- data.table::transpose(data.frame(sapply(genes, function(x) {
-    geneGraph <- subset(overlapDF, gene1 == x | gene2 == x)
-    return(c(nrow(geneGraph), geneGraph$component[1]))
-  })))
-  df <- cbind(genes, df)
-  colnames(df) <- c('gene', 'nEdges', 'component')
+geneDegreesCore <- function(edgesDF){
+  genes <- union(edgesDF$gene1, edgesDF$gene2)
+  df <- data.table::transpose(data.frame(sapply(genes, function(x){
+    geneGraph <- subset(edgesDF, gene1 == x | gene2 == x)
+    return(c(x, nrow(geneGraph), geneGraph$group[1]))
+    })))
+  colnames(df) <- c('gene', 'nEdges', 'group')
+  df$nEdges <- as.integer(df$nEdges)
   df <- df[order(df$nEdges, decreasing = TRUE), ]
-  if (!is.null(dataset))
-    df$dataset <- dataset
   return(df)
 }
 
-#' Compute the gene degrees in several filtered overlap data frame
+#' Calculate gene degrees from multiple data frames of edges
 #'
-#' This function computes the gene degrees several filtered overlap data frames.
+#' This function calculates gene degrees from the list of data frames of edges
+#' generated with edgeLists
+#' @param edgesDFs A list of data frames of edges generated with edgeLists
 #'
-#' @param overlapDFs List of overlap data frames
-#' @param datasets Character vector containing the names used for the datasets
-#' @param cutoffs Numeric vector allowing further filtering of the data frames
-#'
-#' @return A data frame showcasing the degrees of genes from multiple overlap
-#' data frames
+#' @return A gene degrees data frame
 #'
 #' @export
 #'
-geneDegrees <- function(overlapDFs, datasets, cutoffs = NULL){
-  message('Finding gene degrees...')
-  #Check if input is a single overlap data frame
-  if (is(overlapDFs) == 'data.frame')
-    return(geneDegreesCore(overlapDFs))
-  dfList <- mapply(geneDegreesCore, overlapDFs, datasets, cutoffs, SIMPLIFY = FALSE)
+geneDegrees <- function(edgesDFs){
+  dfList <- lapply(edgesDFs, geneDegreesCore)
   df <- Reduce(rbind, dfList)
   df <- df[order(df$nEdges, decreasing = TRUE), ]
   return(df)
@@ -86,6 +73,8 @@ geneDegrees <- function(overlapDFs, datasets, cutoffs = NULL){
 #' @param degreesDF Gene degree data frame
 #'
 #' @return A data frame of gene distances
+#'
+#' @export
 #'
 distFreq <- function(degreesDF){
   message('Finding frequencies of gene degrees...')
@@ -104,16 +93,19 @@ distFreq <- function(degreesDF){
 #' This function computes the coordinates of genes on the figure made from
 #' concentric circles
 #'
-#' @inheritParams geneDegrees
+#' @inheritParams edgeLists.list
 #'
 #' @return A data frame containing the coordinates of the genes
 #'
-geneCoords <- function(overlapDFs, datasets, cutoffs = NULL){
-  degreesDF <- geneDegrees(overlapDFs, datasets, cutoffs)
+#' @export
+#'
+geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
+  edgesDFs <- edgeLists(overlapObj, groupNames, cutoff)
+  degreesDF <- geneDegrees(edgesDFs)
   distFreqDF <- distFreq(degreesDF)
   message('Finding gene coordinates...')
   df <- data.frame(matrix(nrow = 0, ncol = 3))
-  for (i in 1:nrow(distFreqDF))
+  for (i in seq_len(nrow(distFreqDF)))
     df <- rbind(df, pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i]))
   df <- Reduce(cbind, list(degreesDF[, 1, drop = F], df, degreesDF[, 2:3]))
   df[, 5] <- as.factor(df[, 5])
@@ -125,17 +117,20 @@ geneCoords <- function(overlapDFs, datasets, cutoffs = NULL){
 #' This function store the radii of the circles and the corresponding number
 #' of edges
 #'
-#' @param coordsDF Dataframe wih gene coordinates
+#' @param geneCoordsDF Dataframe wih gene coordinates
 #' @param extraCircles Number of circles drawn beyond those needed to include the
 #' points representing the genes. Default is 0
 #'
-#' @return A data frame containing the coordinates of the genes
+#' @return A data frame containing the radius and the number of edges for each
+#' circle
 #'
-circlesInfo <- function(coordsDF, extraCircles = 0){
-  minDegree <- coordsDF$nEdges[nrow(coordsDF)] - extraCircles
-  maxDegree <- coordsDF$nEdges[1]
+#' @export
+#'
+circleCoords <- function(geneCoordsDF, extraCircles = 0){
+  minDegree <- geneCoordsDF$nEdges[nrow(geneCoordsDF)] - extraCircles
+  maxDegree <- geneCoordsDF$nEdges[1]
   nCircles <- maxDegree - minDegree + 1 + extraCircles
-  hasSharedMax <- coordsDF$nEdges[1] == coordsDF$nEdges[2]
+  hasSharedMax <- geneCoordsDF$nEdges[1] == geneCoordsDF$nEdges[2]
   df <- data.frame(
     x = rep(0, nCircles),
     y = rep(0, nCircles),
@@ -144,5 +139,3 @@ circlesInfo <- function(coordsDF, extraCircles = 0){
   )
   return(df)
 }
-
-

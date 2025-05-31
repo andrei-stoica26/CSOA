@@ -4,17 +4,26 @@
 \alias{geneCirclePlot}
 \title{Gene circle plot for an overlap data frames}
 \usage{
-geneCirclePlot(coordsDF, circlesDF, title, groupStr = NULL)
+geneCirclePlot(
+  overlapObj,
+  groupStr = NULL,
+  groupNames = NULL,
+  cutoff = NULL,
+  title = "Top overlap genes plot"
+)
 }
 \arguments{
-\item{coordsDF}{Dataframe wih gene coordinates}
+\item{overlapObj}{An overlap data frame or list of overlap data frames}
 
-\item{circlesDF}{A data frame storing the details of the circles generated
-using circleInfo}
+\item{groupStr}{Column used for grouping}
+
+\item{groupNames}{Names of groups. If provided, must be a vector of the same
+length as the list of overlap data frames}
+
+\item{cutoff}{Number of retained edges from each overlap data frame after
+refiltering. If NULL (as default), no refiltering will be performed}
 
 \item{title}{Plot title}
-
-\item{groupStr}{groupStr Column used for grouping}
 }
 \value{
 A ggplot object

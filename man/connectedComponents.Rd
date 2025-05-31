@@ -4,14 +4,10 @@
 \alias{connectedComponents}
 \title{Find the connected components of the graph determined by the overlaps}
 \usage{
-connectedComponents(overlapDF, raiseWarning = 1000)
+connectedComponents(overlapDF)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
-
-\item{raiseWarning}{If the data frame contains more overlaps than this number,
-users will be warned that they may have introduced the raw overlap data frame
-as input}
 }
 \value{
 An overlap data frame with a column indicated the number of the
