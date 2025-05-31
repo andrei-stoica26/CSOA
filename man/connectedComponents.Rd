@@ -4,7 +4,7 @@
 \alias{connectedComponents}
 \title{Find the connected components of the graph determined by the overlaps}
 \usage{
-connectedComponents(overlapDF, raiseWarning = 2000)
+connectedComponents(overlapDF, raiseWarning = 1000)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}

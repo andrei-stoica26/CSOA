@@ -3,20 +3,14 @@
 #' This function finds the connected components of the graph having the filtered
 #' overlaps as edges
 #'
-#' @inheritParams computeCellScores
-#' @param raiseWarning If the data frame contains more overlaps than this number,
-#' users will be warned that they may have introduced the raw overlap data frame
-#' as input
-#'
+#' @inheritParams warnUnfiltered
 #' @return An overlap data frame with a column indicated the number of the
 #' connected component
 #'
 #' @export
 #'
-connectedComponents <- function(overlapDF, raiseWarning = 2000){
-  if (nrow(overlapDF) > raiseWarning)
-    warning(paste0('The number of overlaps in the data frame is very large (', nrow(overlapDF),
-    '). Are you sure you filtered the overlap data frame?'))
+connectedComponents <- function(overlapDF, raiseWarning = 1000){
+  warnUnfiltered(overlapDF, raiseWarning)
   if(!nrow(overlapDF))
     stop('Error: The dataframe has no rows.')
   overlapDF$component <- -1

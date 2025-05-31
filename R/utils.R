@@ -1,3 +1,5 @@
+#' @importFrom methods is
+#' @importFrom stats runif
 #' @importFrom SeuratObject LayerData
 #' @importFrom sgof BY
 #'
@@ -35,6 +37,16 @@ byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify = F))
 
+pointsOnCircle <- function(r, nPoints){
+  #Points on circle centered at origin
+  angleOffset <- runif(n = 1, min = 0, max = 2 * pi)
+  theta <- 2 * pi / nPoints
+  points <- lapply(1:nPoints, function(k) c(r * cos(k * theta + angleOffset), r * sin(k * theta + angleOffset)))
+  df <- data.table::transpose(data.frame(points))
+  colnames(df) <- c('x', 'y')
+  return(df)
+}
+
 #' Run LayerData from Seurat and return an error when the requested layer does
 #' not exist
 #'
@@ -52,6 +64,21 @@ safeLayerData <- function(seuratObj, layer){
     stop(paste0('The Seurat object has no ', layer, ' layer.'))
   return(layerData)
 }
+#' Raise a warning that the overlap data frame may have been not filtered
+#'
+#' This functions raises a warning that the overlap data frame may have been not
+#' filtered based on the number of overlaps
+#'
+#' @inheritParams computeCellScores
+#' @param raiseWarning If the data frame contains more overlaps than this number,
+#' users will be warned that they may have introduced the raw overlap data frame
+#' as input
+#'
+warnUnfiltered <- function(overlapDF, raiseWarning)
+  if (nrow(overlapDF) > raiseWarning)
+    warning(paste0('The number of overlaps in the data frame is very large (', nrow(overlapDF),
+                   '). Are you sure you filtered the overlap data frame?'))
+
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
