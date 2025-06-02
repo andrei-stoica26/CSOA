@@ -70,7 +70,7 @@ featureWes <- function(seuratObj, feature, title = feature, wesPal='Royal1', wes
 #'
 networkPlot <- function(overlapDF, title = 'Top overlaps network plot', nodePointSize = 10, nodeTextSize = 2.3,
                         ...){
-  df <- networkPlotDF(overlapDF, ...)
+  df <- networkPlotDF(overlapDF)
   tblGraph <- tidygraph::as_tbl_graph(df, directed = FALSE)
   p <- ggraph(tblGraph, layout = "nicely") +
     geom_edge_link(aes(width = weight), color = 'green4') +

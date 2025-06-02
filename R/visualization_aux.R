@@ -9,16 +9,14 @@ NULL
 #' plot.
 #'
 #' @inheritParams warnUnfiltered
-#' @param weightFactor A scaling factor used for generating edge weights
 #'
 #' @return A data frame ready to serve as input to networkPlot
 #'
 #' @export
 #'
-networkPlotDF <- function(overlapDF, weightFactor = 2, raiseWarning = 1000){
-  warnUnfiltered(overlapDF, raiseWarning)
+networkPlotDF <- function(overlapDF){
   preWeight <- log(max(overlapDF$rank) / overlapDF$rank + 0.01)
-  overlapDF$weight <- weightFactor * preWeight / max(preWeight)
+  overlapDF$weight <- 2 * preWeight / max(preWeight)
   overlapDF <- overlapDF[, c('gene1', 'gene2', 'weight')]
   return(overlapDF)
 }

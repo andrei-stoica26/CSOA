@@ -4,16 +4,10 @@
 \alias{networkPlotDF}
 \title{Prepare overlap data frame for network plot}
 \usage{
-networkPlotDF(overlapDF, weightFactor = 2, raiseWarning = 1000)
+networkPlotDF(overlapDF)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
-
-\item{weightFactor}{A scaling factor used for generating edge weights}
-
-\item{raiseWarning}{If the data frame contains more overlaps than this number,
-users will be warned that they may have introduced the raw overlap data frame
-as input}
 }
 \value{
 A data frame ready to serve as input to networkPlot
