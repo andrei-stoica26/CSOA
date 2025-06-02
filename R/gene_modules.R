@@ -15,7 +15,7 @@ connectedComponents <- function(overlapDF){
     stop('Error: The dataframe has no rows.')
   overlapDF$component <- -1
   rownames(overlapDF) <- 1:dim(overlapDF)[1]
-  vertices <- union(overlapDF$gene1, overlapDF$gene2)
+  vertices <- overlapGenes(overlapDF)
   seen <- c()
   nextComp = 1
   for (v in vertices){
@@ -59,7 +59,7 @@ scoreModules <- function(scObj, overlapDF, colStr = 'Module'){
     message(str_c('Scoring ', colStr, i, '...'))
     overlapComp <- subset(overlapDF, component == i)
     overlapComp <- scoreOverlaps(overlapDF)
-    genes <- unique(union(overlapComp[, 1], overlapComp[, 2]))
+    genes <- overlapGenes(overlapComp)
     message('Normalizing expression matrix by rows...')
     normExp <- kerntools::minmax(expression[genes, ], rows=T)
     scoreDF <- computeCellScores(overlapDF, normExp, colnames(scObj), colStr)

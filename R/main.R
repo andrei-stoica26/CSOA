@@ -137,9 +137,10 @@ storeCellScores.matrix <- function(scObj, scoreDF, ...){
 #'
 #' @export
 #'
-scoreCells <- function(expression, overlapDF, genes, nPairs=100, colStr='CSOA'){
+scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
   overlapDF <- processOverlaps(overlapDF, nPairs)
   message('Normalizing expression matrix by rows...')
+  genes <- overlapGenes(overlapDF)
   normExp <- kerntools::minmax(expression[genes, ], rows=T)
   scoreDF <- computeCellScores(overlapDF, normExp, colnames(expression), colStr)
   return(scoreDF)
@@ -160,7 +161,7 @@ scoreCells <- function(expression, overlapDF, genes, nPairs=100, colStr='CSOA'){
 runCSOA <- function(scObj, genes, nQuantiles=10, nPairs=100, colStr='CSOA', overlapFileName=NULL){
   expression <- expMat(scObj)
   overlapDF <- generateOverlaps(expression, genes, nQuantiles, overlapFileName)
-  scoreDF <- scoreCells(expression, overlapDF, genes, nPairs, colStr)
+  scoreDF <- scoreCells(expression, overlapDF, nPairs, colStr)
   return(storeCellScores(scObj, scoreDF))
 }
 

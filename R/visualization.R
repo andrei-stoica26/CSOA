@@ -2,12 +2,13 @@
 #'@importFrom ggeasy easy_remove_axes
 #'@importFrom ggforce geom_circle
 #'@importFrom ggnewscale new_scale_color new_scale_fill
-#'@importFrom ggplot2 aes coord_fixed element_text geom_point ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn theme theme_classic
+#'@importFrom ggplot2 aes coord_fixed element_text geom_point ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn theme theme_classic theme_void
+#'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
+#'@importFrom tidygraph as_tbl_graph
 #'@importFrom viridis scale_color_viridis scale_fill_viridis
 #'@importFrom wesanderson wes_palette
-#'@importFrom igraph E graph_from_data_frame layout_nicely
 #'@include utils.R
 #'@include visualization_aux.R
 #'
@@ -19,14 +20,14 @@ NULL
 #'
 #' @param p A ggplot object
 #' @param title Plot title
-#' @param titleSize Title font size
+#' @param ... Other arguments passed to element_text
 #'
 #' @return A ggplot object
 #'
 #' @export
 #'
-titlePlot <- function(p, title, titleSize=12)
-  return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, size=titleSize, color='slateblue', face='bold')))
+titlePlot <- function(p, title, ...)
+  return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
 
 #' Improved feature plot with a highly distinctive color scheme
 #'
@@ -36,7 +37,6 @@ titlePlot <- function(p, title, titleSize=12)
 #' @param seuratObj A SeuratObj
 #' @param feature Seurat feature
 #' @param title Plot title
-#' @param titleSize Title font size
 #' @param wesPal Wes Anderson palette
 #' @param wesLow Index of color marking low expression
 #' @param wesHigh Index of color marking high expression
@@ -46,9 +46,9 @@ titlePlot <- function(p, title, titleSize=12)
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title = feature, titleSize = 12, wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
+featureWes <- function(seuratObj, feature, title = feature, wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
   p <- FeaturePlot(seuratObj, feature, ...)
-  p <- titlePlot(p, title, titleSize)
+  p <- titlePlot(p, title, ...)
   p <- p + scale_color_gradientn(colours = wes_palette(wesPal)[c(wesLow, wesHigh)])
   return(p)
 }
@@ -59,25 +59,28 @@ featureWes <- function(seuratObj, feature, title = feature, titleSize = 12, wesP
 #' graph
 #'
 #' @inheritParams warnUnfiltered
-#' @param ... Additional parameters passed to the networkPlotDF helper
+#' @param title Plot title
+#' @param nodePointSize Point size of graph nodes
+#' @param nodeTextSize Text size of graph nodes
+#' @param ... Additional parameters passed to other functions
 
 #' @return A network plot
 #'
 #' @export
 #'
-networkPlot <- function(overlapDF, ...){
+networkPlot <- function(overlapDF, title = 'Top overlaps network plot', nodePointSize = 10, nodeTextSize = 2.3,
+                        ...){
   df <- networkPlotDF(overlapDF, ...)
-  g <- graph_from_data_frame(df, directed = F)
-  par(mar=c(0,0,0,0))
-  plot(g, edge.width = E(g)$weight, vertex.size = 15,
-       vertex.color = 'orange',
-       vertex.frame.color = 'orange',
-       vertex.shape = 'circle',
-       vertex.label.color = 'black',
-       vertex.label.cex = 0.65,
-       vertex.label.font = 1,
-       edge.color = 'green4',
-       layout = layout_nicely(g))
+  tblGraph <- tidygraph::as_tbl_graph(df, directed = FALSE)
+  p <- ggraph(tblGraph, layout = "nicely") +
+    geom_edge_link(aes(width = weight), color = 'green4') +
+    scale_edge_width(range = c(0.1, 1)) +
+    geom_node_point(size = nodePointSize, color = 'orange') +
+    geom_node_text(aes(label = name), color = 'black', size = nodeTextSize) +
+    theme_void() +
+    theme(legend.position = 'none')
+  p <- titlePlot(p, title, ...)
+  return(p)
 }
 
 #' Gene circle plot for an overlap data frames

@@ -37,6 +37,18 @@ byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify = F))
 
+#' Get all genes from an overlap data frame
+#'
+#' This function gets all genes from an overlap data frame
+#'
+#' @inheritParams rankOverlaps
+#'
+#' @return A character vector of genes
+#'
+#' @export
+overlapGenes <- function(overlapDF)
+  return(union(overlapDF$gene1, overlapDF$gene2))
+
 #' Generate the coordinates of points on a circle centered at origin
 #'
 #' This function generates nPoints on a circle of radius r centered at origin

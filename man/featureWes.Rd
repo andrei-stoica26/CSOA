@@ -8,7 +8,6 @@ featureWes(
   seuratObj,
   feature,
   title = feature,
-  titleSize = 12,
   wesPal = "Royal1",
   wesLow = 3,
   wesHigh = 2,
@@ -21,8 +20,6 @@ featureWes(
 \item{feature}{Seurat feature}
 
 \item{title}{Plot title}
-
-\item{titleSize}{Title font size}
 
 \item{wesPal}{Wes Anderson palette}
 

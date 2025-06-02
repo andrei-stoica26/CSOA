@@ -4,14 +4,14 @@
 \alias{titlePlot}
 \title{Add an aesthetic title to a plot}
 \usage{
-titlePlot(p, title, titleSize = 12)
+titlePlot(p, title, ...)
 }
 \arguments{
 \item{p}{A ggplot object}
 
 \item{title}{Plot title}
 
-\item{titleSize}{Title font size}
+\item{...}{Other arguments passed to element_text}
 }
 \value{
 A ggplot object

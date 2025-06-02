@@ -38,7 +38,7 @@ runCSOAMultiple <- function(scObj, geneSets, geneSetsNames, nQuantiles=10, nPair
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[i])
     setGenes <- geneSets[i]
-    scoreDF <- scoreCells(expression, setOverlapDF, geneSets[i], nPairs, geneSetsNames[i])
+    scoreDF <- scoreCells(expression, setOverlapDF, nPairs, geneSetsNames[i])
     return(scoreDF)
   })
   return(joinCellScores(scObj, scoreDFList))

@@ -4,14 +4,12 @@
 \alias{scoreCells}
 \title{Generate CSOA scores from overlap data frame}
 \usage{
-scoreCells(expression, overlapDF, genes, nPairs = 100, colStr = "CSOA")
+scoreCells(expression, overlapDF, nPairs = 100, colStr = "CSOA")
 }
 \arguments{
 \item{expression}{Expression matrix}
 
 \item{overlapDF}{A data frame created with generate_overlaps}
-
-\item{genes}{Vector of genes. Must include at least two genes}
 
 \item{nPairs}{Number of overlaps that will be retained}
 

@@ -14,10 +14,10 @@ Imports:
     ggforce,
     ggnewscale,
     ggplot2,
+    ggraph,
     ggrepel,
     graphics,
     kerntools,
-    igraph,
     methods,
     qs,
     Seurat,
@@ -27,6 +27,7 @@ Imports:
     sgof,
     stats,
     stringr,
+    tidygraph,
     viridis,
     wesanderson
 Encoding: UTF-8

@@ -18,9 +18,9 @@ NULL
 networkPlotDF <- function(overlapDF, weightFactor = 2, raiseWarning = 1000){
   warnUnfiltered(overlapDF, raiseWarning)
   preWeight <- log(max(overlapDF$rank) / overlapDF$rank + 0.01)
-  df$weight <- weightFactor * preWeight / max(preWeight)
-  df <- df[, c('gene1', 'gene2', 'weight')]
-  return(df)
+  overlapDF$weight <- weightFactor * preWeight / max(preWeight)
+  overlapDF <- overlapDF[, c('gene1', 'gene2', 'weight')]
+  return(overlapDF)
 }
 
 #' Calculate gene degrees from edges data frame

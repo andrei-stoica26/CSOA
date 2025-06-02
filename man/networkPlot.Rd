@@ -4,12 +4,24 @@
 \alias{networkPlot}
 \title{Plot the overlaps as a network}
 \usage{
-networkPlot(overlapDF, ...)
+networkPlot(
+  overlapDF,
+  title = "Top overlaps network plot",
+  nodePointSize = 10,
+  nodeTextSize = 2.3,
+  ...
+)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
 
-\item{...}{Additional parameters passed to the networkPlotDF helper}
+\item{title}{Plot title}
+
+\item{nodePointSize}{Point size of graph nodes}
+
+\item{nodeTextSize}{Text size of graph nodes}
+
+\item{...}{Additional parameters passed to other functions}
 }
 \value{
 A network plot
