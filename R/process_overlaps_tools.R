@@ -9,9 +9,9 @@
 #'
 
 rankOverlaps <- function(overlapDF){
-  overlapDF$pvalRank <- 1:nrow(overlapDF)
-  overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=T), ]
-  overlapDF$ratioRank <- 1:nrow(overlapDF)
+  overlapDF$pvalRank <- seq_len(nrow(overlapDF))
+  overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]
+  overlapDF$ratioRank <- seq_len(nrow(overlapDF))
   overlapDF$rank <- rowMeans(overlapDF[ , c('pvalRank', 'ratioRank')])
   overlapDF <- overlapDF[order(overlapDF$rank), ]
   return(overlapDF)
@@ -30,9 +30,7 @@ rankOverlaps <- function(overlapDF){
 #' @return A data frame with ranked overlaps
 #'
 scoreOverlaps <- function(overlapDF){
-  overlapDF$rank <- 1:nrow(overlapDF)
-  overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[1:nrow(overlapDF)])
+  overlapDF$rank <- seq_len(nrow(overlapDF))
+  overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[overlapDF$rank])
   return(overlapDF)
 }
-
-

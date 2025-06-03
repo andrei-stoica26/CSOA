@@ -1,3 +1,18 @@
+#' Saves plot or list of plots
+#'
+#' This function saves a plot or list of plots as a pdf. Can also take as input
+#' a function with arguments that returns a ggplot object.
+#'
+#' @param plotObject A function, ggplot object, or list of ggplot objects
+#' @param ... Arguments passed to other methods
+#'
+#' @return NULL
+#'
+#' @export
+#'
+devPlot <- function(plotObject, ...)
+  UseMethod(generic='devPlot', object=plotObject)
+
 #' Extracts the data expression matrix from object
 #'
 #' This function extracts the data expression matrix from object as a
@@ -11,7 +26,6 @@
 #'
 expMat <- function(scObj)
   UseMethod(generic='expMat', object=scObj)
-
 
 #' Extract the edge list from overlap data frame or list of overlap data frames
 #'

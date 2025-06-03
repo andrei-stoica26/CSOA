@@ -16,7 +16,7 @@ NULL
 #'
 networkPlotDF <- function(overlapDF){
   preWeight <- log(max(overlapDF$rank) / overlapDF$rank + 0.01)
-  overlapDF$weight <- 2 * preWeight / max(preWeight)
+  overlapDF$weight <- preWeight / max(preWeight)
   overlapDF <- overlapDF[, c('gene1', 'gene2', 'weight')]
   return(overlapDF)
 }

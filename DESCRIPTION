@@ -17,6 +17,7 @@ Imports:
     ggraph,
     ggrepel,
     graphics,
+    grDevices,
     kerntools,
     methods,
     qs,

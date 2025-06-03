@@ -6,6 +6,7 @@
 #'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
+#'@importFrom grDevices dev.new dev.off
 #'@importFrom tidygraph as_tbl_graph
 #'@importFrom viridis scale_color_viridis scale_fill_viridis
 #'@importFrom wesanderson wes_palette
@@ -13,6 +14,33 @@
 #'@include visualization_aux.R
 #'
 NULL
+
+#' @rdname devPlot
+#' @export
+#'
+devPlot.default <- function(plotObject, ...)
+  stop('Unrecognized input type: plotObject must be a function, a ggplot object or a list of ggplot objects')
+
+#' @rdname devPlot
+#' @export
+#'
+devPlot.function <- function(plotObject, ...){
+  dev.new(noRStudioGD = TRUE)
+  print(plotObject(...))
+  dev.off()
+}
+
+#' @rdname devPlot
+#' @export
+#'
+devPlot.ggplot <- function(plotObject, ...)
+  devPlot.function(identity, plotObject)
+
+#' @rdname devPlot
+#' @export
+#'
+devPlot.list <- function(plotObject, ...)
+  invisible(lapply(plotObject, devPlot.ggplot))
 
 #' Add an aesthetic title to a plot
 #'
@@ -74,7 +102,7 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', nodePoin
   tblGraph <- tidygraph::as_tbl_graph(df, directed = FALSE)
   p <- ggraph(tblGraph, layout = "nicely") +
     geom_edge_link(aes(width = weight), color = 'green4') +
-    scale_edge_width(range = c(0.1, 1)) +
+    scale_edge_width(range = c(0.1, 0.3)) +
     geom_node_point(size = nodePointSize, color = 'orange') +
     geom_node_text(aes(label = name), color = 'black', size = nodeTextSize) +
     theme_void() +
