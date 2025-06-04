@@ -1,17 +1,18 @@
-#' @importFrom fabricatr split_quantile
+#' @importFrom stats quantile
 #'
 NULL
+
 
 #' Generates cell quantiles of gene expression for input genes
 #'
 #' This function takes a Seurat object or expression matrix of matrix class,
 #' a list of genes and a number of quantiles. For each gene, the cells
-#' with a non-zero expression detected for the gene are selected and grouped
-#' into quantiles based on the expression of the gene.
+#' where the gene has a non-zero expression are arranged into quantiles based on
+#' the expression of the gene.
 #'
 #' @inheritParams expMat
 #' @param genes Vector of genes. Must include at least two genes
-#' @param nQuantiles An integer between 2 and 10
+#' @param nQuantiles A positive integer
 #'
 #' @return A named list of length equal to the length of the genes array.
 #' Each of its elements is a list comprising nQuantiles character arrays.
@@ -19,16 +20,16 @@ NULL
 #' @export
 #'
 fullQuantileSets <- function(scObj, genes, nQuantiles=10){
-  if (length(genes) < 2)
-    stop('genes must be a character array of length >= 2')
-  if (!nQuantiles %in% seq(2, 10))
-    stop('nQuantiles must be an integer between 2 and 10.')
+  if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
+    stop('genes must be a character vector of length >= 2')
+  if (!isPosInt(nQuantiles))
+    stop('nQuantiles must be a positive integer')
   expression <- expMat(scObj)
   message('Computing quantiles...')
   expList <- lapply(genes, function(x){
     geneExp <- expression[x, ]
     geneExp <- geneExp[geneExp > 0]
-    quantiles <- fabricatr::split_quantile(geneExp, nQuantiles)
+    quantiles <- splitQuantile(geneExp, nQuantiles)
     return(lapply(1:nQuantiles, function(y) return(names(geneExp[which(quantiles == y)]))))
   })
   names(expList) <- genes

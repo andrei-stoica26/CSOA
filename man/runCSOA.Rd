@@ -7,9 +7,9 @@
 runCSOA(
   scObj,
   genes,
+  colStr = "CSOA",
   nQuantiles = 10,
   nPairs = 100,
-  colStr = "CSOA",
   overlapFileName = NULL
 )
 }
@@ -18,11 +18,11 @@ runCSOA(
 
 \item{genes}{Vector of genes. Must include at least two genes}
 
-\item{nQuantiles}{An integer between 2 and 10}
+\item{colStr}{The name of the column where CSOA results will be stored}
+
+\item{nQuantiles}{A positive integer}
 
 \item{nPairs}{Number of overlaps that will be retained}
-
-\item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}

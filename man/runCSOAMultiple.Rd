@@ -20,7 +20,7 @@ runCSOAMultiple(
 
 \item{geneSetsNames}{Character vector of names of gene sets}
 
-\item{nQuantiles}{An integer between 2 and 10}
+\item{nQuantiles}{A positive integer}
 
 \item{nPairs}{Number of overlaps that will be retained}
 

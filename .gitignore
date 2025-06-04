@@ -1,4 +1,5 @@
 .Rbuildignore
 .Rhistory
 .Rproj.user
+test_code.R
 CSOA.Rproj

@@ -4,6 +4,7 @@
 #' @importFrom SingleCellExperiment altExp
 #' @importFrom SummarizedExperiment assay
 #' @importFrom kerntools minmax
+#' @importFrom stats setNames
 #' @include quantile_sets.R
 #' @include generics.R
 #' @include generate_overlaps_tools.R
@@ -51,7 +52,7 @@ processOverlaps <- function(overlapDF, nPairs=100){
   if (!is.null(nPairs)){
     if(nPairs > nrow(overlapDF))
       message(paste0('Will return only ', nrow(overlapDF), ' significant overlaps. More are not available.'))
-    overlapDF <- overlapDF[1:min(nPairs, nrow(overlapDF)), ]
+    overlapDF <- overlapDF[seq_len(min(nPairs, nrow(overlapDF))), ]
   }
   overlapDF <- scoreOverlaps(overlapDF)
   return(overlapDF)
@@ -78,7 +79,7 @@ computeCellScores <- function(overlapDF, normExp, cellNames, colStr='CSOA'){
   message('Computing per-cell pathway scores...')
   scores <- rowSums(data.frame(pairsScores))
   scores <- kerntools::minmax(as.matrix(scores))
-  scoreDF <- data.frame(colStr = scores)
+  scoreDF <- data.frame(setNames(list(scores), colStr))
   rownames(scoreDF) <- cellNames
   return(scoreDF)
 }
@@ -158,7 +159,7 @@ scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
 #'
 #' @export
 #'
-runCSOA <- function(scObj, genes, nQuantiles=10, nPairs=100, colStr='CSOA', overlapFileName=NULL){
+runCSOA <- function(scObj, genes, colStr='CSOA', nQuantiles=10, nPairs=100, overlapFileName=NULL){
   expression <- expMat(scObj)
   overlapDF <- generateOverlaps(expression, genes, nQuantiles, overlapFileName)
   scoreDF <- scoreCells(expression, overlapDF, nPairs, colStr)

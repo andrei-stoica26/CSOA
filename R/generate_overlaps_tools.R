@@ -46,7 +46,6 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL)
   if(is.null(pairs))
     pairs <- getPairs(genes)
   df <- lapply(pairs, function(x) pairOverlap(cellSets[x], nCells))
-    #pairOverlap(cellSets[x], nCells))
   df <- data.frame(Reduce(rbind, df))
   if (ncol(df) == 1)
     df <- data.table::transpose(df)
@@ -60,9 +59,9 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL)
   return(df)
 }
 
-overlapList <- function(overlapDF)
+overlapPairs <- function(overlapDF)
   return(as.list(data.table::transpose(overlapDF[, c(1, 2)])))
 
 overlapSlice <- function(overlapDF, pairs)
-  return(overlapDF[which(overlapList(overlapDF) %in% pairs),])
+  return(overlapDF[which(overlapPairs(overlapDF) %in% pairs),])
 

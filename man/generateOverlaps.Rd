@@ -17,7 +17,7 @@ generateOverlaps(
 
 \item{genes}{Vector of genes. Must include at least two genes}
 
-\item{nQuantiles}{An integer between 2 and 10}
+\item{nQuantiles}{A positive integer}
 
 \item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
 pairs will be assessed}
