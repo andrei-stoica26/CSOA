@@ -21,7 +21,6 @@ will be saved. Default is NULL (the overlap data frame will not be saved)}
 A data frame listing statistics for all cell set overlaps
 }
 \description{
-This function takes a list generated using fullQuantileSets, consisting of
-lists of cell names and named using gene names, and retains the top-quantile
-cells from each list.
+This function computes the statistical significance of overlaps of pairs of
+cell sets
 }

@@ -7,7 +7,7 @@
 generateOverlaps(
   scObj,
   genes,
-  nQuantiles,
+  percentile = 90,
   pairs = NULL,
   overlapFileName = NULL
 )
@@ -17,7 +17,7 @@ generateOverlaps(
 
 \item{genes}{Vector of genes. Must include at least two genes}
 
-\item{nQuantiles}{A positive integer}
+\item{percentile}{A non-negative number under 100}
 
 \item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
 pairs will be assessed}
@@ -29,9 +29,8 @@ will be saved. Default is NULL (the overlap data frame will not be saved)}
 A data frame listing statistics for all cell set overlaps
 }
 \description{
-This function builds a set of cells for each input gene by dividing the cells
-expressing the gene into quantiles based on their expression and retaining
-the top-quantile cells. Subsequently, the significance of the overlaps of all
-pairs of the constructed cell sets is computed, and the overlaps receive a
-ranking.
+This function builds a set of cells for each input gene by first selecting all
+the cells expressing the gene and then retaining only the cells expressing the
+gene at the input percentile. Subsequently, overlaps of pairs of the constructed
+cell sets are assessed for statistical significance.
 }

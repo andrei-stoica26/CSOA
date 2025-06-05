@@ -5,7 +5,7 @@
 #' @importFrom SummarizedExperiment assay
 #' @importFrom kerntools minmax
 #' @importFrom stats setNames
-#' @include quantile_sets.R
+#' @include percentile_sets.R
 #' @include generics.R
 #' @include generate_overlaps_tools.R
 #' @include process_overlaps_tools.R
@@ -13,23 +13,21 @@ NULL
 
 #' Generate overlaps of cell sets for input genes
 #'
-#' This function builds a set of cells for each input gene by dividing the cells
-#' expressing the gene into quantiles based on their expression and retaining
-#' the top-quantile cells. Subsequently, the significance of the overlaps of all
-#' pairs of the constructed cell sets is computed, and the overlaps receive a
-#' ranking.
+#' This function builds a set of cells for each input gene by first selecting all
+#' the cells expressing the gene and then retaining only the cells expressing the
+#' gene at the input percentile. Subsequently, overlaps of pairs of the constructed
+#' cell sets are assessed for statistical significance.
 #'
-#' @inheritParams fullQuantileSets
+#' @inheritParams percentileSets
 #' @inheritParams cellSetsOverlaps
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
 #' @export
 #'
-generateOverlaps <- function(scObj, genes, nQuantiles, pairs=NULL, overlapFileName=NULL){
-  allCellSets <- fullQuantileSets(scObj, genes, nQuantiles)
-  topCellSets <- topQuantileSets(allCellSets)
-  overlapDF <- cellSetsOverlaps(topCellSets, dim(scObj)[2], pairs, overlapFileName)
+generateOverlaps <- function(scObj, genes, percentile = 90, pairs = NULL, overlapFileName = NULL){
+  cellSets <- percentileSets(scObj, genes, percentile)
+  overlapDF <- cellSetsOverlaps(cellSets, dim(scObj)[2], pairs, overlapFileName)
   return(overlapDF)
 }
 
@@ -150,7 +148,10 @@ scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
 #' Run the CSOA pipeline
 #'
 #' This function generates cell set overlaps for an input gene set based on
-#' quantiles of gene expression and retaining the top quantile genes.
+#' percentiles of gene expression, computes the significance of these overlaps,
+#' ranks, filters and scores the overlaps based on this significance, and builds
+#' a per-cell score by summing the products of the scores of these overlaps and
+#' the custom-normalized per-cell expressions of the corresponding pairs of genes.
 #'
 #' @inheritParams generateOverlaps
 #' @inheritParams scoreCells
@@ -159,9 +160,9 @@ scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
 #'
 #' @export
 #'
-runCSOA <- function(scObj, genes, colStr='CSOA', nQuantiles=10, nPairs=100, overlapFileName=NULL){
+runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, nPairs = 100, overlapFileName = NULL){
   expression <- expMat(scObj)
-  overlapDF <- generateOverlaps(expression, genes, nQuantiles, overlapFileName)
+  overlapDF <- generateOverlaps(expression, genes, percentile, overlapFileName)
   scoreDF <- scoreCells(expression, overlapDF, nPairs, colStr)
   return(storeCellScores(scObj, scoreDF))
 }

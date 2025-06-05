@@ -1,5 +1,5 @@
 .Rbuildignore
 .Rhistory
 .Rproj.user
-test_code.R
+R/.test_code.R
 CSOA.Rproj

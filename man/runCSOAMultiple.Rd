@@ -8,7 +8,7 @@ runCSOAMultiple(
   scObj,
   geneSets,
   geneSetsNames,
-  nQuantiles = 10,
+  percentile = 90,
   nPairs = 100,
   overlapFileName = NULL
 )
@@ -20,7 +20,7 @@ runCSOAMultiple(
 
 \item{geneSetsNames}{Character vector of names of gene sets}
 
-\item{nQuantiles}{A positive integer}
+\item{percentile}{A non-negative number under 100}
 
 \item{nPairs}{Number of overlaps that will be retained}
 
@@ -33,5 +33,8 @@ assigned for each cell
 }
 \description{
 This function generates cell set overlaps for input gene sets based on
-quantiles of gene expression and retaining the top quantile genes.
+percentiles of gene expression, computes the significance of these overlaps,
+ranks, filters and scores the overlaps based on this significance, and builds
+a per-cell score by summing the products of the scores of these overlaps and
+the custom-normalized per-cell expressions of the corresponding pairs of genes.
 }

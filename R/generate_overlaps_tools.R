@@ -27,9 +27,8 @@ pairOverlap <- function(pairCellSets, nCells){
 
 #' Calculates the significance of overlaps of pairs of cells sets
 #'
-#' This function takes a list generated using fullQuantileSets, consisting of
-#' lists of cell names and named using gene names, and retains the top-quantile
-#' cells from each list.
+#' This function computes the statistical significance of overlaps of pairs of
+#' cell sets
 #'
 #' @param cellSets A list of character arrays
 #' @param nCells The total number of cells in the Seurat object

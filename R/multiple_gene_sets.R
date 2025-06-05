@@ -17,7 +17,10 @@ joinCellScores <- function(scObj, scoreDFList){
 #' Run the CSOA pipeline for multiple gene sets
 #'
 #' This function generates cell set overlaps for input gene sets based on
-#' quantiles of gene expression and retaining the top quantile genes.
+#' percentiles of gene expression, computes the significance of these overlaps,
+#' ranks, filters and scores the overlaps based on this significance, and builds
+#' a per-cell score by summing the products of the scores of these overlaps and
+#' the custom-normalized per-cell expressions of the corresponding pairs of genes.
 #'
 #' @inheritParams runCSOA
 #' @param geneSets List of character vectors
@@ -28,13 +31,13 @@ joinCellScores <- function(scObj, scoreDFList){
 #'
 #' @export
 #'
-runCSOAMultiple <- function(scObj, geneSets, geneSetsNames, nQuantiles=10, nPairs=100, overlapFileName=NULL){
+runCSOAMultiple <- function(scObj, geneSets, geneSetsNames, percentile = 90, nPairs = 100, overlapFileName = NULL){
   expression <- expMat(scObj)
   geneSets <- lapply(geneSets, sort)
   genes <- unique(unlist(geneSets))
   setPairs <- lapply(geneSets, getPairs)
   pairs <- Reduce(union, setPairs)
-  overlapDF <- generateOverlaps(expression, genes, nQuantiles, pairs, overlapFileName)
+  overlapDF <- generateOverlaps(expression, genes, percentile, pairs, overlapFileName)
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
     setGenes <- geneSets[i]

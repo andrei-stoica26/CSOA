@@ -25,20 +25,6 @@ byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
   return(df)
 }
 
-#' Check if a variable is a positive integer
-#'
-#' This function checks if a variable is a positive integer
-#'
-#' @param x Variable to be checked
-#'
-#' @return True or false
-#'
-isPosInt <- function(x){
-  if (!is.numeric(x))
-    return(FALSE)
-  return(x > 0 & x == round(x))
-}
-
 #' Get all unorderded pairs of two elements from a vector
 #'
 #' This function returns all unorderded pairs of two elements from a vector as
@@ -99,30 +85,6 @@ safeLayerData <- function(seuratObj, layer){
   if (!dim(layerData)[1])
     stop(paste0('The Seurat object has no ', layer, ' layer.'))
   return(layerData)
-}
-
-#' Split a numeric vector into quantiles
-#'
-#' This function splits a numeric vector into quantiles
-#'
-#' @param x A numeric vector
-#' @param nQuantiles Number of quantiles
-#'
-#' @return A numeric vector of the same size as x listing the quantile allocation of each element
-#'
-#' @export
-#'
-splitQuantile <- function(x, nQuantiles){
-  if(!is.numeric(x)) stop('x must be a numeric vector')
-  if(!isPosInt(nQuantiles) | length(nQuantiles) > 1) stop('nQuantiles must be a positive integer')
-  manyQuantilesError <- paste0("The requested number of quantiles (",
-                               nQuantiles, ") is too high to split the input vector of length ", length(x), ". Try lower values")
-  if (nQuantiles > length(unique(x)))stop(manyQuantilesError)
-
-  breaks <- quantile(x, probs = seq(0, 1, length.out = nQuantiles + 1))
-  if(length(breaks) != length(unique(breaks)))
-    stop(manyQuantilesError)
-  return(cut(x, breaks = breaks, labels = 1:nQuantiles, include.lowest = TRUE))
 }
 
 #' Raise a warning that the overlap data frame may have been not filtered

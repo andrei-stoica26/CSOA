@@ -38,7 +38,7 @@ Collate:
     'generate_overlaps_tools.R'
     'generics.R'
     'process_overlaps_tools.R'
-    'quantile_sets.R'
+    'percentile_sets.R'
     'main.R'
     'multiple_gene_sets.R'
     'utils.R'
