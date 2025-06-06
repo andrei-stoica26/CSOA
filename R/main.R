@@ -18,6 +18,7 @@ NULL
 #' gene at the input percentile. Subsequently, overlaps of pairs of the constructed
 #' cell sets are assessed for statistical significance.
 #'
+#'
 #' @inheritParams percentileSets
 #' @inheritParams cellSetsOverlaps
 #'
@@ -25,9 +26,9 @@ NULL
 #'
 #' @export
 #'
-generateOverlaps <- function(scObj, genes, percentile = 90, pairs = NULL, overlapFileName = NULL){
-  cellSets <- percentileSets(scObj, genes, percentile)
-  overlapDF <- cellSetsOverlaps(cellSets, dim(scObj)[2], pairs, overlapFileName)
+generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL, overlapFileName = NULL){
+  cellSets <- percentileSets(geneSetExp, percentile)
+  overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs, overlapFileName)
   return(overlapDF)
 }
 
@@ -38,14 +39,16 @@ generateOverlaps <- function(scObj, genes, percentile = 90, pairs = NULL, overla
 #'
 #' @inheritParams rankOverlaps
 #' @param nPairs Number of overlaps that will be retained
+#' @inheritParamas byCorrectDF
 #'
 #' @return A data frame consisting of filtered, ranked and scored cell sets
 #' overlaps
 #'
 #' @export
 #'
-processOverlaps <- function(overlapDF, nPairs=100){
-  overlapDF <- subset(overlapDF, pval_adj < 0.05)
+processOverlaps <- function(overlapDF, nPairs = 100, pvalThr = 0.05){
+  if (nrow(overlapDF) > 1)
+    overlapDF <- byCorrectDF(overlapDF, pvalThr) else overlapDF$pval_adj <- overlapDF$pval
   overlapDF <- rankOverlaps(overlapDF)
   if (!is.null(nPairs)){
     if(nPairs > nrow(overlapDF))
@@ -92,7 +95,7 @@ computeCellScores <- function(overlapDF, normExp, cellNames, colStr='CSOA'){
 #' @export
 #'
 storeCellScores.default <- function(scObj, scoreDF, ...)
-  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay or an expression matrix.')
+  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay or a matrix.')
 
 #' @rdname storeCellScores
 #' @export
@@ -108,40 +111,39 @@ storeCellScores.Seurat <- function(scObj, scoreDF, ...){
 #' @export
 #'
 storeCellScores.SingleCellExperiment <- function(scObj, scoreDF, altExpName = 'CSOA', ...){
-  SingleCellExperiment::altExp(scObj, altExpName) <- SummarizedExperiment::SummarizedExperiment(t(scoreDF))
+  colData(scObj) <- cbind(colData(scObj), scoreDF)
   return(scObj)
 }
 
 #' @rdname storeCellScores
 #' @export
 #'
-storeCellScores.matrix <- function(scObj, scoreDF, ...){
+storeCellScores.matrix <- function(scObj, scoreDF, ...)
   return(scoreDF)
-}
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' Generate CSOA scores from overlap data frame
 #'
-#' This function generates per-cell CSOA scores after the overlap data frame has
+#' This function computes per-cell CSOA scores after the overlap data frame has
 #' been generated.
 #'
-#' @param expression Expression matrix
-#' @inheritParams processOverlaps
 #' @inheritParams generateOverlaps
+#' @inheritParams processOverlaps
 #' @inheritParams computeCellScores
 #'
 #' @return A data frame with a column corresponding to the CSOA scores
 #'
 #' @export
 #'
-scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
+scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', nPairs = 100){
   overlapDF <- processOverlaps(overlapDF, nPairs)
   message('Normalizing expression matrix by rows...')
   genes <- overlapGenes(overlapDF)
-  normExp <- kerntools::minmax(expression[genes, ], rows=T)
-  scoreDF <- computeCellScores(overlapDF, normExp, colnames(expression), colStr)
+  normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
+  scoreDF <- computeCellScores(overlapDF, normExp, colnames(geneSetExp), colStr)
   return(scoreDF)
 }
 
@@ -153,6 +155,8 @@ scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
 #' a per-cell score by summing the products of the scores of these overlaps and
 #' the custom-normalized per-cell expressions of the corresponding pairs of genes.
 #'
+#' @inheritParams expMat
+#' @param genes Vector of genes. Must include at least two genes
 #' @inheritParams generateOverlaps
 #' @inheritParams scoreCells
 #'
@@ -161,9 +165,12 @@ scoreCells <- function(expression, overlapDF, nPairs=100, colStr='CSOA'){
 #' @export
 #'
 runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, nPairs = 100, overlapFileName = NULL){
-  expression <- expMat(scObj)
-  overlapDF <- generateOverlaps(expression, genes, percentile, overlapFileName)
-  scoreDF <- scoreCells(expression, overlapDF, nPairs, colStr)
+  if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
+    stop('genes must be a character vector of length >= 2')
+  genes <- sort(genes)
+  geneSetExp <- expMat(scObj, genes)
+  overlapDF <- generateOverlaps(geneSetExp, percentile, pairs = NULL, overlapFileName)
+  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, nPairs)
   return(storeCellScores(scObj, scoreDF))
 }
 

@@ -44,3 +44,11 @@ Collate:
     'utils.R'
     'visualization_aux.R'
     'visualization.R'
+Suggests: 
+    BiocStyle,
+    knitr,
+    patchwork,
+    rmarkdown,
+    scRNAseq,
+    scuttle
+VignetteBuilder: knitr

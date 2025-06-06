@@ -1,0 +1,159 @@
+---
+title: "Getting started with CSOA"
+author: "Andrei-Florian Stoica"
+package: CSOA
+date: June 6, 2025
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{CSOA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# Introduction
+
+CSOA is a tool for scoring gene set signatures in scRNA-seq data based on the overlaps of sets comprising, for each gene, the cells with the highest expression of the gene.
+
+# Installation
+To install CSOA, run the following commands in an R session:
+```{r setup, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("andrei-stoica26/CSOA")
+```
+
+# Prerequisites
+In addition to CSOA, you need to install [ggplot2](https://hadley.github.io/ggplot2/), [patchwork](https://patchwork.data-imaginist.com/index.html),
+[scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html), [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) and [Seurat](https://satijalab.org/seurat/articles/install.html) for this tutorial.
+
+
+# Scoring a gene set
+
+This example uses an annotated scRNA-seq human pancreas dataset. After loading the required packages, download the dataset using the `BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
+
+CSOA requires the input scRNA-seq data to be normalized and log-transformed. We will employ the `logNormCounts` function from `scuttle` for this step.
+  
+```{r message = F, warning = F, results=F}
+library(CSOA)
+library(ggplot2)
+library(patchwork)
+library(scRNAseq)
+library(scuttle)
+library(Seurat)
+
+sceObj <- BaronPancreasData('human')
+sceObj <- logNormCounts(sceObj)
+```
+
+We can take a look at the cell types found in this dataset:
+
+```{r}
+table(colData(sceObj)$label)
+```
+
+Next, we will define a vector of acinar markers based on [PanglaoDB](https://www.panglaodb.se/markers.html):
+
+```{r}
+acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1', 
+                   'DUOXA2', 'ALDOB', 'REG3A', 'SERPINA3', 'PRSS3', 'REG1B', 
+                   'CFB',	'GDF15',	'MUC1','ANPEP', 'ANGPTL4', 'OLFM4', 
+                   'GSTA1', 'LGALS2', 'PDZK1IP1', 'RARRES2', 'CXCL17', 
+                   'UBD', 'GSTA2', 'LYZ', 'RBPJL', 'PTF1A', 'CELA3A', 
+                   'SPINK1', 'ZG16', 'CEL', 'CELA2A', 'CPB1', 'CELA1', 
+                   'PNLIPRP1', 'RNASE1', 'AMY2B', 'CPA2','CPA1', 'CELA3B', 
+                   'CTRB2', 'PLA2G1B', 'PRSS2', 'CLPS', 'REG1A', 'SYCN')
+```
+
+Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to use `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells from the dataset:
+
+```{r warning = F}
+seuratObj <- as.Seurat(sceObj)
+seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
+VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label')
+```
+
+Alternatively, CSOA can be run on a `SingleCellExperiment` object. The results will be stored as a column in the object's `colData` matrix:
+
+```{r}
+sceObj <- runCSOA(sceObj, acinarMarkers, 'CSOA_acinar')
+identical(seuratObj@meta.data$CSOA_acinar, sceObj$CSOA_acinar)
+```
+
+Furthermore, CSOA can be run directly on an expression matrix of class `matrix`. The `expMat` function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class. When running directly on an expression matrix, CSOA will return a data frame:
+
+```{r}
+geneSetExp <- expMat(seuratObj)
+df <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
+head(df)
+identical(seuratObj@meta.data$CSOA_acinar, df$CSOA_acinar)
+```
+
+# Scoring multiple gene sets
+
+CSOA can score multiple gene sets using the `runCSOAMultiple` function. We provide three additional marker lists selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
+```{r}
+alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
+                  'CHGA', 'SCGB2A1', 'GLS', 'FAP', 'DPP4', 'GPR119',
+                  'PAX6', 'NEUROD1', 'LOXL4', 'PLCE1', 'GC', 'KLHL41',
+                  'FEV', 'PTGER3', 'RFX6', 'SMARCA1', 'PGR', 'IRX1',
+                  'UCP2', 'RGS4', 'KCNK16', 'GLP1R', 'ARX', 'POU3F4',
+                  'RESP18', 'PYY', 'SLC38A5', 'TM4SF4', 'CRYBA2', 'SH3GL2', 
+                  'PCSK1', 'PRRG2', 'IRX2', 'ALDH1A1','PEMT', 'SMIM24', 
+                  'F10', 'SCGN', 'SLC30A8')
+
+ductalMarkers <-	c('CFTR', 'SERPINA5', 'SLPI', 'TFF1', 'CFB', 'LGALS4', 
+                   'CTSH',	'PERP', 'PDLIM3',	'WFDC2', 'SLC3A1', 'AQP1', 
+                   'ALDH1A3', 'VTCN1',	'KRT19', 'TFF2', 'KRT7', 'CLDN4',
+                   'LAMB3', 'TACSTD2', 'CCL2', 'DCDC2','CXCL2', 'CLDN10',
+                   'HNF1B', 'KRT20', 'MUC1', 'ONECUT1', 'AMBP', 'HHEX',
+                   'ANXA4', 'SPP1', 'PDX1', 'SERPINA3', 'GDF15', 'AKR1C3',
+                   'MMP7', 'DEFB1', 'SERPING1', 'TSPAN8', 'CLDN1', 'S100A10',
+                   'PIGR')
+
+gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3', 
+                  'CHN2', 'PTGFR', 'ENTPD2', 'AQP3', 'THSD7A', 'CARTPT',
+                  'ISL1', 'PAX6', 'NEUROD1', 'APOBEC2', 'SEMA3E', 'SLITRK6',
+                  'SERTM1', 'PXK', 'PPY2P', 'ETV1', 'ARX', 'CMTM8', 'SCGB2A1', 
+                  'FXYD2', 'SCGN')
+
+```
+
+Now we run CSOA on the four provided marker lists:
+```{r warning = F, fig.height = 8, fig.width = 7}
+geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
+geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
+seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
+plots <- lapply(geneSetNames, function(x) {
+  VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
+    theme(axis.text = element_text(size=10),
+          axis.title.x = element_blank(),
+          plot.title = element_text (size=11))
+
+})
+(plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
+```
+
+Alternatively, CSOA can score multiple sets using a `SingleCellExperiment` or a `matrix` object as input:
+
+```{r warning = F}
+sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
+sapply(geneSetNames, 
+       function(x) identical(seuratObj@meta.data[[x]], colData(sceObj)[[x]]))
+df <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
+head(df)
+sapply(geneSetNames, 
+       function(x) identical(seuratObj@meta.data[[x]], df[[x]]))
+```
+
+
+# Session information {-}
+```{r}
+sessionInfo()
+```

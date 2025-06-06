@@ -4,14 +4,13 @@
 \alias{percentileSets}
 \title{Generates cell expressing input genes at an input percentile}
 \usage{
-percentileSets(scObj, genes, percentile = 90)
+percentileSets(geneSetExp, percentile = 90)
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+for which cell sets will be computed}
 
-\item{genes}{Vector of genes. Must include at least two genes}
-
-\item{percentile}{A non-negative number under 100}
+\item{percentile}{A non-negative number below 100}
 }
 \value{
 A named list of character vectors of length equaling the number of

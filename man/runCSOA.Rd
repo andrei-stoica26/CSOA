@@ -20,7 +20,7 @@ runCSOA(
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 
-\item{percentile}{A non-negative number under 100}
+\item{percentile}{A non-negative number below 100}
 
 \item{nPairs}{Number of overlaps that will be retained}
 

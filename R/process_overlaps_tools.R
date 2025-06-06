@@ -7,7 +7,6 @@
 #'
 #' @return A data frame with ranked overlaps
 #'
-
 rankOverlaps <- function(overlapDF){
   overlapDF$pvalRank <- seq_len(nrow(overlapDF))
   overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]

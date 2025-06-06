@@ -1,17 +1,26 @@
-#' Join scores for multiple gene sets
+#' Generate CSOA scores from overlap data frame for multiple gene sets
 #'
-#' This function joins multiple data frames with CSOA scores and returns the
-#' scored object
+#' This function scores an overlap data frame generated using multiple gene sets.
+#' The overlap data frame is split based on the overlaps corresponding to
+#' each gene set and scored, and the output is rejoined as a data frame.
 #'
-#' @inheritParams runCSOA
-#' @param scoreDFList A list of data frames with CSOA scores
+#' @inheritParams scoreCells
+#' @param setPairs A list of overlaps corresponding to each input gene set
+#' @param geneSetsNames Character vector of names of gene sets
 #'
-#' @return An object (Seurat, SingleCellExpression or matrix, depending on the
-#' input) containing all the scores
+#' @return A data frame whose columns correspond to the CSOA scores of the input
+#' gene sets
 #'
-joinCellScores <- function(scObj, scoreDFList){
+#' @export
+#'
+scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetsNames, nPairs){
+  scoreDFList <- lapply(seq_along(setPairs), function(i) {
+    setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
+    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetsNames[i], nPairs)
+    return(scoreDF)
+  })
   allScoresDF <- Reduce(cbind, scoreDFList)
-  return(storeCellScores(scObj, allScoresDF))
+  return(allScoresDF)
 }
 
 #' Run the CSOA pipeline for multiple gene sets
@@ -24,7 +33,7 @@ joinCellScores <- function(scObj, scoreDFList){
 #'
 #' @inheritParams runCSOA
 #' @param geneSets List of character vectors
-#' @param geneSetsNames Character vector of names of gene sets
+#' @inheritParams scoreCellsMultiple
 #'
 #' @return An object of the same class as scObj with per-gene-set CSOA scores
 #' assigned for each cell
@@ -32,17 +41,12 @@ joinCellScores <- function(scObj, scoreDFList){
 #' @export
 #'
 runCSOAMultiple <- function(scObj, geneSets, geneSetsNames, percentile = 90, nPairs = 100, overlapFileName = NULL){
-  expression <- expMat(scObj)
   geneSets <- lapply(geneSets, sort)
-  genes <- unique(unlist(geneSets))
   setPairs <- lapply(geneSets, getPairs)
   pairs <- Reduce(union, setPairs)
-  overlapDF <- generateOverlaps(expression, genes, percentile, pairs, overlapFileName)
-  scoreDFList <- lapply(seq_along(setPairs), function(i) {
-    setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    setGenes <- geneSets[i]
-    scoreDF <- scoreCells(expression, setOverlapDF, nPairs, geneSetsNames[i])
-    return(scoreDF)
-  })
-  return(joinCellScores(scObj, scoreDFList))
+  genes <- Reduce(union, geneSets)
+  geneSetExp <- expMat(scObj, genes)
+  overlapDF <- generateOverlaps(geneSetExp, percentile, pairs, overlapFileName)
+  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetsNames, nPairs)
+  return(storeCellScores(scObj, scoreDF))
 }

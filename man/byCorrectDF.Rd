@@ -4,14 +4,14 @@
 \alias{byCorrectDF}
 \title{Adjust a dataframe column of p-values with Benjamini-Yekutieli}
 \usage{
-byCorrectDF(df, colStr = "pval", pvalThr = 0.05)
+byCorrectDF(df, pvalThr = 0.05, colStr = "pval")
 }
 \arguments{
 \item{df}{A dataframe with a column of p-values}
 
-\item{colStr}{Name of the column of p-values}
-
 \item{pvalThr}{p-value threshold}
+
+\item{colStr}{Name of the column of p-values}
 }
 \value{
 Dataframe with Benjamini-Yekutieli-corrected p-values

@@ -5,19 +5,17 @@
 \title{Generate overlaps of cell sets for input genes}
 \usage{
 generateOverlaps(
-  scObj,
-  genes,
+  geneSetExp,
   percentile = 90,
   pairs = NULL,
   overlapFileName = NULL
 )
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+for which cell sets will be computed}
 
-\item{genes}{Vector of genes. Must include at least two genes}
-
-\item{percentile}{A non-negative number under 100}
+\item{percentile}{A non-negative number below 100}
 
 \item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
 pairs will be assessed}

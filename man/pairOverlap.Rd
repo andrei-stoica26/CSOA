@@ -11,6 +11,11 @@ pairOverlap(pairCellSets, nCells)
 
 \item{nCells}{An integer}
 }
+\value{
+A vector comprising the names of genes, the cell counts, the recorded and
+expected shared cells, the recorded-over-expected ratio, and the hypergeometric
+p-value
+}
 \description{
 This function performs the overlap
 column of p-values. Additionally, the function filters the dataframe based on

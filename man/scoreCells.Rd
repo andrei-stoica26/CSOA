@@ -4,21 +4,22 @@
 \alias{scoreCells}
 \title{Generate CSOA scores from overlap data frame}
 \usage{
-scoreCells(expression, overlapDF, nPairs = 100, colStr = "CSOA")
+scoreCells(geneSetExp, overlapDF, colStr = "CSOA", nPairs = 100)
 }
 \arguments{
-\item{expression}{Expression matrix}
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+for which cell sets will be computed}
 
 \item{overlapDF}{A data frame created with generate_overlaps}
 
-\item{nPairs}{Number of overlaps that will be retained}
-
 \item{colStr}{The name of the column where CSOA results will be stored}
+
+\item{nPairs}{Number of overlaps that will be retained}
 }
 \value{
 A data frame with a column corresponding to the CSOA scores
 }
 \description{
-This function generates per-cell CSOA scores after the overlap data frame has
+This function computes per-cell CSOA scores after the overlap data frame has
 been generated.
 }

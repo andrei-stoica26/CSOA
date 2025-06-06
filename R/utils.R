@@ -12,16 +12,17 @@ NULL
 #' filtering the dataframe based on p-values.
 #'
 #' @param df A dataframe with a column of p-values
-#' @param colStr Name of the column of p-values
 #' @param pvalThr p-value threshold
+#' @param colStr Name of the column of p-values
 #'
 #' @return Dataframe with Benjamini-Yekutieli-corrected p-values
 #'
-byCorrectDF <- function(df, colStr='pval', pvalThr=0.05){
+#' @export
+#'
+byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   df <- df[order(df[[colStr]]), ]
-  df$pval_adj <- BY(df[[colStr]], 0.05)$Adjusted.pvalues
-  if (!is.null(pvalThr))
-    df <- subset(df, pval_adj < pvalThr)
+  df$pval_adj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
+  df <- subset(df, pval_adj < pvalThr)
   return(df)
 }
 
@@ -87,6 +88,22 @@ safeLayerData <- function(seuratObj, layer){
   return(layerData)
 }
 
+#' Filter matrix using rows and convert the matrix to non-sparse
+#'
+#' This internal functions select input rows from a matrix. If the rows parameter
+#' is set to NULL, the matrix will be returned unchanged.
+#'
+#' @param matObj Matrix object
+#' @param rows Rows
+#'
+#' @return A non-sparse matrix
+#'
+matrixRowFilter <- function(matObj, rows = NULL){
+  if(!is.null(rows))
+    matObj <- matObj[rows, ]
+  return(as.matrix(matObj))
+}
+
 #' Raise a warning that the overlap data frame may have been not filtered
 #'
 #' This function raises a warning that the overlap data frame may have been not
@@ -107,27 +124,36 @@ warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+#' @param genes Genes retained in the expression matrix. If NULL, all genes will
+#' be retained
+#'
 #' @rdname expMat
 #' @export
 #'
-expMat.default <- function(scObj)
-  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay, or an expression matrix')
+expMat.default <- function(scObj, genes = NULL, ...)
+  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay, a matrix or a dgCMatrix object')
 
 #' @rdname expMat
 #' @export
 #'
-expMat.Seurat <- function(scObj)
-  return(as.matrix(safeLayerData(scObj, layer='data')))
+expMat.Seurat <- function(scObj, ...)
+  return(matrixRowFilter(safeLayerData(scObj, layer='data'), ...))
 
 #' @rdname expMat
 #' @export
 #'
-expMat.SingleCellExperiment <- function(scObj)
-  return(assay(scObj, 'logcounts'))
+expMat.SingleCellExperiment <- function(scObj, ...)
+  return(matrixRowFilter(assay(scObj, 'logcounts'), ...))
 
 #' @rdname expMat
 #' @export
 #'
-expMat.matrix <- function(scObj)
-  return(scObj)
+expMat.dgCMatrix <- function(scObj, ...)
+  return(matrixRowFilter(scObj, ...))
+
+#' @rdname expMat
+#' @export
+#'
+expMat.matrix <- function(scObj, ...)
+  return(matrixRowFilter(scObj, ...))
 

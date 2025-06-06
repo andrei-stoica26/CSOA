@@ -38,6 +38,22 @@ connectedComponents <- function(overlapDF){
   return(overlapDF)
 }
 
+#' Join scores for multiple gene sets
+#'
+#' This function joins multiple data frames with CSOA scores and returns the
+#' scored object
+#'
+#' @inheritParams runCSOA
+#' @param scoreDFList A list of data frames with CSOA scores
+#'
+#' @return An object (Seurat, SingleCellExpression or matrix, depending on the
+#' input) containing all the scores
+#'
+joinCellScores <- function(scObj, scoreDFList){
+  allScoresDF <- Reduce(cbind, scoreDFList)
+  return(storeCellScores(scObj, allScoresDF))
+}
+
 #' Run CSOA separately on the connected components of the overlap graph
 #'
 #' This function runs CSOA on connected components of the graph having the

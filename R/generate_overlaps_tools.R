@@ -14,6 +14,10 @@ NULL
 #' @param pairCellSets A named list of two character arrays
 #' @param nCells An integer
 #'
+#' @return A vector comprising the names of genes, the cell counts, the recorded and
+#' expected shared cells, the recorded-over-expected ratio, and the hypergeometric
+#' p-value
+#'
 pairOverlap <- function(pairCellSets, nCells){
   xCount <- length(pairCellSets[[1]])
   yCount <- length(pairCellSets[[2]])
@@ -39,7 +43,7 @@ pairOverlap <- function(pairCellSets, nCells){
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
-cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL){
+cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = NULL){
   message('Assessing gene overlaps...')
   genes <- names(cellSets)
   if(is.null(pairs))
@@ -51,10 +55,8 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs=NULL, overlapFileName=NULL)
   df[, c(3:8)] <- apply(df[, c(3:8)], 2, as.numeric)
   colnames(df) <- c('gene1', 'gene2', 'ncells1', 'ncells2', 'shared_cells', 'exp_shared_cells', 'ratio', 'pval')
   rownames(df) <- 1:length(rownames(df))
-  if (nrow(df) > 1)
-    df <- byCorrectDF(df, pvalThr=NULL) else df$pval_adj <- df$pval
   if (!is.null(overlapFileName))
-    qsave(df, str_c(overlapFileName, '.qs'))
+    qsave(df, paste0(overlapFileName, '.qs'))
   return(df)
 }
 

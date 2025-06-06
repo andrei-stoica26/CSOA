@@ -5,21 +5,29 @@
 \alias{expMat.default}
 \alias{expMat.Seurat}
 \alias{expMat.SingleCellExperiment}
+\alias{expMat.dgCMatrix}
 \alias{expMat.matrix}
 \title{Extracts the data expression matrix from object}
 \usage{
-expMat(scObj)
+expMat(scObj, ...)
 
-\method{expMat}{default}(scObj)
+\method{expMat}{default}(scObj, genes = NULL, ...)
 
-\method{expMat}{Seurat}(scObj)
+\method{expMat}{Seurat}(scObj, ...)
 
-\method{expMat}{SingleCellExperiment}(scObj)
+\method{expMat}{SingleCellExperiment}(scObj, ...)
 
-\method{expMat}{matrix}(scObj)
+\method{expMat}{dgCMatrix}(scObj, ...)
+
+\method{expMat}{matrix}(scObj, ...)
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+
+\item{...}{Arguments passed to other methods}
+
+\item{genes}{Genes retained in the expression matrix. If NULL, all genes will
+be retained}
 }
 \value{
 An expression matrix
