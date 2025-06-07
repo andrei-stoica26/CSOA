@@ -8,7 +8,7 @@ featureWes(
   seuratObj,
   feature,
   title = feature,
-  colStr = "orig.ident",
+  idClass = "orig.ident",
   label = TRUE,
   labelSize = 3,
   repel = TRUE,
@@ -25,7 +25,7 @@ featureWes(
 
 \item{title}{Plot title}
 
-\item{colStr}{Column to be used for labelling}
+\item{idClass}{Column to be used for labelling}
 
 \item{label}{Whether to label the identity classes}
 

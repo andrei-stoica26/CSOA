@@ -7,6 +7,7 @@
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
 #'@importFrom grDevices dev.new dev.off
+#'@importFrom SeuratObject Idents
 #'@importFrom tidygraph as_tbl_graph
 #'@importFrom viridis scale_color_viridis scale_fill_viridis
 #'@importFrom wesanderson wes_palette
@@ -65,7 +66,7 @@ titlePlot <- function(p, title, ...)
 #' @param seuratObj A SeuratObj
 #' @param feature Seurat feature
 #' @param title Plot title
-#' @param colStr Column to be used for labelling
+#' @param idClass Column to be used for labelling
 #' @param label Whether to label the identity classes
 #' @param labelSize Size of labels
 #' @param repel Whether to make names of labels repel
@@ -78,11 +79,11 @@ titlePlot <- function(p, title, ...)
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title = feature, colStr = 'orig.ident',
+featureWes <- function(seuratObj, feature, title = feature, idClass = 'orig.ident',
                        label = TRUE, labelSize = 3, repel = TRUE,
                        wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
-  Idents(seuratObj) <- colStr
-  p <- FeaturePlot(seuratObj, feature, label = label, label.size = labelSize, repel = repel...)
+  Idents(seuratObj) <- idClass
+  p <- FeaturePlot(seuratObj, feature, label = label, label.size = labelSize, repel = repel, ...)
   p <- titlePlot(p, title, ...)
   p <- p + scale_color_gradientn(colours = wes_palette(wesPal)[c(wesLow, wesHigh)])
   return(p)

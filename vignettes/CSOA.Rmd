@@ -30,8 +30,8 @@ BiocManager::install("andrei-stoica26/CSOA")
 ```
 
 # Prerequisites
-In addition to CSOA, you need to install [ggplot2](https://hadley.github.io/ggplot2/), [patchwork](https://patchwork.data-imaginist.com/index.html),
-[scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html), [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) and [Seurat](https://satijalab.org/seurat/articles/install.html) for this tutorial.
+In addition to CSOA, you need to install [harmony](https://github.com/immunogenomics/harmony), [patchwork](https://patchwork.data-imaginist.com/index.html),
+[scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html), and [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) for this tutorial.
 
 
 # Scoring a gene set
@@ -40,9 +40,10 @@ This example uses an annotated scRNA-seq human pancreas dataset. After loading t
 
 CSOA requires the input scRNA-seq data to be normalized and log-transformed. We will employ the `logNormCounts` function from `scuttle` for this step.
   
-```{r message = F, warning = F, results=F}
+```{r message=F, warning=F, results=F}
 library(CSOA)
 library(ggplot2)
+library(harmony)
 library(patchwork)
 library(scRNAseq)
 library(scuttle)
@@ -130,15 +131,21 @@ Now we run CSOA on the four provided marker lists:
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
 geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
-plots <- lapply(geneSetNames, function(x) {
-  VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
+
+patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
+  plots <- lapply(geneSetNames, function(x) {
+  fun(seuratObj, x, ...) + NoLegend() +
     theme(axis.text = element_text(size=10),
           axis.title.x = element_blank(),
           plot.title = element_text (size=11))
+    })
+  (plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
+}
 
-})
-(plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
+patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
+
 ```
+
 
 Alternatively, CSOA can score multiple sets using a `SingleCellExperiment` or a `matrix` object as input:
 
@@ -152,6 +159,29 @@ sapply(geneSetNames,
        function(x) identical(seuratObj@meta.data[[x]], df[[x]]))
 ```
 
+# Feature plot visualization
+
+CSOA provides an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness, `featureWes`.
+
+`featureWes` takes a pair of colors from any [wesanderson](https://github.com/karthik/wesanderson) palette as arguments.
+
+First, we will perform dimensionality reduction upon the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
+
+```{r message=F, warning=F}
+
+seuratObj <- FindVariableFeatures(seuratObj)
+seuratObj <- ScaleData(seuratObj)
+seuratObj <- RunPCA(seuratObj)
+seuratObj <- RunHarmony(seuratObj, group.by.vars = 'orig.ident')
+seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = "harmony")
+
+```
+
+Now we can visualize the CSOA results as feature plots:
+
+```{r message=F, warning=F, fig.height=8, fig.width=7}
+patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
+```
 
 # Session information {-}
 ```{r}
