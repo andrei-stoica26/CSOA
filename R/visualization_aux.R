@@ -9,14 +9,16 @@ NULL
 #' plot.
 #'
 #' @inheritParams warnUnfiltered
+#' @param rankCol Name of the rank column
+#' @param edgeScale Scaling factor used in generating edge weights
 #'
 #' @return A data frame ready to serve as input to networkPlot
 #'
 #' @export
 #'
-networkPlotDF <- function(overlapDF){
-  preWeight <- log(max(overlapDF$rank) / overlapDF$rank + 0.01)
-  overlapDF$weight <- preWeight / max(preWeight)
+networkPlotDF <- function(overlapDF, rankCol = 'rank', edgeScale = 2){
+  preWeight <- log(max(overlapDF[[rankCol]]) / overlapDF[[rankCol]] + 0.01)
+  overlapDF$weight <- edgeScale * preWeight / max(preWeight)
   overlapDF <- overlapDF[, c('gene1', 'gene2', 'weight')]
   return(overlapDF)
 }
@@ -137,3 +139,21 @@ circleCoords <- function(geneCoordsDF, extraCircles = 0){
   )
   return(df)
 }
+
+#' Build a data frame showing the distribution of cells in sets among all cells
+#'
+#' This function builds a binary data frame showing the distribution of cells in
+#' input sets among all cells in the dataset
+#'
+#' @param cellSets Cell sets
+#' @param allCells Names of all cells in the dataset. If not specified, assumed
+#' to be the union of the cell sets
+#'
+#' @return A data frame representing the distribution of cells from input sets
+#' among all the sets in the dataset
+#'
+#' @export
+#'
+
+
+

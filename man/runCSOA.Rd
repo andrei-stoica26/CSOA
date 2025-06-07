@@ -10,7 +10,8 @@ runCSOA(
   colStr = "CSOA",
   percentile = 90,
   nPairs = 100,
-  overlapFileName = NULL
+  overlapFileName = NULL,
+  pairFileName = NULL
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ runCSOA(
 \item{nPairs}{Number of overlaps that will be retained}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
+will be saved. Default is NULL (the overlap data frame will not be saved)}
+
+\item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}
 }
 \value{

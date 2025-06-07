@@ -4,10 +4,14 @@
 \alias{networkPlotDF}
 \title{Prepare overlap data frame for network plot}
 \usage{
-networkPlotDF(overlapDF)
+networkPlotDF(overlapDF, rankCol = "rank", edgeScale = 2)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
+
+\item{rankCol}{Name of the rank column}
+
+\item{edgeScale}{Scaling factor used in generating edge weights}
 }
 \value{
 A data frame ready to serve as input to networkPlot

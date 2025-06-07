@@ -55,14 +55,10 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = N
   df[, c(3:8)] <- apply(df[, c(3:8)], 2, as.numeric)
   colnames(df) <- c('gene1', 'gene2', 'ncells1', 'ncells2', 'shared_cells', 'exp_shared_cells', 'ratio', 'pval')
   rownames(df) <- 1:length(rownames(df))
-  if (!is.null(overlapFileName))
-    qsave(df, paste0(overlapFileName, '.qs'))
+  if (!is.null(overlapFileName)){
+    overlapFile <- paste0(overlapFileName, '.qs')
+    message(paste0('Saving overlap file: ', overlapFile, '...'))
+    qsave(df, overlapFile)
+  }
   return(df)
 }
-
-overlapPairs <- function(overlapDF)
-  return(as.list(data.table::transpose(overlapDF[, c(1, 2)])))
-
-overlapSlice <- function(overlapDF, pairs)
-  return(overlapDF[which(overlapPairs(overlapDF) %in% pairs),])
-

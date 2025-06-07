@@ -7,6 +7,8 @@
 networkPlot(
   overlapDF,
   title = "Top overlaps network plot",
+  rankCol = "rank",
+  edgeScale = 2,
   nodePointSize = 10,
   nodeTextSize = 2.3,
   ...
@@ -16,6 +18,10 @@ networkPlot(
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
 
 \item{title}{Plot title}
+
+\item{rankCol}{Name of the rank column}
+
+\item{edgeScale}{Scaling factor used in generating edge weights}
 
 \item{nodePointSize}{Point size of graph nodes}
 

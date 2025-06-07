@@ -4,12 +4,10 @@
 \alias{rankOverlaps}
 \title{Rank cell set overlaps}
 \usage{
-rankOverlaps(overlapDF, pvalThr = 0.05)
+rankOverlaps(overlapDF)
 }
 \arguments{
 \item{overlapDF}{A data frame created with generate_overlaps}
-
-\item{pvalThr}{p-value threshold}
 }
 \value{
 A data frame with ranked overlaps

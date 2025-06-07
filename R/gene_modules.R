@@ -3,19 +3,19 @@
 #' This function finds the connected components of the graph having the filtered
 #' overlaps as edges
 #'
-#' @inheritParams warnUnfiltered
+#' @param df A data frame with gene1 and gene2 columns
 #' @return An overlap data frame with a column indicated the number of the
 #' connected component
 #'
 #' @export
 #'
-connectedComponents <- function(overlapDF){
-  warnUnfiltered(overlapDF)
-  if(!nrow(overlapDF))
+connectedComponents <- function(df){
+  warnUnfiltered(df)
+  if(!nrow(df))
     stop('Error: The dataframe has no rows.')
-  overlapDF$component <- -1
-  rownames(overlapDF) <- 1:dim(overlapDF)[1]
-  vertices <- overlapGenes(overlapDF)
+  df$component <- -1
+  rownames(df) <- 1:dim(df)[1]
+  vertices <- overlapGenes(df)
   seen <- c()
   nextComp = 1
   for (v in vertices){
@@ -24,64 +24,40 @@ connectedComponents <- function(overlapDF){
     currVertices <- c(v)
     while (length(currVertices)){
       v <- currVertices[1]
-      leftdf <- subset(overlapDF, gene1 == v)
-      rightdf <- subset(overlapDF, gene2 == v)
+      leftdf <- subset(df, gene1 == v)
+      rightdf <- subset(df, gene2 == v)
       seen <- c(seen, v)
       newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
-      overlapDF$component[newEdges] <- nextComp
+      df$component[newEdges] <- nextComp
       neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1), c(currVertices, seen))
       currVertices <- c(currVertices, neighbors)
       currVertices <- currVertices[-1]
     }
     nextComp <- nextComp + 1
   }
-  return(overlapDF)
-}
-
-#' Join scores for multiple gene sets
-#'
-#' This function joins multiple data frames with CSOA scores and returns the
-#' scored object
-#'
-#' @inheritParams runCSOA
-#' @param scoreDFList A list of data frames with CSOA scores
-#'
-#' @return An object (Seurat, SingleCellExpression or matrix, depending on the
-#' input) containing all the scores
-#'
-joinCellScores <- function(scObj, scoreDFList){
-  allScoresDF <- Reduce(cbind, scoreDFList)
-  return(storeCellScores(scObj, allScoresDF))
+  return(df)
 }
 
 #' Run CSOA separately on the connected components of the overlap graph
 #'
-#' This function runs CSOA on connected components of the graph having the
+#' This function runs CSOA on the connected components of the graph having the
 #' filtered overlaps as edges
 #'
 #' @inheritParams runCSOA
-#' @param overlapDF An overlap data frame with connected component indices added
-#' to the "component" column
-#' @inheritParams computeCellScores
+#' @param df A data frame with gene1, gene2 and component columns
+#' @param components Vector of connected components that will be scored
+#' @param colStrTemplate Character used in the naming of the component gene sets
+#' @param ... Additional parameters to other functions
 #'
-#' @return An overlap data frame with a column indicated the number of the
-#' connected component
+#' @return An object of the same class as scObj with CSOA scores corresponding to
+#' the genes defining each connected components assinged for each cell
 #'
 #' @export
 #'
-scoreModules <- function(scObj, overlapDF, colStr = 'Module'){
-  expression <- expMat(scObj)
-  scoredComponents <- lapply(seq_len(max(overlapDF$component)), function(i){
-    message(str_c('Scoring ', colStr, i, '...'))
-    overlapComp <- subset(overlapDF, component == i)
-    overlapComp <- scoreOverlaps(overlapDF)
-    genes <- overlapGenes(overlapComp)
-    message('Normalizing expression matrix by rows...')
-    normExp <- kerntools::minmax(expression[genes, ], rows=T)
-    scoreDF <- computeCellScores(overlapDF, normExp, colnames(scObj), colStr)
-    return(scoreDF)
-  })
-  return(joinCellScores(scObj, scoredComponents))
+scoreModules <- function(scObj, df, components, colStrTemplate = 'CSOA_component', ...){
+  geneSets <- lapply(components, function(i) overlapGenes(subset(df, component == i)))
+  geneSetNames <- paste0(colStrTemplate, components)
+  return(runCSOAMultiple(scObj, geneSets, geneSetNames, ...))
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

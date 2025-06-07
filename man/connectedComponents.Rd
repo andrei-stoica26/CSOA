@@ -4,10 +4,10 @@
 \alias{connectedComponents}
 \title{Find the connected components of the graph determined by the overlaps}
 \usage{
-connectedComponents(overlapDF)
+connectedComponents(df)
 }
 \arguments{
-\item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
+\item{df}{A data frame with gene1 and gene2 columns}
 }
 \value{
 An overlap data frame with a column indicated the number of the

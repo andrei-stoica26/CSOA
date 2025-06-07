@@ -1,4 +1,5 @@
 #' @importFrom methods is
+#' @importFrom qs qread
 #' @importFrom stats runif
 #' @importFrom SeuratObject LayerData
 #' @importFrom sgof BY
@@ -35,8 +36,10 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 #'
 #' @return A list of vectors of length 2
 #'
+#' @export
+#'
 getPairs <- function(v)
-  return(utils::combn(v, 2, simplify = F))
+  return(utils::combn(v, 2, simplify=FALSE))
 
 #' Get all genes from an overlap data frame
 #'
@@ -90,8 +93,8 @@ safeLayerData <- function(seuratObj, layer){
 
 #' Filter matrix using rows and convert the matrix to non-sparse
 #'
-#' This internal functions select input rows from a matrix. If the rows parameter
-#' is set to NULL, the matrix will be returned unchanged.
+#' This internal functions selects input rows from a matrix in sorted name order.
+#' If the rows parameter is set to NULL.
 #'
 #' @param matObj Matrix object
 #' @param rows Rows
@@ -99,9 +102,29 @@ safeLayerData <- function(seuratObj, layer){
 #' @return A non-sparse matrix
 #'
 matrixRowFilter <- function(matObj, rows = NULL){
-  if(!is.null(rows))
-    matObj <- matObj[rows, ]
-  return(as.matrix(matObj))
+  if(!is.null(rows)){
+    if(length(setdiff(rows, rownames(matObj))))
+      stop('Some input genes do not exist in the expression matrix')
+    matObj <- matObj[sort(rows), ]
+    return(as.matrix(matObj))
+  }
+  return(as.matrix(matObj)[sort(rownames(matObj)), ])
+}
+
+#' Read and delete a .qs file
+#'
+#' This functions reads a .qs file, deletes it, and returns it content
+#'
+#' @param qsFile Name of .qs file including its path
+#'
+#' @return The content of the .qs file
+#'
+#' @export
+#'
+qGrab <- function(qsFile){
+  res <- qread(qsFile)
+  file.remove(qsFile)
+  return(res)
 }
 
 #' Raise a warning that the overlap data frame may have been not filtered

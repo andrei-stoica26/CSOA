@@ -4,7 +4,13 @@
 \alias{computeCellScores}
 \title{Assign a per-cell gene set score to Seurat object}
 \usage{
-computeCellScores(overlapDF, normExp, cellNames, colStr = "CSOA")
+computeCellScores(
+  overlapDF,
+  normExp,
+  cellNames,
+  colStr = "CSOA",
+  pairFileName = NULL
+)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
@@ -14,6 +20,9 @@ computeCellScores(overlapDF, normExp, cellNames, colStr = "CSOA")
 \item{cellNames}{Cell names}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
+
+\item{pairFileName}{The name of the file where the pair data frame
+will be saved. Default is NULL (the overlap data frame will not be saved)}
 }
 \value{
 A Seurat object with a CSOA score assigned for each cell

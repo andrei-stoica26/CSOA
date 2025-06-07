@@ -4,21 +4,24 @@
 \alias{scoreModules}
 \title{Run CSOA separately on the connected components of the overlap graph}
 \usage{
-scoreModules(scObj, overlapDF, colStr = "Module")
+scoreModules(scObj, df, components, colStrTemplate = "CSOA_component", ...)
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
 
-\item{overlapDF}{An overlap data frame with connected component indices added
-to the "component" column}
+\item{df}{A data frame with gene1, gene2 and component columns}
 
-\item{colStr}{The name of the column where CSOA results will be stored}
+\item{components}{Vector of connected components that will be scored}
+
+\item{colStrTemplate}{Character used in the naming of the component gene sets}
+
+\item{...}{Additional parameters to other functions}
 }
 \value{
-An overlap data frame with a column indicated the number of the
-connected component
+An object of the same class as scObj with CSOA scores corresponding to
+the genes defining each connected components assinged for each cell
 }
 \description{
-This function runs CSOA on connected components of the graph having the
+This function runs CSOA on the connected components of the graph having the
 filtered overlaps as edges
 }

@@ -65,6 +65,10 @@ titlePlot <- function(p, title, ...)
 #' @param seuratObj A SeuratObj
 #' @param feature Seurat feature
 #' @param title Plot title
+#' @param colStr Column to be used for labelling
+#' @param label Whether to label the identity classes
+#' @param labelSize Size of labels
+#' @param repel Whether to make names of labels repel
 #' @param wesPal Wes Anderson palette
 #' @param wesLow Index of color marking low expression
 #' @param wesHigh Index of color marking high expression
@@ -74,8 +78,11 @@ titlePlot <- function(p, title, ...)
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title = feature, wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
-  p <- FeaturePlot(seuratObj, feature, ...)
+featureWes <- function(seuratObj, feature, title = feature, colStr = 'orig.ident',
+                       label = TRUE, labelSize = 3, repel = TRUE,
+                       wesPal='Royal1', wesLow = 3, wesHigh = 2, ...){
+  Idents(seuratObj) <- colStr
+  p <- FeaturePlot(seuratObj, feature, label = label, label.size = labelSize, repel = repel...)
   p <- titlePlot(p, title, ...)
   p <- p + scale_color_gradientn(colours = wes_palette(wesPal)[c(wesLow, wesHigh)])
   return(p)
@@ -88,17 +95,18 @@ featureWes <- function(seuratObj, feature, title = feature, wesPal='Royal1', wes
 #'
 #' @inheritParams warnUnfiltered
 #' @param title Plot title
+#' @inheritParams networkPlotDF
 #' @param nodePointSize Point size of graph nodes
 #' @param nodeTextSize Text size of graph nodes
 #' @param ... Additional parameters passed to other functions
-
+#'
 #' @return A network plot
 #'
 #' @export
 #'
-networkPlot <- function(overlapDF, title = 'Top overlaps network plot', nodePointSize = 10, nodeTextSize = 2.3,
-                        ...){
-  df <- networkPlotDF(overlapDF)
+networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank', edgeScale = 2,
+                        nodePointSize = 10, nodeTextSize = 2.3, ...){
+  df <- networkPlotDF(overlapDF, rankCol, edgeScale)
   tblGraph <- tidygraph::as_tbl_graph(df, directed = FALSE)
   p <- ggraph(tblGraph, layout = "nicely") +
     geom_edge_link(aes(width = weight), color = 'green4') +
@@ -145,3 +153,5 @@ geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutof
   p <- titlePlot(p, title)
   return(p)
 }
+
+

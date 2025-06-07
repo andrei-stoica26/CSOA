@@ -4,7 +4,13 @@
 \alias{scoreCells}
 \title{Generate CSOA scores from overlap data frame}
 \usage{
-scoreCells(geneSetExp, overlapDF, colStr = "CSOA", nPairs = 100)
+scoreCells(
+  geneSetExp,
+  overlapDF,
+  colStr = "CSOA",
+  nPairs = 100,
+  pairFileName = NULL
+)
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
@@ -15,6 +21,9 @@ for which cell sets will be computed}
 \item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{nPairs}{Number of overlaps that will be retained}
+
+\item{pairFileName}{The name of the file where the pair data frame
+will be saved. Default is NULL (the overlap data frame will not be saved)}
 }
 \value{
 A data frame with a column corresponding to the CSOA scores

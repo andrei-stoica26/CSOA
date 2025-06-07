@@ -8,6 +8,10 @@ featureWes(
   seuratObj,
   feature,
   title = feature,
+  colStr = "orig.ident",
+  label = TRUE,
+  labelSize = 3,
+  repel = TRUE,
   wesPal = "Royal1",
   wesLow = 3,
   wesHigh = 2,
@@ -20,6 +24,14 @@ featureWes(
 \item{feature}{Seurat feature}
 
 \item{title}{Plot title}
+
+\item{colStr}{Column to be used for labelling}
+
+\item{label}{Whether to label the identity classes}
+
+\item{labelSize}{Size of labels}
+
+\item{repel}{Whether to make names of labels repel}
 
 \item{wesPal}{Wes Anderson palette}
 

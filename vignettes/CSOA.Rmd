@@ -73,7 +73,7 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
 
 Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to use `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells from the dataset:
 
-```{r warning = F}
+```{r warning=F}
 seuratObj <- as.Seurat(sceObj)
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
 VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label')
@@ -126,7 +126,7 @@ gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3',
 ```
 
 Now we run CSOA on the four provided marker lists:
-```{r warning = F, fig.height = 8, fig.width = 7}
+```{r warning=F, fig.height=8, fig.width=7}
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
 geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
@@ -142,7 +142,7 @@ plots <- lapply(geneSetNames, function(x) {
 
 Alternatively, CSOA can score multiple sets using a `SingleCellExperiment` or a `matrix` object as input:
 
-```{r warning = F}
+```{r warning=F}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
 sapply(geneSetNames, 
        function(x) identical(seuratObj@meta.data[[x]], colData(sceObj)[[x]]))

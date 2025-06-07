@@ -25,6 +25,7 @@ Imports:
     SingleCellExperiment,
     SummarizedExperiment,
     sgof,
+    spatstat.utils,
     stats,
     stringr,
     tidygraph,

@@ -15,6 +15,6 @@ matrixRowFilter(matObj, rows = NULL)
 A non-sparse matrix
 }
 \description{
-This internal functions select input rows from a matrix. If the rows parameter
-is set to NULL, the matrix will be returned unchanged.
+This internal functions selects input rows from a matrix in sorted name order.
+If the rows parameter is set to NULL.
 }
