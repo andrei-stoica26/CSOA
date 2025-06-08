@@ -2,7 +2,7 @@
 #'@importFrom ggeasy easy_remove_axes
 #'@importFrom ggforce geom_circle
 #'@importFrom ggnewscale new_scale_color new_scale_fill
-#'@importFrom ggplot2 aes coord_fixed element_text geom_point ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn theme theme_classic theme_void
+#'@importFrom ggplot2 aes coord_fixed element_text geom_point ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_x_continuous scale_y_continuous theme theme_classic theme_void
 #'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
@@ -130,6 +130,7 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' @inheritParams circleCoords
 #'
 #' @return A ggplot object
+#'
 #' @export
 #'
 geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutoff = NULL, title = 'Top overlap genes plot',
@@ -153,6 +154,34 @@ geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutof
     scale_color_discrete(type = c('red', 'purple1', 'olivedrab1','darkorange1', 'lavender', 'thistle1', 'green1','violetred4',
                                   'goldenrod1', 'firebrick4')) +
     labs(color = groupStr) else p <- p + geom_point(aes(x, y), data = geneCoordsDF, color = 'red', size = 0.8)
+  p <- titlePlot(p, title)
+  return(p)
+}
+
+#' Plot the gene pair rank versus the overlap rank
+#'
+#' This functions plots the gene pair rank versus the overlap rank
+#'
+#' @param pairScoreDF A dataframe with columns gene1, gene2 (character),
+#' overlapRank and pairRank (numeric)
+#' @param title Plot title
+#' @param pointColor Point color
+#' @param pointSize Point size
+#' @param labelSize Label size
+#'
+#' @return A ggplot object
+#'
+#' @export
+#'
+birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', pointColor = 'deeppink3',
+                       pointSize = 1.5, labelSize = 3.5){
+  pairScoreDF$overlaps <- paste0(pairScoreDF$gene1, '∩', pairScoreDF$gene2)
+  p <- ggplot(pairScoreDF, aes(overlapRank, pairRank)) + theme_classic() +
+    geom_point(color = pointColor, size =  pointSize) +
+    geom_text_repel(aes(label = overlaps), size = labelSize) +
+    scale_x_continuous(trans = 'reverse') +
+    scale_y_continuous(trans = 'reverse') +
+    labs(x='Overlap rank', y='Gene pair rank')
   p <- titlePlot(p, title)
   return(p)
 }

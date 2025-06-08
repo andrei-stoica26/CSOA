@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 ```
 # Introduction
 
-CSOA is a tool for scoring gene set signatures in scRNA-seq data based on the overlaps of sets comprising, for each gene, the cells with the highest expression of the gene.
+CSOA is a tool for scoring gene set signatures in scRNA-seq data using overlaps of pairs of sets comprising cells of high expression for each input gene. By default, CSOA constructs, for each input gene, a set of cells above the ```90```th percentile in their expression of the gene. Subsequently, the overlaps of all pairs of cell sets are computed, assessed for statistical significance and ranked. The top-ranked overlaps then receive a score and contribute to the per-cell CSOA scores.
 
 # Installation
 To install CSOA, run the following commands in an R session:
@@ -31,12 +31,14 @@ BiocManager::install("andrei-stoica26/CSOA")
 
 # Prerequisites
 In addition to CSOA, you need to install [harmony](https://github.com/immunogenomics/harmony), [patchwork](https://patchwork.data-imaginist.com/index.html),
-[scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html), and [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) for this tutorial.
+[scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html) and [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) for this tutorial.
 
 
 # Scoring a gene set
 
-This example uses an annotated scRNA-seq human pancreas dataset. After loading the required packages, download the dataset using the `BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
+This tutorial uses a scRNA-seq human pancreas dataset with cell type annotations. 
+
+After loading the required packages, download the dataset using the `BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
 
 CSOA requires the input scRNA-seq data to be normalized and log-transformed. We will employ the `logNormCounts` function from `scuttle` for this step.
   
@@ -72,7 +74,7 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
                    'CTRB2', 'PLA2G1B', 'PRSS2', 'CLPS', 'REG1A', 'SYCN')
 ```
 
-Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to use `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells from the dataset:
+Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to visualize the results using `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells in the dataset:
 
 ```{r warning=F}
 seuratObj <- as.Seurat(sceObj)
@@ -87,7 +89,7 @@ sceObj <- runCSOA(sceObj, acinarMarkers, 'CSOA_acinar')
 identical(seuratObj@meta.data$CSOA_acinar, sceObj$CSOA_acinar)
 ```
 
-Furthermore, CSOA can be run directly on an expression matrix of class `matrix`. The `expMat` function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class. When running directly on an expression matrix, CSOA will return a data frame:
+Furthermore, CSOA can be run directly on an expression matrix. The `expMat` function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class. When running directly on an expression matrix, CSOA will return a data frame:
 
 ```{r}
 geneSetExp <- expMat(seuratObj)
@@ -127,11 +129,15 @@ gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3',
 ```
 
 Now we run CSOA on the four provided marker lists:
-```{r warning=F, fig.height=8, fig.width=7}
+```{r warning=F}
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
 geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
+```
 
+To visualize the results of CSOA on multiple gene sets, we define and call the ```patchworkPlot``` function in order to display a plot composed of multiple subplots. For the subplots, we use again the ```VlnPlot``` function from ```Seurat```.
+
+```{r warning=F, fig.height=8, fig.width=7}
 patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
   plots <- lapply(geneSetNames, function(x) {
   fun(seuratObj, x, ...) + NoLegend() +
@@ -143,16 +149,19 @@ patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
 }
 
 patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
-
 ```
 
+Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment`:
 
-Alternatively, CSOA can score multiple sets using a `SingleCellExperiment` or a `matrix` object as input:
-
-```{r warning=F}
+```{r}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
 sapply(geneSetNames, 
        function(x) identical(seuratObj@meta.data[[x]], colData(sceObj)[[x]]))
+```
+
+CSOA can also score multiple gene sets directly on an expression matrix. The results will again be available as a data frame.
+
+```{r}
 df <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
 head(df)
 sapply(geneSetNames, 
@@ -161,11 +170,11 @@ sapply(geneSetNames,
 
 # Feature plot visualization
 
-CSOA provides an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness, `featureWes`.
+CSOA provides  `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
 
-`featureWes` takes a pair of colors from any [wesanderson](https://github.com/karthik/wesanderson) palette as arguments.
+The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette. The colors are chosen using arguments `wesPal` (the name of the palette) `wesLow` (the index of the color chosen for the feature minimum) and `wesHigh` (the index of the color chosen for the feature maximum). Labels of Seurat identity classes are displayed on the plot using the `idClass` argument.
 
-First, we will perform dimensionality reduction upon the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
+To enable feature plot visualization, we will perform dimensionality reduction on the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
 
 ```{r message=F, warning=F}
 
@@ -173,7 +182,7 @@ seuratObj <- FindVariableFeatures(seuratObj)
 seuratObj <- ScaleData(seuratObj)
 seuratObj <- RunPCA(seuratObj)
 seuratObj <- RunHarmony(seuratObj, group.by.vars = 'orig.ident')
-seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = "harmony")
+seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = 'harmony')
 
 ```
 
@@ -181,6 +190,13 @@ Now we can visualize the CSOA results as feature plots:
 
 ```{r message=F, warning=F, fig.height=8, fig.width=7}
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
+```
+
+We can select another ```wesanderson```-based color scheme as follows:
+
+```{r message=F, warning=F, fig.height=8, fig.width=7}
+patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label', 
+              wesPal = 'Rushmore1', wesLow = 4, wesHigh = 5)  
 ```
 
 # Session information {-}
