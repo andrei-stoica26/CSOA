@@ -47,13 +47,16 @@ scoreOverlaps <- function(overlapDF){
 #' @param pairScores A list of pair scores in each cell for each pair in the
 #' overlap data frame
 #' @param pairFileName The name of the file where the pair data frame
-#' will be saved. Default is NULL (the overlap data frame will not be saved)
+#' will be saved. Default is NULL (the pair data frame will not be saved)
+#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair score
+#' file, as opposed to changing it to a pair score-based order. Ignored if
+#' pairFileName is NULL
 #'
 #' @return A data frame with overlap and pair scores and ranks
 #'
 #' @export
 #'
-computePairScores <- function(overlapDF, pairScores, pairFileName = NULL){
+computePairScores <- function(overlapDF, pairScores, pairFileName = NULL, keepOverlapOrder = FALSE){
   df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
   colnames(df)[3:4] <- paste0('overlap', c('Score', 'Rank'))
   pairTotalScores <- colSums(data.frame(pairScores))
@@ -63,6 +66,8 @@ computePairScores <- function(overlapDF, pairScores, pairFileName = NULL){
   df$pairRank <- seq_len(nrow(overlapDF))
   df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
   pairFile <- paste0(pairFileName, '.qs')
+  if (keepOverlapOrder)
+    df <- df[order(df$overlapScore, decreasing = TRUE), ]
   message(paste0('Saving pair file: ', pairFile, '...'))
   qsave(df, pairFile)
   return(df)

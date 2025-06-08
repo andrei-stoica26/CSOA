@@ -9,7 +9,8 @@ scoreCells(
   overlapDF,
   colStr = "CSOA",
   nPairs = 100,
-  pairFileName = NULL
+  pairFileName = NULL,
+  keepOverlapOrder = FALSE
 )
 }
 \arguments{
@@ -23,7 +24,11 @@ for which cell sets will be computed}
 \item{nPairs}{Number of overlaps that will be retained}
 
 \item{pairFileName}{The name of the file where the pair data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the pair data frame will not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileName is NULL}
 }
 \value{
 A data frame with a column corresponding to the CSOA scores

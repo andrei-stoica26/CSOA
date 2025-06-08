@@ -9,7 +9,8 @@ geneCirclePlot(
   groupStr = NULL,
   groupNames = NULL,
   cutoff = NULL,
-  title = "Top overlap genes plot"
+  title = "Top overlap genes plot",
+  extraCircles = 0
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ length as the list of overlap data frames}
 refiltering. If NULL (as default), no refiltering will be performed}
 
 \item{title}{Plot title}
+
+\item{extraCircles}{Number of circles drawn beyond those needed to include the
+points representing the genes. Default is 0}
 }
 \value{
 A ggplot object

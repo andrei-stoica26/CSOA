@@ -129,7 +129,7 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
 circleCoords <- function(geneCoordsDF, extraCircles = 0){
   minDegree <- geneCoordsDF$nEdges[nrow(geneCoordsDF)] - extraCircles
   maxDegree <- geneCoordsDF$nEdges[1]
-  nCircles <- maxDegree - minDegree + 1 + extraCircles
+  nCircles <- maxDegree - minDegree + 1
   hasSharedMax <- geneCoordsDF$nEdges[1] == geneCoordsDF$nEdges[2]
   df <- data.frame(
     x = rep(0, nCircles),

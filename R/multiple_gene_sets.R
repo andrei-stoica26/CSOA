@@ -6,17 +6,26 @@
 #'
 #' @inheritParams scoreCells
 #' @param setPairs A list of overlaps corresponding to each input gene set
-#' @param geneSetsNames Character vector of names of gene sets
+#' @param geneSetNames Character vector of names of gene sets
+#' @param pairFileTemplate Character object used in the naming of the files where
+#' the pair data frames will be saved. Default is NULL (the pair data frames will
+#' not be saved)
+#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair score
+#' file, as opposed to changing it to a pair score-based order. Ignored if
+#' pairFileTemplate is NULL
 #'
 #' @return A data frame whose columns correspond to the CSOA scores of the input
 #' gene sets
 #'
 #' @export
 #'
-scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetsNames, nPairs){
+scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs, pairFileTemplate = NULL,
+                               keepOverlapOrder = FALSE){
+  if(!is.null(pairFileTemplate))
+    pairFileName <- paste0(pairFileTemplate, geneSetNames) else pairFileName <- NULL
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetsNames[i], nPairs)
+    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], nPairs, pairFileName[i], keepOverlapOrder)
     return(scoreDF)
   })
   allScoresDF <- Reduce(cbind, scoreDFList)
@@ -40,13 +49,14 @@ scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetsNames, n
 #'
 #' @export
 #'
-runCSOAMultiple <- function(scObj, geneSets, geneSetsNames, percentile = 90, nPairs = 100, overlapFileName = NULL){
+runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, nPairs = 100, overlapFileName = NULL,
+                            pairFileTemplate = NULL, keepOverlapOrder = FALSE){
   geneSets <- lapply(geneSets, sort)
   setPairs <- lapply(geneSets, getPairs)
   pairs <- Reduce(union, setPairs)
   genes <- Reduce(union, geneSets)
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs, overlapFileName)
-  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetsNames, nPairs)
+  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs, pairFileTemplate, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

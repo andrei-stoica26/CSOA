@@ -5,7 +5,7 @@ package: CSOA
 date: June 6, 2025
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{CSOA}
+  %\VignetteIndexEntry{Getting started with CSOA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

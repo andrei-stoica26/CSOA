@@ -127,28 +127,30 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' @inheritParams edgeLists.list
 #' @param title Plot title
 #' @param groupStr Column used for grouping
+#' @inheritParams circleCoords
 #'
 #' @return A ggplot object
 #' @export
 #'
-geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutoff = NULL, title = 'Top overlap genes plot'){
+geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutoff = NULL, title = 'Top overlap genes plot',
+                           extraCircles = 0){
   geneCoordsDF <- geneCoords(overlapObj, groupNames, cutoff)
-  circleCoordsDF <- circleCoords(geneCoordsDF)
+  circleCoordsDF <- circleCoords(geneCoordsDF, extraCircles)
   message('Plotting genes...')
   legendStep <- as.integer(geneCoordsDF$nEdges[1] / 6) + 1
   p <- ggplot() +
     geom_circle(aes(x0 = x, y0 = y, r = r, fill = nEdges, color = nEdges), data = circleCoordsDF) +
     scale_fill_viridis(option = 'viridis', begin = 0.4, breaks = seq(geneCoordsDF$nEdges[1], 1, -legendStep)) +
     scale_color_viridis(option = 'viridis', begin = 0.4, breaks = seq(geneCoordsDF$nEdges[1], 1, -legendStep), guide = 'none') +
-    labs(fill = 'Degree') +
+    labs(fill = 'Number of top overlaps') +
     theme_classic() + easy_remove_axes() + coord_fixed() +
     theme(plot.margin = margin(0, 0, 0, 0), legend.title = element_text(size = 10), legend.text = element_text(size = 10)) +
-    geom_text_repel(aes(x, y, label = gene), data = geneCoordsDF, size = 4)
+    geom_text_repel(aes(x, y, label = gene), data = geneCoordsDF, size = 3)
   if (!is.null(groupStr))
     p <- p + new_scale_color() +
     new_scale_fill() +
-    geom_point(aes(x, y, color = group), data = geneCoordsDF, size = 1) +
-    scale_color_discrete(type = c('red', 'purple1', 'olivedrab1','darkorange1', 'snow', 'thistle1', 'green1','violetred4',
+    geom_point(aes(x, y, color = group), data = geneCoordsDF, size = 0.8) +
+    scale_color_discrete(type = c('red', 'purple1', 'olivedrab1','darkorange1', 'lavender', 'thistle1', 'green1','violetred4',
                                   'goldenrod1', 'firebrick4')) +
     labs(color = groupStr) else p <- p + geom_point(aes(x, y), data = geneCoordsDF, color = 'red', size = 0.8)
   p <- titlePlot(p, title)

@@ -4,7 +4,15 @@
 \alias{scoreCellsMultiple}
 \title{Generate CSOA scores from overlap data frame for multiple gene sets}
 \usage{
-scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetsNames, nPairs)
+scoreCellsMultiple(
+  geneSetExp,
+  overlapDF,
+  setPairs,
+  geneSetNames,
+  nPairs,
+  pairFileTemplate = NULL,
+  keepOverlapOrder = FALSE
+)
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
@@ -14,9 +22,17 @@ for which cell sets will be computed}
 
 \item{setPairs}{A list of overlaps corresponding to each input gene set}
 
-\item{geneSetsNames}{Character vector of names of gene sets}
+\item{geneSetNames}{Character vector of names of gene sets}
 
 \item{nPairs}{Number of overlaps that will be retained}
+
+\item{pairFileTemplate}{Character object used in the naming of the files where
+the pair data frames will be saved. Default is NULL (the pair data frames will
+not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileTemplate is NULL}
 }
 \value{
 A data frame whose columns correspond to the CSOA scores of the input

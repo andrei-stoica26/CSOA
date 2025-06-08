@@ -4,7 +4,12 @@
 \alias{computePairScores}
 \title{Compute pair scores}
 \usage{
-computePairScores(overlapDF, pairScores, pairFileName = NULL)
+computePairScores(
+  overlapDF,
+  pairScores,
+  pairFileName = NULL,
+  keepOverlapOrder = FALSE
+)
 }
 \arguments{
 \item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
@@ -13,7 +18,11 @@ computePairScores(overlapDF, pairScores, pairFileName = NULL)
 overlap data frame}
 
 \item{pairFileName}{The name of the file where the pair data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the pair data frame will not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileName is NULL}
 }
 \value{
 A data frame with overlap and pair scores and ranks

@@ -11,7 +11,8 @@ runCSOA(
   percentile = 90,
   nPairs = 100,
   overlapFileName = NULL,
-  pairFileName = NULL
+  pairFileName = NULL,
+  keepOverlapOrder = FALSE
 )
 }
 \arguments{
@@ -29,7 +30,11 @@ runCSOA(
 will be saved. Default is NULL (the overlap data frame will not be saved)}
 
 \item{pairFileName}{The name of the file where the pair data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the pair data frame will not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileName is NULL}
 }
 \value{
 An object of the same class as scObj with a CSOA score assigned for each cell

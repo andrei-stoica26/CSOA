@@ -9,7 +9,8 @@ computeCellScores(
   normExp,
   cellNames,
   colStr = "CSOA",
-  pairFileName = NULL
+  pairFileName = NULL,
+  keepOverlapOrder = FALSE
 )
 }
 \arguments{
@@ -22,7 +23,11 @@ computeCellScores(
 \item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{pairFileName}{The name of the file where the pair data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the pair data frame will not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileName is NULL}
 }
 \value{
 A Seurat object with a CSOA score assigned for each cell

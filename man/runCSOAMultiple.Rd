@@ -7,10 +7,12 @@
 runCSOAMultiple(
   scObj,
   geneSets,
-  geneSetsNames,
+  geneSetNames,
   percentile = 90,
   nPairs = 100,
-  overlapFileName = NULL
+  overlapFileName = NULL,
+  pairFileTemplate = NULL,
+  keepOverlapOrder = FALSE
 )
 }
 \arguments{
@@ -18,7 +20,7 @@ runCSOAMultiple(
 
 \item{geneSets}{List of character vectors}
 
-\item{geneSetsNames}{Character vector of names of gene sets}
+\item{geneSetNames}{Character vector of names of gene sets}
 
 \item{percentile}{A non-negative number below 100}
 
@@ -26,6 +28,14 @@ runCSOAMultiple(
 
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}
+
+\item{pairFileTemplate}{Character object used in the naming of the files where
+the pair data frames will be saved. Default is NULL (the pair data frames will
+not be saved)}
+
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
+file, as opposed to changing it to a pair score-based order. Ignored if
+pairFileName is NULL}
 }
 \value{
 An object of the same class as scObj with per-gene-set CSOA scores
