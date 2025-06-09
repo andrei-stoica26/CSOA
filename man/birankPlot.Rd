@@ -7,9 +7,9 @@
 birankPlot(
   pairScoreDF,
   title = "Overlap and gene pair ranks",
-  pointColor = "firebrick1",
+  pointColor = "deeppink3",
   pointSize = 1.5,
-  labelSize = 4
+  labelSize = 3.5
 )
 }
 \arguments{

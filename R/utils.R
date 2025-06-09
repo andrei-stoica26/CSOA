@@ -1,4 +1,5 @@
 #' @importFrom methods is
+#' @importFrom kerntools minmax
 #' @importFrom qs qread
 #' @importFrom stats runif
 #' @importFrom SeuratObject LayerData
@@ -16,7 +17,7 @@ NULL
 #' @param pvalThr p-value threshold
 #' @param colStr Name of the column of p-values
 #'
-#' @return Dataframe with Benjamini-Yekutieli-corrected p-values
+#' @return The data frame with Benjamini-Yekutieli-corrected p-values
 #'
 #' @export
 #'
@@ -27,7 +28,28 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   return(df)
 }
 
-#' Get all unorderded pairs of two elements from a vector
+
+#' Show the distribution of cell sets among cells
+#'
+#' This function returns a matrix that shows the presence of cell sets among
+#' cells.
+#'
+#' @param cellSets A list of character vectors
+#' @param allCells A character vector. If not specified, the union of the cell
+#' sets
+#'
+#' @return A logical matrix with genes as rows and cells as columns
+#'
+#' @export
+#'
+cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
+  df <- data.table::transpose(data.frame(lapply(cellSets, function(x) allCells %in% x)))
+  rownames(df) <- names(cellSets)
+  colnames(df) <- allCells
+  return(as.matrix(df))
+}
+
+#' Get all unordered pairs of two elements from a vector
 #'
 #' This function returns all unorderded pairs of two elements from a vector as
 #' a list of vectors of length 2
@@ -40,6 +62,25 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 #'
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
+
+
+#' Convert a matrix to a data frame suitable for basicHeatmap
+#'
+#' This function converts a matrix to a long data frame suitable for basicHeatmap
+#'
+#' @param mat A matrix
+#' @param colNames A character vector of size 3 representing the column names
+#' of the output data frame
+#'
+#' @return A data frame suitable for basicHeatmap
+#'
+#' @export
+#'
+heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
+  mat <- cluster_matrix(mat)
+  df <- reshape2::melt(mat, varnames = colNames[1:2], value.name = colNames[3])
+  return(df)
+}
 
 #' Get all genes from an overlap data frame
 #'
@@ -126,6 +167,19 @@ qGrab <- function(qsFile){
   file.remove(qsFile)
   return(res)
 }
+
+#' Applies kerntools minmax-normalization on a vector using
+#'
+#' This functions applies kerntools::minmax on a vector
+#'
+#' @param v Numeric vector
+#'
+#' @return A minmax-normalized vector
+#'
+#' @export
+#'
+vMinmax <- function(v)
+  return(as.numeric(kerntools::minmax(as.matrix(v))))
 
 #' Raise a warning that the overlap data frame may have been not filtered
 #'

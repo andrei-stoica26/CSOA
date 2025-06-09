@@ -4,10 +4,16 @@
 \alias{scoreOverlaps}
 \title{Score cell set overlaps}
 \usage{
-scoreOverlaps(overlapDF)
+scoreOverlaps(overlapDF, osMethod = "log", firstOutRank = NULL)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A filtered overlap data frame}
+
+\item{osMethod}{The method used to compute overlap scores. Options are 'log'
+and 'minmax'}
+
+\item{firstOutRank}{The raw rank of the highest-ranked overlap that was not
+recorded among top overlaps. Ignored if osMethod is set to 'log'}
 }
 \value{
 A data frame with ranked overlaps

@@ -7,7 +7,7 @@
 warnUnfiltered(overlapDF, raiseWarning = 1000)
 }
 \arguments{
-\item{overlapDF}{Processed overlap dataframe generated using processOverlaps}
+\item{overlapDF}{A scored overlap data frame}
 
 \item{raiseWarning}{If the data frame contains more overlaps than this number,
 users will be warned that they may have introduced the raw overlap data frame

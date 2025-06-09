@@ -11,12 +11,52 @@ NULL
 #'
 #' @return A data frame with ranked overlaps
 #'
+#' @export
+#'
 rankOverlaps <- function(overlapDF){
   overlapDF$pvalRank <- seq_len(nrow(overlapDF))
   overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]
   overlapDF$ratioRank <- seq_len(nrow(overlapDF))
-  overlapDF$rank <- rowMeans(overlapDF[ , c('pvalRank', 'ratioRank')])
-  overlapDF <- overlapDF[order(overlapDF$rank), ]
+  overlapDF$rawAggRank <- rowMeans(overlapDF[ , c('pvalRank', 'ratioRank')])
+  overlapDF <- overlapDF[order(overlapDF$rawAggRank), ]
+  overlapDF$rank <- seq_len(nrow(overlapDF))
+  return(overlapDF)
+}
+
+#' Find the raw aggregate rank of the highest non-top overlap
+#'
+#' This function finds the raw aggregate rank of the highest non-top overlap.
+#'
+#' @param overlapDF A ranked overlap data frame
+#' @param nPairs Number of overlaps that will be retained
+#'
+#' @return A numeric value
+#'
+#' @export
+#'
+firstExcluded <- function(overlapDF, nPairs=100){
+  if (nrow(overlapDF) > nPairs)
+    return(overlapDF$rawAggRank[nPairs + 1])
+  return(NULL)
+}
+
+#' Filter cell set overlaps
+#'
+#' This function filters cell set overlaps after the overlap data frame
+#' has been ranked
+#'
+#' @inheritParams firstExcluded
+#'
+#' @return A filtered overlap data frame
+#'
+#' @export
+#'
+filterOverlaps <- function(overlapDF, nPairs = 100){
+  if (!is.null(nPairs)){
+    if(nPairs > nrow(overlapDF))
+      message(paste0('Will return only ', nrow(overlapDF), ' significant overlaps. More are not available.'))
+    overlapDF <- overlapDF[seq_len(min(nPairs, nrow(overlapDF))), ]
+  }
   return(overlapDF)
 }
 
@@ -28,49 +68,34 @@ rankOverlaps <- function(overlapDF){
 #' filtered data frame (i.e., if the filtered data frame contains 100 overlaps,
 #' the 101st overlap corresponds to a score of 0)
 #'
-#' @inheritParams rankOverlaps
+#' @param overlapDF A filtered overlap data frame
+#' @param osMethod The method used to compute overlap scores. Options are 'log'
+#' and 'minmax'
+#' @param firstOutRank The raw rank of the highest-ranked overlap that was not
+#' recorded among top overlaps. Ignored if osMethod is set to 'log'
 #'
 #' @return A data frame with ranked overlaps
 #'
-scoreOverlaps <- function(overlapDF){
-  overlapDF$rank <- seq_len(nrow(overlapDF))
-  overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[overlapDF$rank])
-  return(overlapDF)
-}
-
-#' Compute pair scores
-#'
-#' This function assesses the relative contribution of each gene pair to the CSOA
-#' score
-#'
-#' @inheritParams computeCellScores
-#' @param pairScores A list of pair scores in each cell for each pair in the
-#' overlap data frame
-#' @param pairFileName The name of the file where the pair data frame
-#' will be saved. Default is NULL (the pair data frame will not be saved)
-#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair score
-#' file, as opposed to changing it to a pair score-based order. Ignored if
-#' pairFileName is NULL
-#'
-#' @return A data frame with overlap and pair scores and ranks
-#'
 #' @export
 #'
-computePairScores <- function(overlapDF, pairScores, pairFileName = NULL, keepOverlapOrder = FALSE){
-  df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
-  colnames(df)[3:4] <- paste0('overlap', c('Score', 'Rank'))
-  pairTotalScores <- colSums(data.frame(pairScores))
-  totalScore <- sum(pairTotalScores)
-  df$pairScore <- pairTotalScores / totalScore * 100
-  df <- df[order(df$pairScore, decreasing = TRUE), ]
-  df$pairRank <- seq_len(nrow(overlapDF))
-  df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
-  pairFile <- paste0(pairFileName, '.qs')
-  if (keepOverlapOrder)
-    df <- df[order(df$overlapScore, decreasing = TRUE), ]
-  message(paste0('Saving pair file: ', pairFile, '...'))
-  qsave(df, pairFile)
-  return(df)
+scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRank = NULL){
+  if (nrow(overlapDF) == 1){
+    overlapDF$score <- 1
+    return(overlapDF)
+  }
+  if(!osMethod %in% c('log', 'minmax'))
+    stop('Unrecognized overlap scoring method. See ?CSOA::scoreOverlaps for the accepted methods')
+
+  if (osMethod == 'log')
+    overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[overlapDF$rank])
+  if (osMethod == 'minmax'){
+    rawRank <- overlapDF$rawAggRank
+    if (!is.null(firstOutRank))
+      rawRank <- c(rawRank, firstOutRank) else
+        rawRank <- c(rawRank, 2 * rawRank[nrow(overlapDF)] - rawRank[nrow(overlapDF) - 1])
+    overlapDF$score <- (1 - vMinmax(rawRank))[overlapDF$rank]
+  }
+  return(overlapDF)
 }
 
 #' Extract gene pairs from overlap matrix

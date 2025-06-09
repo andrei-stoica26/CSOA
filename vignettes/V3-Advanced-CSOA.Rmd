@@ -2,13 +2,19 @@
 title: "Advanced CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: June 7, 2025
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Advanced CSOA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 # Storing gene pair scores
 First, let us repeat the setup from **Getting started with CSOA**. We need the `BaronPancreasData` dataset from `scRNAseq`, and we used [PanglaoDB](https://www.panglaodb.se/markers.html) to generate the list of acinar markers.
@@ -92,7 +98,7 @@ The results are extremely close to those obtained using all the `47` genes:
 printStats(seuratObj, 'CSOA_acinar', 'CSOA_acinar2')
 ```
 
-It is instructive to think why the results between the two runs were not identical. This is because the additional overlaps computed for the `47` acinar markers **impacted the individual components of the overlap rank** (p-value rank, ratio rank)—resulting in **slight changes in the overlap ranking** and subsequent selection and scoring. 
+It is instructive to think why the results between the two runs were not identical. This is because the additional overlaps computed for the `47` acinar markers impacted the individual components of the overlap rank (p-value rank, ratio rank)—resulting in slight changes in the overlap ranking and subsequent selection and scoring. 
 
 Below, we explore some of the main effects of these changes. First, we extract the top overlaps for each set of results:
 

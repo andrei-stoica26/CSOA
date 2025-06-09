@@ -1,0 +1,334 @@
+---
+title: "The CSOA algorithm"
+author: "Andrei-Florian Stoica"
+package: CSOA
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{The CSOA algorithm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Constructing cell sets
+First, we repeat the setup from the **Getting started with CSOA** tutorial. We need the `BaronPancreasData` dataset from `scRNAseq` and the list of acinar markers from [PanglaoDB](https://www.panglaodb.se/markers.html).
+
+```{r message=F, warning=F, results=F}
+library(CSOA)
+library(scRNAseq)
+library(scuttle)
+library(Seurat)
+
+sceObj <- BaronPancreasData('human')
+sceObj <- logNormCounts(sceObj)
+
+seuratObj <- as.Seurat(sceObj)
+
+acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1', 
+                   'DUOXA2', 'ALDOB', 'REG3A', 'SERPINA3', 'PRSS3', 'REG1B', 
+                   'CFB',	'GDF15',	'MUC1','ANPEP', 'ANGPTL4', 'OLFM4', 
+                   'GSTA1', 'LGALS2', 'PDZK1IP1', 'RARRES2', 'CXCL17', 
+                   'UBD', 'GSTA2', 'LYZ', 'RBPJL', 'PTF1A', 'CELA3A', 
+                   'SPINK1', 'ZG16', 'CEL', 'CELA2A', 'CPB1', 'CELA1', 
+                   'PNLIPRP1', 'RNASE1', 'AMY2B', 'CPA2','CPA1', 'CELA3B', 
+                   'CTRB2', 'PLA2G1B', 'PRSS2', 'CLPS', 'REG1A', 'SYCN')
+```
+
+The first step is extracing the expression data for the input genes. The results will be stored as a non-sparse matrix:
+
+```{r}
+geneSetExp <- expMat(seuratObj, acinarMarkers)
+class(geneSetExp)
+dim(geneSetExp)
+```
+
+Next, each gene gets a cell set representing the cells with the highest expression of the gene. The cutoff for cell selection is implemented using the `percentile` argument, set at `90` by default.
+
+**! Note:** The percentile is taken over **all the cells expressing the gene**, not over all the cells in the dataset. Therefore, the cell sets are allowed to vary in size.
+
+```{r}
+cellSets <- percentileSets(geneSetExp, percentile = 90)
+sapply(cellSets, length)
+```
+
+We can now visualize the distribution of the cell sets among all the cells:
+
+```{r}
+mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
+basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
+             title='Distribution of cell sets among all cells',
+             palType='fillDis')
+```
+
+The cell sets strongly cluster in a small region of the heatmap, which indicates their significant overlaps. Since the corresponding genes are markers of a cell type identity, this is expected. 
+
+We can also zoom in by running `cellDistribution` without specifying an `allCells` argument, in which case the function will take the union of all cell sets as the argument:
+
+```{r}
+mat <- cellDistribution(cellSets)
+basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
+             title='Distribution of cell sets - a closer look',
+             palType='fillDis')
+```
+
+# Computing overlaps of pairs of cell sets
+
+The next step is calculating the statistical significance of the overlaps of pairs of cell sets by usign hypergeometric tests. The function designed to this end, `cellSetsOverlaps`, also records the size of each overlap and compares it to to expected size. In addition, the function offers the option of saving the data frame it returns for further analysis. This is particularly useful when analyzing large gene, because computing the statistical significance and the recorded-over-expected size for each pair of overlaps is the speed bottleneck of the algorithm. If saved, the output of `cellSetsOverlaps` can be used, for instance, to experiment with different choices of parameters (e.g., adjusting `nPairs`, the cutoff for the selection of top overlaps, whose default value is set at `100`).
+
+```{r}
+cso <- cellSetsOverlaps(cellSets, nCells=dim(seuratObj)[2], overlapFileName='acinarOverlaps')
+```
+
+**! Note:** The `nCells` argument must be set to the total number of cells in the Seurat object, NOT to the number of cells in the cell sets.
+
+We can now inspect the output:
+
+```{r}
+df <- qGrab('acinarOverlaps.qs')
+dim(df)
+head(df)
+```
+
+The number of rows (`1081`) equals the number of all possible unordered pairs that can be generated from a list of `47` genes (`47 * 46 / 2 = 1081`).
+
+Users also have the option of performing both steps—creating cell sets and assessing overlaps of pairs of cell sets—in a single call. This can be accomplished through the the `generateOverlaps` function:
+
+```{r}
+cso2 <- generateOverlaps(geneSetExp, percentile = 90)
+identical(cso, cso2)
+```
+
+# Identifying and scoring top overlaps
+
+The output of `cellSetsOverlaps` can become ready for scoring in a single call, using `processOverlaps`. We use the default value of `100` for the nPairs:
+
+```{r}
+po <- processOverlaps(cso, nPairs=100)
+head(po)
+```
+
+`processOverlaps` sequentially performs four main steps by calling four helper functions:
+
+1. Pre-filtering: `byCorrectDF`
+
+2. Ranking: `rankOverlaps`
+
+3. Filtering: `filterOverlaps`
+
+4. Scoring: `scoreOverlaps`
+
+`byCorrectDF` first performs the Benjamini-Yekutieli correction for multiple testings. This slightly increases all p-values, but without changing their relative order. Subsequently, `byCorrectDF` filters out insignificant overlaps, with a significance level set by default at `0.05`:
+
+```{r}
+po2 <- byCorrectDF(cso)
+dim(po2)
+head(po2)
+```
+
+The overlap data frame has gained an additional column (`pval_adj`). Note also that the number of rows has decreased from `1081` to `619` due to the filtering of insignificant overlaps.
+
+Next, `rankOverlaps` defines a rank using the following steps:
+
+1. A rank based on adjusted p-value is computed.
+
+2. A rank based on recorded-over-expected size ratio is computed.
+
+3. An aggregate rank is computed as the average of the two ranks.
+
+4. The overlaps are ordered increasingly based on the aggregate rank.
+
+5. A new aggregate rank representing the order imposed by the initial aggregate rank is constructed
+
+```{r}
+po2 <- rankOverlaps(po2)
+head(po2)
+```
+
+The data frame has now gained four additional columns: `pvalRank`, `ratioRank`, `rawAggRank` and `rank`.
+
+Before filtering the overlap data frame, we will call the `firstExcluded` function to store the highest raw aggregate rank recorded among the overlaps that will **not** be retained as top overlaps. This information is useful, though not required, if the `minmax` option is chosen for the subsequent `scoreOverlaps` run. If the default `log` option is chosen instead, the output of `firstExcluded` is not used.
+
+```{r}
+firstOutRank <- firstExcluded(po2, nPairs=100)
+v <- c(po2$rawAggRank[100], firstOutRank)
+names(v) <- c('lastInRank', 'firstOutRank')
+v
+```
+
+Thus, the raw aggregate rank of overlap `100` (the lowest included one) is `133`, while  the raw aggregate rank of overlap `101` (the highest excluded one) is `134`.
+
+We are now ready to run `filterOverlaps`:
+```{r}
+po2 <- filterOverlaps(po2, nPairs=100)
+dim(po2)
+```
+The function select the top `nPairs` overlaps in the data frame, or, if the data frame has fewer than `nPairs` overlaps, it selects as many as there are available—so long as there is at least one overlap in the data frame.
+
+Next, `scoreOverlaps` is applied with the default `log` overlap scoring:
+
+```{r}
+po2 <- scoreOverlaps(po2)
+head(po2)
+identical(po, po2)
+```
+
+We identity a new column,`score`. The scores and everything else in the data frame are identical with those generated using `processOverlaps` at the beginning of this section, because default parameters were used in both cases. 
+
+All overlap scores are in (0, 1]. This is a property shared by both of the supported overlap scoring methods, `log` and `minmax`.
+
+We can now plot the scores versus the ranks using `rankScorePlot`. The plot shows a logarithmic decrease of scores from `1` towards `0`. The latter figure is not reached—the algorithm assigns a positive score to all top overlaps, while `0` is assigned as the score of the `nPairs + 1` overlap (the first non-top overlap)
+
+```{r}
+rankScorePlot(po2, 'Overlap scores computed using the log method')
+```
+
+
+We can also compute the scores using the `minmax` method and the previously computed `firstOutRank`:
+
+```{r}
+po2Minmax <- scoreOverlaps(po2, 'minmax', firstOutRank)
+rankScorePlot(po2Minmax, 'Overlap scores computed using the minmax method with firstOutRank')
+head(po2Minmax)
+```
+
+If a `firstOutRank` numeric value has not been computed, the `minmax` method can still be employed—`scoreOverlaps` will introduce a fictitious raw aggregate rank of the first non-top overlap by summing the last raw aggregate rank in the data frame and the last difference of consecutive aggregate ranks (i. e., it sums the raw aggregate rank of overlap `nPairs` with the difference of the raw aggregate rank of the same overlap and that of overlap `nPairs - 1`). Of course, this requires that `nPairs >= 2`. If `nPairs` is 1, both the `log`and the `minmax` method will directly assign a score of `1` to the corresponding overlap.
+
+We can now look at the scores computed using the `minmax` method with no `firstOutRank` argument:
+
+```{r}
+po2Minmax <- scoreOverlaps(po2, 'minmax')
+rankScorePlot(po2Minmax, 'Overlap scores computed using the minmax method without firstOutRank')
+head(po2Minmax)
+```
+
+# Scoring the cells
+
+First, we select the genes that registered at least one top overlap with the `overlapGenes` function:
+```{r}
+genes <- overlapGenes(po2)
+genes
+```
+
+In general, these are **not** the same as the original input genes, but a smaller subset of them—because not all input genes register top overlaps. This subject is discussed in more detail in the **Advanced CSOA** tutorial.
+
+Here, we observe that `33` out of the original `47` input genes have registered top overlaps:
+
+```{r}
+length(genes)
+length(acinarMarkers)
+setdiff(acinarMarkers, genes)
+```
+
+Next, we extract and minmax-normalize the expression of these `33` genes:
+
+```{r}
+normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
+```
+
+We can now compute the per-cell scores of each gene pair corresponding to a top overlap. Each of these scores are obtained by multiplying these three quantities:
+
+1. The overlap score of the gene pair
+
+2. The in-cell minmax-normalized expresssion of the first gene
+
+3. The in-cell minmax-normalized expresssion of the second gene
+
+```{r}
+pcPairScores <- computePCPairScores(po2, normExp)
+dim(pcPairScores)
+rownames(pcPairScores)[1:10]
+colnames(pcPairScores)[1:10]
+```
+
+We can now plot a heatmap displaying these scores:
+
+```{r, fig.height=9, fig.width=7}
+basicHeatmap(as.matrix(pcPairScores), c('GenePair', 'Cell', 'Score'),
+             title = 'Gene pair scores',
+             axisTextSize = 6,
+             palType = 'fillCont')
+```
+
+
+Next, we compute a CSOA score for each cell by summing the values in each of the column of `pcPairScores` and performing minmax normalization to bring the output to `[0, 1]`. We use the `computePCSetScores` function for this task, with the cell name taken from the `geneSetExp` expression matrix. The result is a data frame with a score column:
+
+```{r}
+df <- computePCSetScores(pcPairScores, cellNames = colnames(geneSetExp), colStr = 'CSOA_acinar')
+head(df)
+```
+
+To attach the scores to the `Seurat` object, we run `storeCellScores`:
+
+```{r}
+seuratObj <- storeCellScores(seuratObj, df)
+VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label')
+```
+
+
+# The usage of scoring wrappers
+
+CSOA offers multiple wrappers for scoring the cells, starting at ending at different parts of the pipeline, allowing to users to explore intermediary outputs and alter intermediary inputs.
+
+The `scoreCells` function requires an unprocessed overlap data frame (that is, the output of `cellSetsOverlaps` or its wrapper `generateOverlaps`) and returns the output of `computePCSetScores`:
+
+```{r}
+dfScoreCells <- scoreCells(geneSetExp, cso, 'CSOA_acinar')
+identical(dfScoreCells$CSOA_acinar, df$CSOA_acinar)
+```
+
+The `computeCellScores` function starts further downstream, requiring a processed overlap data frame (the output of `processOverlaps`), the minmax-normalized expression matrix of top overlap genes, as well as the cell names. It likewise returns the output of `computePCSetScores`:
+
+```{r}
+dfComputeCellScores <- computeCellScores(po2, normExp, colnames(geneSetExp), 'CSOA_acinar')
+identical(dfComputeCellScores$CSOA_acinar, df$CSOA_acinar)
+```
+
+Finally, the `runCSOA` wrapper introduced in **Getting started with CSOA** runs the whole pipeline, including `storeCellScores`, the step beyond `computePCSetScores`:  
+
+```{r}
+seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
+identical(seuratObj@meta.data$CSOA_acinar, df$CSOA_acinar)
+```
+
+# Exploring gene pair scores
+
+We can explore the total score obtained for each gene pair using the `computePairScores` function.
+
+This function sums the values in each of the rows of `pcPairScores`, and converts the results to percentages. As input, it requires a processed overlap data frame (the output of `processOverlaps`) and a data frame of per-cell gene pair scores (the output of `computePCPairScores`)
+
+```{r}
+df <- computePairScores(po2, pcPairScores)
+head(df)
+```
+
+Here, the `pairScore` column lists the percentage of the total score that is accounted for by each gene pair:
+
+Note that `computeCellScores` does **not** run `computePairScores` by default, since the output of the latter function is not required for the calculation of per-cell CSOA scores. The same is true about the `scoreCells` (which calls `computeCellScores`) and `runCSOA` (which calls `scoreCells`)
+
+To make any among the `computeCellScores`, `scoreCells` and `runCSOA` wrappers call `computePairScores`, a character values needs to be assigned to the `pairFileName` parameter, for instance:
+
+```{r}
+dfComputeCellScores <- computeCellScores(po2, normExp, colnames(geneSetExp), 'CSOA_acinar', pairFileName = 'cpsOutput')
+```
+
+The purpose of this parameter is saving the output of `computePairScores` as a `.qs` file. Thus, the function can be accessed from any of the three scoring wrappers only by electing to save its output. When running `computePairScores` by itself, the `pairFileName` can be left as `NULL` (i.e., the output will not be saved).
+
+To access the output of the `cpsOutput.qs` file, we will use `qGrab`, a wrapper around `qread` from `qs` which deletes the file after reading it:
+
+```{r}
+df2 <- qGrab('cpsOutput.qs')
+identical(df, df2)
+head(df, )
+```
+
+# Session information {-}
+```{r}
+sessionInfo()
+```
+

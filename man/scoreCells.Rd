@@ -9,6 +9,8 @@ scoreCells(
   overlapDF,
   colStr = "CSOA",
   nPairs = 100,
+  pvalThr = 0.05,
+  osMethod = "log",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
 )
@@ -22,6 +24,11 @@ for which cell sets will be computed}
 \item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{nPairs}{Number of overlaps that will be retained}
+
+\item{pvalThr}{p-value threshold}
+
+\item{osMethod}{The method used to compute overlap scores. Options are 'log'
+and 'minmax'}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}

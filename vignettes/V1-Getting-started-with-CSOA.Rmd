@@ -2,7 +2,6 @@
 title: "Getting started with CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: June 6, 2025
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Getting started with CSOA}
@@ -16,9 +15,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
 # Introduction
 
-CSOA is a tool for scoring gene set signatures in scRNA-seq data using overlaps of pairs of sets comprising cells of high expression for each input gene. By default, CSOA constructs, for each input gene, a set of cells above the ```90```th percentile in their expression of the gene. Subsequently, the overlaps of all pairs of cell sets are computed, assessed for statistical significance and ranked. The top-ranked overlaps then receive a score and contribute to the per-cell CSOA scores.
+CSOA is a tool for scoring gene set signatures in scRNA-seq data. It constructs, for each input gene, a set of cells highly expressing the gene, then assesses all pairs of cell sets for statistical significance. The significant overlaps are ranked, and the top-ranked overlaps receive scores used to calculate per-cell CSOA scores.
 
 # Installation
 To install CSOA, run the following commands in an R session:
@@ -36,7 +36,7 @@ In addition to CSOA, you need to install [harmony](https://github.com/immunogeno
 
 # Scoring a gene set
 
-This tutorial uses a scRNA-seq human pancreas dataset with cell type annotations. 
+This tutorial uses an scRNA-seq human pancreas dataset with provided cell type annotations. 
 
 After loading the required packages, download the dataset using the `BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
 
@@ -135,7 +135,7 @@ geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
 ```
 
-To visualize the results of CSOA on multiple gene sets, we define and call the ```patchworkPlot``` function in order to display a plot composed of multiple subplots. For the subplots, we use again the ```VlnPlot``` function from ```Seurat```.
+To visualize the results of CSOA on multiple gene sets, we define and call the `patchworkPlot` function in order to display a plot composed of multiple subplots. For the subplots, we use again the `VlnPlot` function from `Seurat`.
 
 ```{r warning=F, fig.height=8, fig.width=7}
 patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
@@ -151,7 +151,7 @@ patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
 patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
 ```
 
-Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment`:
+Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
 
 ```{r}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
@@ -176,7 +176,7 @@ The function builds a continuous scale based on two colors chosen from any [wesa
 
 To enable feature plot visualization, we will perform dimensionality reduction on the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
 
-```{r message=F, warning=F}
+```{r message=F, warning=F, results=F}
 
 seuratObj <- FindVariableFeatures(seuratObj)
 seuratObj <- ScaleData(seuratObj)
@@ -192,7 +192,7 @@ Now we can visualize the CSOA results as feature plots:
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
 ```
 
-We can select another ```wesanderson```-based color scheme as follows:
+We can define another `wesanderson`-based color scheme as follows:
 
 ```{r message=F, warning=F, fig.height=8, fig.width=7}
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label', 

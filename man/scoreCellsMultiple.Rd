@@ -9,7 +9,9 @@ scoreCellsMultiple(
   overlapDF,
   setPairs,
   geneSetNames,
-  nPairs,
+  nPairs = 100,
+  pvalThr = 0.05,
+  osMethod = "log",
   pairFileTemplate = NULL,
   keepOverlapOrder = FALSE
 )
@@ -25,6 +27,11 @@ for which cell sets will be computed}
 \item{geneSetNames}{Character vector of names of gene sets}
 
 \item{nPairs}{Number of overlaps that will be retained}
+
+\item{pvalThr}{p-value threshold}
+
+\item{osMethod}{The method used to compute overlap scores. Options are 'log'
+and 'minmax'}
 
 \item{pairFileTemplate}{Character object used in the naming of the files where
 the pair data frames will be saved. Default is NULL (the pair data frames will

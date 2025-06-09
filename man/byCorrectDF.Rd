@@ -14,7 +14,7 @@ byCorrectDF(df, pvalThr = 0.05, colStr = "pval")
 \item{colStr}{Name of the column of p-values}
 }
 \value{
-Dataframe with Benjamini-Yekutieli-corrected p-values
+The data frame with Benjamini-Yekutieli-corrected p-values
 }
 \description{
 This function performs the Benjamini-Yekutieli correction for multiple

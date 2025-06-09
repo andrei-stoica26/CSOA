@@ -11,6 +11,8 @@ runCSOAMultiple(
   percentile = 90,
   nPairs = 100,
   overlapFileName = NULL,
+  pvalThr = 0.05,
+  osMethod = "log",
   pairFileTemplate = NULL,
   keepOverlapOrder = FALSE
 )
@@ -28,6 +30,11 @@ runCSOAMultiple(
 
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}
+
+\item{pvalThr}{p-value threshold}
+
+\item{osMethod}{The method used to compute overlap scores. Options are 'log'
+and 'minmax'}
 
 \item{pairFileTemplate}{Character object used in the naming of the files where
 the pair data frames will be saved. Default is NULL (the pair data frames will

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getPairs}
 \alias{getPairs}
-\title{Get all unorderded pairs of two elements from a vector}
+\title{Get all unordered pairs of two elements from a vector}
 \usage{
 getPairs(v)
 }

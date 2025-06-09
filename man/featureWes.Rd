@@ -12,9 +12,7 @@ featureWes(
   label = TRUE,
   labelSize = 3,
   repel = TRUE,
-  wesPal = "Royal1",
-  wesLow = 3,
-  wesHigh = 2,
+  titleSize = 12,
   ...
 )
 }
@@ -33,13 +31,9 @@ featureWes(
 
 \item{repel}{Whether to make names of labels repel}
 
-\item{wesPal}{Wes Anderson palette}
+\item{titleSize}{Title size}
 
-\item{wesLow}{Index of color marking low expression}
-
-\item{wesHigh}{Index of color marking high expression}
-
-\item{...}{Other arguments passed to FeaturePlot}
+\item{...}{Other arguments passed to wesBinaryGradient}
 }
 \value{
 A ggplot object

@@ -43,6 +43,8 @@ pairOverlap <- function(pairCellSets, nCells){
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
+#' @export
+#'
 cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = NULL){
   message('Assessing gene overlaps...')
   genes <- names(cellSets)
