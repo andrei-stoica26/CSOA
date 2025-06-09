@@ -86,21 +86,32 @@ Alternatively, CSOA can be run on a `SingleCellExperiment` object. The results w
 
 ```{r}
 sceObj <- runCSOA(sceObj, acinarMarkers, 'CSOA_acinar')
-identical(seuratObj@meta.data$CSOA_acinar, sceObj$CSOA_acinar)
 ```
 
-Furthermore, CSOA can be run directly on an expression matrix. The `expMat` function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class. When running directly on an expression matrix, CSOA will return a data frame:
+Furthermore, CSOA can be run directly on an expression matrix. CSOA requires a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, the `expMat` function will be employed. This function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class.
 
 ```{r}
 geneSetExp <- expMat(seuratObj)
+```
+
+When running directly on an expression matrix, CSOA will return a data frame. The CSOA scores are stored in a column named using the `colStr` parameter, set to `'CSOA_acinar'` in our example:
+
+```{r}
 df <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
 head(df)
+```
+
+We confirm that the results of the three runs are identical:
+
+```{r}
+identical(seuratObj@meta.data$CSOA_acinar, sceObj$CSOA_acinar)
 identical(seuratObj@meta.data$CSOA_acinar, df$CSOA_acinar)
 ```
 
 # Scoring multiple gene sets
 
 CSOA can score multiple gene sets using the `runCSOAMultiple` function. We provide three additional marker lists selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
+
 ```{r}
 alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
                   'CHGA', 'SCGB2A1', 'GLS', 'FAP', 'DPP4', 'GPR119',
@@ -135,9 +146,9 @@ geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
 ```
 
-To visualize the results of CSOA on multiple gene sets, we define and call the `patchworkPlot` function in order to display a plot composed of multiple subplots. For the subplots, we use again the `VlnPlot` function from `Seurat`.
+To visualize the results of CSOA on multiple gene sets, we define `patchworkPlot`, a function intended to display a plot composed of multiple subplots generated with the same function (specified using the `fun` parameter) as follows:
 
-```{r warning=F, fig.height=8, fig.width=7}
+```{r}
 patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
   plots <- lapply(geneSetNames, function(x) {
   fun(seuratObj, x, ...) + NoLegend() +
@@ -147,11 +158,15 @@ patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
     })
   (plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
 }
+```
 
+Next, we call the `patchworkPlot` function. For creating each subplot, we use again the `VlnPlot` function from `Seurat`.
+
+```{r warning=F, fig.height=8, fig.width=8}
 patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
 ```
 
-Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
+Additionally, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
 
 ```{r}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
@@ -172,7 +187,7 @@ sapply(geneSetNames,
 
 CSOA provides  `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
 
-The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette. The colors are chosen using arguments `wesPal` (the name of the palette) `wesLow` (the index of the color chosen for the feature minimum) and `wesHigh` (the index of the color chosen for the feature maximum). Labels of Seurat identity classes are displayed on the plot using the `idClass` argument.
+The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette. The colors are chosen using arguments `wesPal` (the name of the palette), `wesLow` (the index of the color chosen for the feature minimum) and `wesHigh` (the index of the color chosen for the feature maximum). Labels of Seurat identity classes are displayed on the plot using the `idClass` argument.
 
 To enable feature plot visualization, we will perform dimensionality reduction on the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
 
@@ -188,13 +203,13 @@ seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = 'harmony')
 
 Now we can visualize the CSOA results as feature plots:
 
-```{r message=F, warning=F, fig.height=8, fig.width=7}
+```{r message=F, warning=F, fig.height=8, fig.width=8}
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
 ```
 
 We can define another `wesanderson`-based color scheme as follows:
 
-```{r message=F, warning=F, fig.height=8, fig.width=7}
+```{r message=F, warning=F, fig.height=8, fig.width=8}
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label', 
               wesPal = 'Rushmore1', wesLow = 4, wesHigh = 5)  
 ```
