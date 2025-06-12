@@ -12,7 +12,9 @@ runCSOAMultiple(
   nPairs = 100,
   overlapFileName = NULL,
   pvalThr = 0.05,
-  osMethod = "log",
+  orMethod = "conn",
+  ofMethod = "saddle",
+  osMethod = "minmax",
   pairFileTemplate = NULL,
   keepOverlapOrder = FALSE
 )
@@ -26,12 +28,12 @@ runCSOAMultiple(
 
 \item{percentile}{A non-negative number below 100}
 
-\item{nPairs}{Number of overlaps that will be retained}
-
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved)}
 
 \item{pvalThr}{p-value threshold}
+
+\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

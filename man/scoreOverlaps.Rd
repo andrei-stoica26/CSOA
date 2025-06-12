@@ -4,7 +4,7 @@
 \alias{scoreOverlaps}
 \title{Score cell set overlaps}
 \usage{
-scoreOverlaps(overlapDF, osMethod = "log", firstOutRank = NULL)
+scoreOverlaps(overlapDF, osMethod = "minmax", firstOutRawRank = NULL)
 }
 \arguments{
 \item{overlapDF}{A filtered overlap data frame}
@@ -12,7 +12,7 @@ scoreOverlaps(overlapDF, osMethod = "log", firstOutRank = NULL)
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}
 
-\item{firstOutRank}{The raw rank of the highest-ranked overlap that was not
+\item{firstOutRawRank}{The raw rank of the highest-ranked overlap that was not
 recorded among top overlaps. Ignored if osMethod is set to 'log'}
 }
 \value{

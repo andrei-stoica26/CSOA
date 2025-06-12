@@ -10,7 +10,9 @@ scoreCells(
   colStr = "CSOA",
   nPairs = 100,
   pvalThr = 0.05,
-  osMethod = "log",
+  orMethod = "conn",
+  ofMethod = "saddle",
+  osMethod = "minmax",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
 )
@@ -23,9 +25,9 @@ for which cell sets will be computed}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 
-\item{nPairs}{Number of overlaps that will be retained}
-
 \item{pvalThr}{p-value threshold}
+
+\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

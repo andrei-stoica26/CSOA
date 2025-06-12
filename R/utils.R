@@ -23,8 +23,8 @@ NULL
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   df <- df[order(df[[colStr]]), ]
-  df$pval_adj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
-  df <- subset(df, pval_adj < pvalThr)
+  df$pvalAdj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
+  df <- subset(df, pvalAdj < pvalThr)
   return(df)
 }
 
@@ -63,6 +63,35 @@ cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
 
+
+#' Find the connectivity of each gene
+#'
+#' This function finds the connectivity of each gene from an overlap data frame
+#' ranked using p-values and recorded-over-expected ratios
+#'
+#' @param overlapDF Overlap data frame with the pvalRank and ratioRank columns
+#' @param asRanks Whether to replace connectivity scores by ranks
+#'
+#' @return A data frame with genes involved in the overlaps as rownames, and two
+#' columns, corresponding to connectivity ranks (by default) or scores (if
+#' asRanks is set to FALSE) for both p-value and ratio
+#'
+#' @export
+#'
+geneConnectivity <- function(overlapDF, asRanks = TRUE){
+  genes <- overlapGenes(overlapDF)
+  df <- data.table::transpose(data.frame(lapply(genes, function(gene){
+    geneDF <- subset(overlapDF, gene1 == gene | gene2 == gene)
+    return(c(sum(nrow(overlapDF) + 1 - geneDF$pvalRank), sum(nrow(overlapDF) + 1 - geneDF$ratioRank)))
+  })))
+  rownames(df) <- genes
+  colnames(df) <- c('connPvalRank', 'connRatioRank')
+  if (asRanks){
+    df <- rankReplace(df, 'connPvalRank')
+    df <- rankReplace(df, 'connRatioRank')
+  }
+  return(df)
+}
 
 #' Convert a matrix to a data frame suitable for basicHeatmap
 #'
@@ -166,6 +195,27 @@ qGrab <- function(qsFile){
   res <- qread(qsFile)
   file.remove(qsFile)
   return(res)
+}
+
+#' Replace a column by its rank
+#'
+#' This functions orders a data frame by the values in a column and replaces
+#' them by the resulting rank.
+#'
+#' @param df A data frame
+#' @param colName The name of a numeric column
+#' @param isPosRank Whether the data frame should be ordered decreasingly (TRUE)
+#' or increasingly (FALSE) by colName
+#'
+#' @return The data frame ordered by colName (decreasingly by default), in which the original
+#' values of colName have been replaced by ranks
+#'
+#' @export
+#'
+rankReplace <- function(df, colName, isPosRank=TRUE){
+  df <- df[order(df[, colName], decreasing=isPosRank), ]
+  df[, colName] <- seq_len(nrow(df))
+  return(df)
 }
 
 #' Applies kerntools minmax-normalization on a vector using

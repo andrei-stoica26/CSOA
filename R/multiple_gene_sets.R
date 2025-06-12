@@ -20,12 +20,14 @@
 #' @export
 #'
 scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs = 100, pvalThr = 0.05,
-                               osMethod = 'log', pairFileTemplate = NULL, keepOverlapOrder = FALSE){
+                               orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
+                               pairFileTemplate = NULL, keepOverlapOrder = FALSE){
   if(!is.null(pairFileTemplate))
     pairFileName <- paste0(pairFileTemplate, geneSetNames) else pairFileName <- NULL
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], nPairs, pvalThr, osMethod,
+    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], nPairs, pvalThr,
+                          orMethod, ofMethod, osMethod,
                           pairFileName[i], keepOverlapOrder)
     return(scoreDF)
   })
@@ -51,14 +53,17 @@ scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, nP
 #' @export
 #'
 runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, nPairs = 100, overlapFileName = NULL,
-                            pvalThr = 0.05, osMethod = 'log', pairFileTemplate = NULL, keepOverlapOrder = FALSE){
+                            pvalThr = 0.05, orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
+                            pairFileTemplate = NULL,
+                            keepOverlapOrder = FALSE){
   geneSets <- lapply(geneSets, sort)
   setPairs <- lapply(geneSets, getPairs)
   pairs <- Reduce(union, setPairs)
   genes <- Reduce(union, geneSets)
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs, overlapFileName)
-  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs, pvalThr, osMethod,
+  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs, pvalThr,
+                                orMethod, ofMethod, osMethod,
                                 pairFileTemplate, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

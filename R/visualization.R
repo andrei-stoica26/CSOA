@@ -269,7 +269,7 @@ basicHeatmap <- function(mat, aesNames, title = 'Gene expression heatmap', axisT
 #'
 #' @export
 #'
-rankScorePlot <- function(df, title, lineColor = 'mediumpurple4', pointColor = 'red', pointSize = 1, axisTitleSize = 10){
+rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4', pointColor = 'red', pointSize = 1, axisTitleSize = 10){
   p <- ggplot(df, aes(x = rank, y = score)) + geom_line(color = lineColor) + geom_point(color = pointColor, size = pointSize) +
     labs(x = 'Overlap rank', y = 'Overlap score')
   p <-  p <- p + theme_classic() + theme(axis.text.x = element_text(size = axisTitleSize - 1),

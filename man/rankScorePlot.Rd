@@ -6,7 +6,7 @@
 \usage{
 rankScorePlot(
   df,
-  title,
+  title = "Rank-score plot",
   lineColor = "mediumpurple4",
   pointColor = "red",
   pointSize = 1,

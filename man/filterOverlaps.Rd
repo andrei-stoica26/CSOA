@@ -4,12 +4,13 @@
 \alias{filterOverlaps}
 \title{Filter cell set overlaps}
 \usage{
-filterOverlaps(overlapDF, nPairs = 100)
+filterOverlaps(overlapDF, firstOutRawRank = NULL)
 }
 \arguments{
 \item{overlapDF}{A ranked overlap data frame}
 
-\item{nPairs}{Number of overlaps that will be retained}
+\item{firstOutRawRank}{The raw aggregate rank of the first overlap that will be
+excluded}
 }
 \value{
 A filtered overlap data frame

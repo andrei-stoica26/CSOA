@@ -4,14 +4,21 @@
 \alias{processOverlaps}
 \title{Process data frame of overlaps of cell sets}
 \usage{
-processOverlaps(overlapDF, nPairs = 100, pvalThr = 0.05, osMethod = "log")
+processOverlaps(
+  overlapDF,
+  nPairs = 100,
+  pvalThr = 0.05,
+  orMethod = "conn",
+  ofMethod = "saddle",
+  osMethod = "minmax"
+)
 }
 \arguments{
 \item{overlapDF}{A data frame created with generate_overlaps}
 
-\item{nPairs}{Number of overlaps that will be retained}
-
 \item{pvalThr}{p-value threshold}
+
+\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

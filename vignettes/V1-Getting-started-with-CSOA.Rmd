@@ -79,7 +79,7 @@ Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seu
 ```{r warning=F}
 seuratObj <- as.Seurat(sceObj)
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
-VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label')
+VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label') + NoLegend()
 ```
 
 Alternatively, CSOA can be run on a `SingleCellExperiment` object. The results will be stored as a column in the object's `colData` matrix:
@@ -162,7 +162,7 @@ patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
 
 Next, we call the `patchworkPlot` function. For creating each subplot, we use again the `VlnPlot` function from `Seurat`.
 
-```{r warning=F, fig.height=8, fig.width=8}
+```{r warning=F, fig.height=6, fig.width=6}
 patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
 ```
 
@@ -203,15 +203,8 @@ seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = 'harmony')
 
 Now we can visualize the CSOA results as feature plots:
 
-```{r message=F, warning=F, fig.height=8, fig.width=8}
+```{r message=F, warning=F, fig.height=6, fig.width=6}
 patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
-```
-
-We can define another `wesanderson`-based color scheme as follows:
-
-```{r message=F, warning=F, fig.height=8, fig.width=8}
-patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label', 
-              wesPal = 'Rushmore1', wesLow = 4, wesHigh = 5)  
 ```
 
 # Session information {-}

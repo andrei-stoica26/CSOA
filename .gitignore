@@ -1,6 +1,7 @@
 .Rbuildignore
 .Rhistory
 .Rproj.user
+R/.recipes.R
 R/.test_code.R
 CSOA.Rproj
 inst/doc

@@ -4,10 +4,12 @@
 \alias{rankOverlaps}
 \title{Rank cell set overlaps}
 \usage{
-rankOverlaps(overlapDF)
+rankOverlaps(overlapDF, orMethod = "conn")
 }
 \arguments{
 \item{overlapDF}{A data frame created with generate_overlaps}
+
+\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 }
 \value{
 A data frame with ranked overlaps
