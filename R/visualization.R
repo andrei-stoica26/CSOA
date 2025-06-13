@@ -256,7 +256,7 @@ basicHeatmap <- function(mat, aesNames, title = 'Gene expression heatmap', axisT
 
 #' Plot a simple heatmap
 #'
-#' This function plots a simple heatmap with clustering but no dendograms
+#' This function plots a simple heatmap with clustering but no dendograms.
 #'
 #' @param df A data frame with rank and score columns
 #' @param title Plot title
@@ -275,6 +275,74 @@ rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurp
   p <-  p <- p + theme_classic() + theme(axis.text.x = element_text(size = axisTitleSize - 1),
                                          axis.text.y = element_text(size = axisTitleSize - 1),
                                          axis.title = element_text(size = axisTitleSize))
+  p <- titlePlot(p, title)
+  return(p)
+}
+
+#' Display the choice of the overlap rank cutoff
+#'
+#' This function plots the raw aggregate rank against the rank while displaying
+#' also the rank ctuoff point, visually resembling a saddle point.
+#'
+#' @param df A ranked overlap data frame
+#' @param pointColor Point color
+#'
+#' @return A ggplot object
+#'
+#' @export
+#'
+rankSaddlePlot <- function(df, title = 'Rank saddle plot', pointColor = 'red'){
+  retainedRawRanks <- df$rawAggRank[df$rawAggRank < firstExcluded(df)]
+  yInt <- max(retainedRawRanks)
+  xInt <- unique(subset(df, rawAggRank == yInt)$rank)
+  nOverlaps <- length(retainedRawRanks)
+  p <- ggplot(df, aes(x = rank, y = rawAggRank)) + geom_point(size = 0.3, color = pointColor) + theme_minimal() +
+    labs(x = 'Overlap rank', y = 'Overlap raw aggregate rank') +
+    geom_hline(yintercept = yInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
+    geom_vline(xintercept = xInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
+    annotate('rect', xmin=0, xmax=xInt, ymin=0, ymax=yInt, alpha=0.2, fill='purple') +
+    annotate("text", x=xInt / 2, y=yInt / 2, label=nOverlaps)
+  p <- titlePlot(p, title)
+  return(p)
+}
+
+#' Plot the selection of overlaps
+#'
+#' This plots shows the process of selecting the overlap rank cutoff, showcasing
+#' the convex hull of the points representing the frequencies of each rank.
+#'
+#' @param df A ranked overlap data frame
+#' @param title Point title
+#'
+#' @return A ggplot object
+#'
+#' @export
+#'
+overlapCutoffPlot <- function(df, title = 'Overlap cutoff plot'){
+  freqDF <- data.frame(rank = unique(df$rank), freq = as.numeric(table(df$rank)))
+  maxFreq <- max(freqDF$freq)
+  freqSub <- subset(freqDF, freq == maxFreq)
+  xInt <- mean(c(max(freqSub$rank), min(freqSub$rank)))
+
+  xMin <- min(freqDF$rank)
+  xMax <- max(freqDF$rank)
+  yMin <- min(freqDF$freq)
+  yMax <- max(freqDF$freq)
+
+  hull <- upperConvexHull(freqDF)
+  hullSegments <- pointsToSegments(hull)
+  plg <- hullToPolygon(hull, xInt)
+  plgOut <- hullToPolygon(hull, xInt, 'out')
+
+  p <- ggplot() +  theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
+    labs(x = 'Overlap rank', y = 'Frequency') +
+    geom_polygon(data = plg, aes(x=rank, y=freq, fill='Accepted overlaps'), alpha = 0.2, ) +
+    geom_polygon(data = plgOut, aes(x=rank, y=freq, fill='Discarded overlaps'), alpha = 0.2) +
+    geom_segment(data = hullSegments, aes(x = x, y = y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
+    geom_point(data = freqDF, aes(rank, freq), color = 'black', size = 1, shape = 24) +
+    scale_fill_manual(values = c('purple', 'gold'), labels = c('Accepted overlaps', 'Discarded overlaps')) +
+    geom_vline(xintercept = xInt, color = 'blue', size = 0.3, linetype = 'dashed') +
+    theme(legend.title = element_blank())
   p <- titlePlot(p, title)
   return(p)
 }

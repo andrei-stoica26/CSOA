@@ -38,6 +38,8 @@ LazyData: true
 RoxygenNote: 7.3.2
 Collate: 
     'compute_cell_scores_tools.R'
+    'convex_hull.R'
+    'gene_degrees.R'
     'gene_modules.R'
     'generate_overlaps_tools.R'
     'generics.R'

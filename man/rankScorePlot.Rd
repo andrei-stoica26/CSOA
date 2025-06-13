@@ -30,5 +30,5 @@ rankScorePlot(
 A ggplot object
 }
 \description{
-This function plots a simple heatmap with clustering but no dendograms
+This function plots a simple heatmap with clustering but no dendograms.
 }

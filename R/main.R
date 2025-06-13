@@ -170,5 +170,3 @@ runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, nPairs = 100, 
                         pairFileName, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }
-
-

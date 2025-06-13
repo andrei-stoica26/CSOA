@@ -92,24 +92,6 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
   return(df)
 }
 
-#' Convert a matrix to a data frame suitable for basicHeatmap
-#'
-#' This function converts a matrix to a long data frame suitable for basicHeatmap
-#'
-#' @param mat A matrix
-#' @param colNames A character vector of size 3 representing the column names
-#' of the output data frame
-#'
-#' @return A data frame suitable for basicHeatmap
-#'
-#' @export
-#'
-heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
-  mat <- cluster_matrix(mat)
-  df <- reshape2::melt(mat, varnames = colNames[1:2], value.name = colNames[3])
-  return(df)
-}
-
 #' Get all genes from an overlap data frame
 #'
 #' This function gets all genes from an overlap data frame
