@@ -160,7 +160,7 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', nPairs = 100, pva
 #' @export
 #'
 runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, nPairs = 100, overlapFileName = NULL,
-                    pvalThr = 0.05, orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
+                    pvalThr = 0.05, orMethod = 'conn', ofMethod = 'saddle', osMethod = 'log',
                     pairFileName = NULL, keepOverlapOrder = FALSE){
   if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
     stop('genes must be a character vector of length >= 2')

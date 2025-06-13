@@ -4,15 +4,14 @@
 \alias{rankReplace}
 \title{Replace a column by its rank}
 \usage{
-rankReplace(df, colName, isPosRank = TRUE)
+rankReplace(df, colName, rankSign = 1)
 }
 \arguments{
 \item{df}{A data frame}
 
 \item{colName}{The name of a numeric column}
 
-\item{isPosRank}{Whether the data frame should be ordered decreasingly (TRUE)
-or increasingly (FALSE) by colName}
+\item{rankSign}{1 to rank the column increasingly, -1 to rank it decreasingly}
 }
 \value{
 The data frame ordered by colName (decreasingly by default), in which the original

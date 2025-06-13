@@ -15,13 +15,15 @@ NULL
 #' @export
 #'
 rankOverlaps <- function(overlapDF, orMethod = 'conn'){
+  overlapDF <- overlapDF[order(overlapDF$pval), ]
   overlapDF$pvalRank <- rank(overlapDF$pval, ties.method = 'min')
-  overlapDF$ratioRank <- rank(overlapDF$ratio, ties.method = 'min')
+  overlapDF <- overlapDF[order(overlapDF$ratio, decreasing = T), ]
+  overlapDF$ratioRank <- rank(-overlapDF$ratio, ties.method = 'min')
   if (!orMethod %in% c('conn', 'basic'))
     stop('Unrecognized overlap ranking method: see ?CSOA::rankOverlaps for supported methods')
   if (orMethod == 'conn'){
-    geneConn <- geneConnectivity(overlapDF)
     message('Connectivity option selected for the overlap ranking method.')
+    geneConn <- geneBestEdgeRank(overlapDF)
     overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] + geneConn[overlapDF$gene2, 1]) / 2
     overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] + geneConn[overlapDF$gene2, 2]) / 2
     overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2

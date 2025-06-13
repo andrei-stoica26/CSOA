@@ -14,7 +14,7 @@ runCSOA(
   pvalThr = 0.05,
   orMethod = "conn",
   ofMethod = "saddle",
-  osMethod = "minmax",
+  osMethod = "log",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
 )

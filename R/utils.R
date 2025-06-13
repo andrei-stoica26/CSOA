@@ -63,7 +63,6 @@ cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
 
-
 #' Find the connectivity of each gene
 #'
 #' This function finds the connectivity of each gene from an overlap data frame
@@ -78,11 +77,11 @@ getPairs <- function(v)
 #'
 #' @export
 #'
-geneConnectivity <- function(overlapDF, asRanks = TRUE){
+geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
   genes <- overlapGenes(overlapDF)
   df <- data.table::transpose(data.frame(lapply(genes, function(gene){
     geneDF <- subset(overlapDF, gene1 == gene | gene2 == gene)
-    return(c(sum(nrow(overlapDF) + 1 - geneDF$pvalRank), sum(nrow(overlapDF) + 1 - geneDF$ratioRank)))
+    return(c(min(geneDF$pvalRank), min(geneDF$ratioRank)))
   })))
   rownames(df) <- genes
   colnames(df) <- c('connPvalRank', 'connRatioRank')
@@ -204,19 +203,20 @@ qGrab <- function(qsFile){
 #'
 #' @param df A data frame
 #' @param colName The name of a numeric column
-#' @param isPosRank Whether the data frame should be ordered decreasingly (TRUE)
-#' or increasingly (FALSE) by colName
+#' @param rankSign 1 to rank the column increasingly, -1 to rank it decreasingly
 #'
 #' @return The data frame ordered by colName (decreasingly by default), in which the original
 #' values of colName have been replaced by ranks
 #'
 #' @export
 #'
-rankReplace <- function(df, colName, isPosRank=TRUE){
-  df <- df[order(df[, colName], decreasing=isPosRank), ]
-  df[, colName] <- seq_len(nrow(df))
+rankReplace <- function(df, colName, rankSign = 1){
+  df <- df[order(df[, colName], decreasing = rankSign - 1), ]
+  df[, colName] <- rank(rankSign * df[, colName], ties.method = 'min')
   return(df)
 }
+
+as.logical(0)
 
 #' Applies kerntools minmax-normalization on a vector using
 #'
