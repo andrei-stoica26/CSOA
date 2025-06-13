@@ -12,13 +12,15 @@
 #'
 #'
 upperConvexSemihullIndices <- function(df, valIndex = 2){
-  maxVal <- 0
-  lineIndices <- c()
-  for (i in seq_len(nrow(df)))
-    if (df[i, valIndex] > maxVal){
-      lineIndices <- c(lineIndices, i)
-      maxVal <- df[i, valIndex]
-    }
+  lineIndices <- which.min(df[, valIndex])
+  maxVal <- df[lineIndices, valIndex]
+  if (nrow(df) > 1){
+    for (i in seq_len(nrow(df)))
+      if (df[i, valIndex] > maxVal){
+        lineIndices <- c(lineIndices, i)
+        maxVal <- df[i, valIndex]
+      }
+  }
   return(lineIndices)
 }
 
@@ -40,7 +42,7 @@ upperConvexHull <- function(df, xIndex = 1, valIndex = 2){
   df <- df[order(df[, xIndex], decreasing=TRUE), ]
   rightIndices <- nrow(df) + 1 - rev(upperConvexSemihullIndices(df, valIndex))
   if (rightIndices[1] == leftIndices[length(leftIndices)])
-    leftIndices <- leftIndices(seq_len(length(leftIndices) - 1))
+    leftIndices <- leftIndices[seq_len(length(leftIndices) - 1)]
   df <- df[order(df[, xIndex]), ]
   return(df[c(leftIndices, rightIndices), ])
 }

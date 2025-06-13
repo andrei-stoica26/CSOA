@@ -2,7 +2,7 @@
 #'@importFrom ggeasy easy_remove_axes
 #'@importFrom ggforce geom_circle
 #'@importFrom ggnewscale new_scale_color new_scale_fill
-#'@importFrom ggplot2 aes coord_fixed element_blank element_text geom_line geom_point geom_tile ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual scale_x_continuous scale_y_continuous theme theme_classic theme_minimal theme_void
+#'@importFrom ggplot2 aes annotate coord_fixed element_blank element_text geom_hline geom_line geom_point geom_polygon geom_segment geom_tile geom_vline ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual scale_x_continuous scale_y_continuous theme theme_classic theme_minimal theme_void xlim ylim
 #'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
