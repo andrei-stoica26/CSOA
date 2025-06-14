@@ -19,16 +19,14 @@
 #'
 #' @export
 #'
-scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs = 100, pvalThr = 0.05,
-                               orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
-                               pairFileTemplate = NULL, keepOverlapOrder = FALSE){
+scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, pvalThr = 0.05,
+                               osMethod = 'log', pairFileTemplate = NULL, keepOverlapOrder = FALSE){
   if(!is.null(pairFileTemplate))
     pairFileName <- paste0(pairFileTemplate, geneSetNames) else pairFileName <- NULL
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], nPairs, pvalThr,
-                          orMethod, ofMethod, osMethod,
-                          pairFileName[i], keepOverlapOrder)
+    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], pvalThr, osMethod, pairFileName[i],
+                          keepOverlapOrder)
     return(scoreDF)
   })
   allScoresDF <- Reduce(cbind, scoreDFList)
@@ -52,9 +50,8 @@ scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, nP
 #'
 #' @export
 #'
-runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, nPairs = 100, overlapFileName = NULL,
-                            pvalThr = 0.05, orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
-                            pairFileTemplate = NULL,
+runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, overlapFileName = NULL,
+                            pvalThr = 0.05, osMethod = 'log',pairFileTemplate = NULL,
                             keepOverlapOrder = FALSE){
   geneSets <- lapply(geneSets, sort)
   setPairs <- lapply(geneSets, getPairs)
@@ -62,8 +59,7 @@ runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, nPai
   genes <- Reduce(union, geneSets)
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs, overlapFileName)
-  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, nPairs, pvalThr,
-                                orMethod, ofMethod, osMethod,
-                                pairFileTemplate, keepOverlapOrder)
+  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, pvalThr,
+                                osMethod, pairFileTemplate, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

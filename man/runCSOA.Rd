@@ -9,11 +9,8 @@ runCSOA(
   genes,
   colStr = "CSOA",
   percentile = 90,
-  nPairs = 100,
   overlapFileName = NULL,
   pvalThr = 0.05,
-  orMethod = "conn",
-  ofMethod = "saddle",
   osMethod = "log",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
@@ -32,8 +29,6 @@ runCSOA(
 will be saved. Default is NULL (the overlap data frame will not be saved)}
 
 \item{pvalThr}{p-value threshold}
-
-\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

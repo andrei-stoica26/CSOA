@@ -4,15 +4,10 @@
 \alias{firstExcluded}
 \title{Find the raw aggregate rank of the highest non-top overlap}
 \usage{
-firstExcluded(overlapDF, ofMethod = "saddle", nPairs = 100)
+firstExcluded(overlapDF)
 }
 \arguments{
 \item{overlapDF}{A ranked overlap data frame}
-
-\item{ofMethod}{Overlap filtering method. Options are 'saddle' and 'preset'}
-
-\item{nPairs}{Number of overlaps that will be retained if ofMethod = preset
-Ignored if ofMethod = saddle}
 }
 \value{
 A numeric value

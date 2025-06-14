@@ -4,7 +4,7 @@
 \alias{scoreOverlaps}
 \title{Score cell set overlaps}
 \usage{
-scoreOverlaps(overlapDF, osMethod = "minmax", firstOutRawRank = NULL)
+scoreOverlaps(overlapDF, osMethod = "log", firstOutRawRank = NULL)
 }
 \arguments{
 \item{overlapDF}{A filtered overlap data frame}

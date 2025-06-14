@@ -9,11 +9,8 @@ scoreCellsMultiple(
   overlapDF,
   setPairs,
   geneSetNames,
-  nPairs = 100,
   pvalThr = 0.05,
-  orMethod = "conn",
-  ofMethod = "saddle",
-  osMethod = "minmax",
+  osMethod = "log",
   pairFileTemplate = NULL,
   keepOverlapOrder = FALSE
 )
@@ -29,8 +26,6 @@ for which cell sets will be computed}
 \item{geneSetNames}{Character vector of names of gene sets}
 
 \item{pvalThr}{p-value threshold}
-
-\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

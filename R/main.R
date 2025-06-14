@@ -46,12 +46,11 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL, overlapF
 #'
 #' @export
 #'
-processOverlaps <- function(overlapDF, nPairs = 100, pvalThr = 0.05,
-                            orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax'){
+processOverlaps <- function(overlapDF, nPairs = 100, pvalThr = 0.05, osMethod = 'log'){
   if (nrow(overlapDF) > 1)
     overlapDF <- byCorrectDF(overlapDF, pvalThr) else overlapDF$pval_adj <- overlapDF$pval
-  overlapDF <- rankOverlaps(overlapDF, orMethod)
-  firstOutRawRank <- firstExcluded(overlapDF, ofMethod, nPairs)
+  overlapDF <- rankOverlaps(overlapDF)
+  firstOutRawRank <- firstExcluded(overlapDF)
   overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
   overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
   return(overlapDF)
@@ -131,10 +130,9 @@ storeCellScores.matrix <- function(scObj, scoreDF, ...)
 #'
 #' @export
 #'
-scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', nPairs = 100, pvalThr = 0.05,
-                       orMethod = 'conn', ofMethod = 'saddle', osMethod = 'minmax',
+scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05, osMethod = 'log',
                        pairFileName = NULL, keepOverlapOrder = FALSE){
-  overlapDF <- processOverlaps(overlapDF, nPairs, pvalThr, orMethod, ofMethod, osMethod)
+  overlapDF <- processOverlaps(overlapDF, nPairs, pvalThr, osMethod)
   message('Normalizing expression matrix by rows...')
   genes <- overlapGenes(overlapDF)
   normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
@@ -159,14 +157,13 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', nPairs = 100, pva
 #'
 #' @export
 #'
-runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, nPairs = 100, overlapFileName = NULL,
-                    pvalThr = 0.05, orMethod = 'conn', ofMethod = 'saddle', osMethod = 'log',
-                    pairFileName = NULL, keepOverlapOrder = FALSE){
+runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, overlapFileName = NULL, pvalThr = 0.05,
+                    osMethod = 'log', pairFileName = NULL, keepOverlapOrder = FALSE){
   if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
     stop('genes must be a character vector of length >= 2')
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs = NULL, overlapFileName)
-  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, nPairs, pvalThr, orMethod, ofMethod, osMethod,
+  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, osMethod,
                         pairFileName, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

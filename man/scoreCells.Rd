@@ -8,11 +8,8 @@ scoreCells(
   geneSetExp,
   overlapDF,
   colStr = "CSOA",
-  nPairs = 100,
   pvalThr = 0.05,
-  orMethod = "conn",
-  ofMethod = "saddle",
-  osMethod = "minmax",
+  osMethod = "log",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
 )
@@ -26,8 +23,6 @@ for which cell sets will be computed}
 \item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{pvalThr}{p-value threshold}
-
-\item{orMethod}{The overlap ranking method. Options are 'conn' and 'basic'}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

@@ -8,28 +8,22 @@ NULL
 #' p-value rank and the ratio of shared cells over expected shared cells rank.
 #'
 #' @param overlapDF A data frame created with generate_overlaps
-#' @param orMethod The overlap ranking method. Options are 'conn' and 'basic'
 #'
 #' @return A data frame with ranked overlaps
 #'
 #' @export
 #'
-rankOverlaps <- function(overlapDF, orMethod = 'conn'){
+rankOverlaps <- function(overlapDF){
   overlapDF <- overlapDF[order(overlapDF$pval), ]
   overlapDF$pvalRank <- rank(overlapDF$pval, ties.method = 'min')
   overlapDF <- overlapDF[order(overlapDF$ratio, decreasing = T), ]
   overlapDF$ratioRank <- rank(-overlapDF$ratio, ties.method = 'min')
-  if (!orMethod %in% c('conn', 'basic'))
-    stop('Unrecognized overlap ranking method: see ?CSOA::rankOverlaps for supported methods')
-  if (orMethod == 'conn'){
-    message('Connectivity option selected for the overlap ranking method.')
-    geneConn <- geneBestEdgeRank(overlapDF)
-    overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] + geneConn[overlapDF$gene2, 1]) / 2
-    overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] + geneConn[overlapDF$gene2, 2]) / 2
-    overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2
-  }
-  if (orMethod == 'basic')
-    overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2
+
+  geneConn <- geneBestEdgeRank(overlapDF)
+  overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] + geneConn[overlapDF$gene2, 1]) / 2
+  overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] + geneConn[overlapDF$gene2, 2]) / 2
+  overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2
+
   overlapDF$rank <- rank(overlapDF$rawAggRank, ties.method = 'min')
   overlapDF <- overlapDF[order(overlapDF$rank), ]
   return(overlapDF)
@@ -40,31 +34,16 @@ rankOverlaps <- function(overlapDF, orMethod = 'conn'){
 #' This function finds the raw aggregate rank of the highest non-top overlap.
 #'
 #' @param overlapDF A ranked overlap data frame
-#' @param ofMethod Overlap filtering method. Options are 'saddle' and 'preset'
-#' @param nPairs Number of overlaps that will be retained if ofMethod = preset
-#' Ignored if ofMethod = saddle
 #'
 #' @return A numeric value
 #'
 #' @export
 #'
-firstExcluded <- function(overlapDF, ofMethod = 'saddle', nPairs = 100){
-  if (!ofMethod %in% c('saddle', 'preset'))
-    stop('Unrecognized overlap ranking method: see ?CSOA::rankOverlaps for supported methods')
-  if(ofMethod == 'saddle'){
-    freqDF <- data.frame(rank = unique(overlapDF$rank), freq = as.numeric(table(overlapDF$rank)))
-    freqSub <- subset(freqDF, freq == max(freq))
-    rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
-  }
-  if(ofMethod == 'preset'){
-    if(nPairs > nrow(overlapDF))
-      message(paste0('Will return only ', nrow(overlapDF), ' significant overlaps. More are not available.'))
-    lastPos <- max(which(overlapDF$rank == overlapDF$rank[nPairs]))
-    if (lastPos > nPairs)
-      message('Will return more overlaps (', lastPos, ') than the requested ', nPairs, ' because overlaps between these positions have equal ranks.')
+firstExcluded <- function(overlapDF){
+  freqDF <- data.frame(rank = unique(overlapDF$rank), freq = as.numeric(table(overlapDF$rank)))
+  freqSub <- subset(freqDF, freq == max(freq))
+  rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
 
-    rankCutoff <- overlapDF$rank[nPairs]
-  }
   outDF <- subset(overlapDF, rank > rankCutoff)
   if (nrow(outDF))
     return(outDF$rawAggRank[1])
@@ -108,13 +87,21 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #'
 #' @export
 #'
-scoreOverlaps <- function(overlapDF, osMethod = 'minmax', firstOutRawRank = NULL){
+scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
   if (nrow(overlapDF) == 1){
     overlapDF$score <- 1
     return(overlapDF)
   }
   if(!osMethod %in% c('log', 'minmax'))
     stop('Unrecognized overlap scoring method. See ?CSOA::scoreOverlaps for the accepted methods')
+
+  if (osMethod == 'log'){
+    rankVals <- unique(overlapDF$rank)
+    logVals <- log(seq(exp(1), 1, length.out = length(rankVals) + 1))[seq_along(rankVals)]
+    names(logVals) <- rankVals
+    overlapDF$score <- logVals[as.character(overlapDF$rank)]
+  }
+
   if (osMethod == 'minmax'){
     rawRank <- overlapDF$rawAggRank
     if (!is.null(firstOutRawRank))
@@ -122,8 +109,7 @@ scoreOverlaps <- function(overlapDF, osMethod = 'minmax', firstOutRawRank = NULL
         rawRank <- c(rawRank, 2 * rawRank[nrow(overlapDF)] - rawRank[nrow(overlapDF) - 1])
     overlapDF$score <- (1 - vMinmax(rawRank))[overlapDF$rank]
   }
-  if (osMethod == 'log')
-    overlapDF$score <- log(seq(exp(1), 1, length.out = nrow(overlapDF) + 1)[overlapDF$rank])
+
   return(overlapDF)
 }
 
