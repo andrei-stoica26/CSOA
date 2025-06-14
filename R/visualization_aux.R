@@ -16,6 +16,8 @@ NULL
 #' @export
 #'
 heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
+  if (!is.matrix(mat))
+    stop('mat must be a matrix')
   mat <- cluster_matrix(mat)
   df <- reshape2::melt(mat, varnames = colNames[1:2], value.name = colNames[3])
   return(df)
@@ -56,6 +58,10 @@ networkPlotDF <- function(overlapDF, rankCol = 'rank', edgeScale = 2){
 #'
 #' @export
 #'
-
-
+cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
+  df <- data.table::transpose(data.frame(lapply(cellSets, function(x) as.numeric(allCells %in% x))))
+  rownames(df) <- names(cellSets)
+  colnames(df) <- allCells
+  return(as.matrix(df))
+}
 

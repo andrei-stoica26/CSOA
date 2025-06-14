@@ -239,7 +239,7 @@ birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', point
 #'
 #' @export
 #'
-basicHeatmap <- function(mat, aesNames, title = 'Gene expression heatmap', axisTextSize = 7, palType = 'fillCont', ...){
+basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap', axisTextSize = 7, palType = 'fillCont', ...){
   df <- heatmapDF(mat, aesNames)
   p <- ggplot(df, aes(x = .data[[aesNames[2]]], y = .data[[aesNames[1]]], fill = .data[[aesNames[3]]])) +
     geom_tile() +

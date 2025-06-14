@@ -6,8 +6,8 @@
 \usage{
 basicHeatmap(
   mat,
-  aesNames,
-  title = "Gene expression heatmap",
+  aesNames = c("x", "y", "fill"),
+  title = "Heatmap",
   axisTextSize = 7,
   palType = "fillCont",
   ...
