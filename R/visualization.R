@@ -204,20 +204,16 @@ geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutof
 #' @param title Plot title
 #' @param pointColor Point color
 #' @param pointSize Point size
-#' @param labelSize Label size
 #'
 #' @return A ggplot object
 #'
 #' @export
 #'
-birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', pointColor = 'deeppink3',
-                       pointSize = 1.5, labelSize = 3.5){
-  pairScoreDF$overlaps <- paste0(pairScoreDF$gene1, '_', pairScoreDF$gene2)
+birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', pointColor = 'deeppink3', pointSize = 0.5){
   p <- ggplot(pairScoreDF, aes(overlapRank, pairRank)) + theme_classic() +
-    geom_point(color = pointColor, size =  pointSize) +
-    geom_text_repel(aes(label = overlaps), size = labelSize) +
-    scale_x_continuous(trans = 'reverse') +
-    scale_y_continuous(trans = 'reverse') +
+    geom_point(color = pointColor, size=pointSize) +
+    scale_x_continuous(trans='reverse') +
+    scale_y_continuous(trans='reverse') +
     labs(x='Overlap rank', y='Gene pair rank')
   p <- titlePlot(p, title)
   return(p)
@@ -285,6 +281,7 @@ rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurp
 #' also the rank ctuoff point, visually resembling a saddle point.
 #'
 #' @param df A ranked overlap data frame
+#' @param title Plot title
 #' @param pointColor Point color
 #'
 #' @return A ggplot object
@@ -312,7 +309,7 @@ rankSaddlePlot <- function(df, title = 'Rank saddle plot', pointColor = 'red'){
 #' the convex hull of the points representing the frequencies of each rank.
 #'
 #' @param df A ranked overlap data frame
-#' @param title Point title
+#' @param title Plot title
 #'
 #' @return A ggplot object
 #'

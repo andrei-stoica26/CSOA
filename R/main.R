@@ -39,6 +39,8 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL, overlapF
 #' @inheritParams rankOverlaps
 #' @inheritParams filterOverlaps
 #' @inheritParams byCorrectDF
+#' @param jaccardCutoff A cutoff used in the filtering of edges with low Jaccard
+#' scores. NULL by default (no filtering of such edges will be performed).
 #' @inheritParams scoreOverlaps
 #'
 #' @return A data frame consisting of filtered, ranked and scored cell sets
@@ -46,12 +48,16 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL, overlapF
 #'
 #' @export
 #'
-processOverlaps <- function(overlapDF, nPairs = 100, pvalThr = 0.05, osMethod = 'log'){
+processOverlaps <- function(overlapDF, pvalThr = 0.05, jaccardCutoff = NULL, osMethod = 'log'){
   if (nrow(overlapDF) > 1)
     overlapDF <- byCorrectDF(overlapDF, pvalThr) else overlapDF$pval_adj <- overlapDF$pval
   overlapDF <- rankOverlaps(overlapDF)
   firstOutRawRank <- firstExcluded(overlapDF)
   overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+  if (!is.null(jaccardCutoff)){
+    overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
+    firstOutRawRank <- NULL
+  }
   overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
   return(overlapDF)
 }
@@ -93,6 +99,9 @@ storeCellScores.default <- function(scObj, scoreDF, ...)
 #' @export
 #'
 storeCellScores.Seurat <- function(scObj, scoreDF, ...){
+  for (colName in colnames(scoreDF))
+    if (colName %in% colnames(scObj@meta.data))
+      scObj@meta.data[[colName]] <- c()
   scObj@meta.data <- cbind(scObj@meta.data, scoreDF)
   return(scObj)
 }
@@ -103,6 +112,9 @@ storeCellScores.Seurat <- function(scObj, scoreDF, ...){
 #' @export
 #'
 storeCellScores.SingleCellExperiment <- function(scObj, scoreDF, altExpName = 'CSOA', ...){
+  for (colName in colnames(scoreDF))
+    if (colName %in% colnames(colData(scObj)))
+      colData(scObj)[[colName]] <- c()
   colData(scObj) <- cbind(colData(scObj), scoreDF)
   return(scObj)
 }
@@ -130,9 +142,10 @@ storeCellScores.matrix <- function(scObj, scoreDF, ...)
 #'
 #' @export
 #'
-scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05, osMethod = 'log',
-                       pairFileName = NULL, keepOverlapOrder = FALSE){
-  overlapDF <- processOverlaps(overlapDF, nPairs, pvalThr, osMethod)
+scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05,
+                       jaccardCutoff = NULL, osMethod = 'log', pairFileName = NULL,
+                       keepOverlapOrder = FALSE){
+  overlapDF <- processOverlaps(overlapDF, pvalThr, jaccardCutoff, osMethod)
   message('Normalizing expression matrix by rows...')
   genes <- overlapGenes(overlapDF)
   normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
@@ -158,12 +171,12 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05, o
 #' @export
 #'
 runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90, overlapFileName = NULL, pvalThr = 0.05,
-                    osMethod = 'log', pairFileName = NULL, keepOverlapOrder = FALSE){
+                    jaccardCutoff = NULL, osMethod = 'log', pairFileName = NULL, keepOverlapOrder = FALSE){
   if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
     stop('genes must be a character vector of length >= 2')
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs = NULL, overlapFileName)
-  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, osMethod,
+  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, jaccardCutoff, osMethod,
                         pairFileName, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

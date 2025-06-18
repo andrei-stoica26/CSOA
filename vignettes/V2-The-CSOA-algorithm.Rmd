@@ -109,10 +109,10 @@ identical(cso, cso2)
 
 # Identifying and scoring top overlaps
 
-The output of `cellSetsOverlaps` can be made ready for scoring in a single call, using `processOverlaps`. We use the default value of `100` for `nPairs`:
+The output of `cellSetsOverlaps` can be made ready for scoring in a single call, using `processOverlaps`:
 
 ```{r}
-po <- processOverlaps(cso, nPairs=100)
+po <- processOverlaps(cso)
 head(po)
 ```
 
@@ -158,7 +158,7 @@ The data frame has now gained four additional columns: `pvalRank`, `ratioRank`, 
 Before filtering the overlap data frame, we will call the `firstExcluded` function to store the highest raw aggregate rank recorded among the overlaps that will **not** be retained as top overlaps. This information is useful, though not required, if the `minmax` option is chosen for the subsequent `scoreOverlaps` run. If the default `log` option is chosen instead, the output of `firstExcluded` is not used.
 
 ```{r}
-firstOutRank <- firstExcluded(po2, nPairs=100)
+firstOutRank <- firstExcluded(po2)
 v <- c(po2$rawAggRank[100], firstOutRank)
 names(v) <- c('lastInRank', 'firstOutRank')
 v
@@ -168,7 +168,7 @@ Thus, the raw aggregate rank of overlap `100` (the lowest included one) is `133`
 
 We are now ready to run `filterOverlaps`:
 ```{r}
-po2 <- filterOverlaps(po2, nPairs=100)
+po2 <- filterOverlaps(po2)
 dim(po2)
 ```
 The function selects the top `nPairs` overlaps in the data frame, or, if the data frame has fewer than `nPairs` overlaps, it selects as many as there are available—so long as there is at least one overlap in the data frame.
@@ -248,16 +248,6 @@ rownames(pcPairScores)[1:10]
 colnames(pcPairScores)[1:10]
 ```
 
-Next, we will plot a heatmap displaying these scores.
-
-```{r, fig.height=9, fig.width=8}
-basicHeatmap(as.matrix(pcPairScores), c('GenePair', 'Cell', 'Score'),
-             title = 'Gene pair scores',
-             axisTextSize = 6,
-             palType = 'fillCont')
-```
-
-
 Next, we compute the CSOA score for each cell by summing the columns of `pcPairScores` and performing minmax normalization to bring the results to `[0, 1]`. We use the `computePCSetScores` function for this task, with the cell names taken from the `geneSetExp` expression matrix. The result is a data frame with a score column:
 
 ```{r}
@@ -271,7 +261,6 @@ To attach the scores to the `Seurat` object, we run `storeCellScores`:
 seuratObj <- storeCellScores(seuratObj, df)
 VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label')
 ```
-
 
 # The usage of scoring wrappers
 

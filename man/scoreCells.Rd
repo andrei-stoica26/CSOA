@@ -9,6 +9,7 @@ scoreCells(
   overlapDF,
   colStr = "CSOA",
   pvalThr = 0.05,
+  jaccardCutoff = NULL,
   osMethod = "log",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
@@ -23,6 +24,9 @@ for which cell sets will be computed}
 \item{colStr}{The name of the column where CSOA results will be stored}
 
 \item{pvalThr}{p-value threshold}
+
+\item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
+scores. NULL by default (no filtering of such edges will be performed).}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
 and 'minmax'}

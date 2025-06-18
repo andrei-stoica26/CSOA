@@ -59,7 +59,7 @@ networkPlotDF <- function(overlapDF, rankCol = 'rank', edgeScale = 2){
 #' @export
 #'
 cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
-  df <- data.table::transpose(data.frame(lapply(cellSets, function(x) as.numeric(allCells %in% x))))
+  df <- data.table::transpose(data.frame(lapply(cellSets, function(x) allCells %in% x)))
   rownames(df) <- names(cellSets)
   colnames(df) <- allCells
   return(as.matrix(df))

@@ -185,7 +185,7 @@ sapply(geneSetNames,
 
 # Feature plot visualization
 
-CSOA provides  `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
+CSOA provides `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
 
 The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette. The colors are chosen using arguments `wesPal` (the name of the palette), `wesLow` (the index of the color chosen for the feature minimum) and `wesHigh` (the index of the color chosen for the feature maximum). Labels of Seurat identity classes are displayed on the plot using the `idClass` argument.
 
