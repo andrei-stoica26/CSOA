@@ -59,7 +59,7 @@ sapply(cellSets, length)
 
 We can now visualize the distribution of the cell sets among all the cells:
 
-```{r}
+```{r, fig.height=6, fig.width=6}
 mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
 basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
              title='Distribution of cell sets among all cells',
@@ -68,20 +68,9 @@ basicHeatmap(mat, c('Gene', 'Cell', 'Presence'),
 
 The cell sets strongly cluster in a small region of the heatmap, which indicates their significant overlap. Since the corresponding genes are markers of a shared cell type identity, this is expected. 
 
-We can also zoom in by running `cellDistribution` without specifying the `allCells` argument, in which case the function will use the union of all cell sets for `allCells`:
-
-```{r}
-mat <- cellDistribution(cellSets)
-basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
-             title='Distribution of cell sets - a closer look',
-             palType='fillDis')
-```
-
 # Assessing overlaps of pairs of cell sets
 
-The next step is calculating the statistical significance of the overlaps of pairs of cell sets by using hypergeometric tests. 
-
-The function designed to this end, `cellSetsOverlaps`, also records the size of each overlap and compares it to the expected size. In addition, the function offers the option of saving its output for further analysis. This choice is particularly useful when analyzing large gene sets, where computing the statistical significance and the recorded-over-expected size for each pair of input genes is the speed bottleneck of the algorithm. If saved, the output of `cellSetsOverlaps` can be used, for instance, to experiment with different choices of parameters (e.g., `nPairs`, the cutoff for the selection of top overlaps,  set at `100` by default).
+The next step is calculating the statistical significance of the overlaps of pairs of cell sets by using hypergeometric tests using the `cellSetsOverlaps` function. The data frame returned by this function can be saved using the `overlapFileName`parameter:
 
 ```{r}
 cso <- cellSetsOverlaps(cellSets, nCells=dim(seuratObj)[2], 
@@ -90,7 +79,8 @@ cso <- cellSetsOverlaps(cellSets, nCells=dim(seuratObj)[2],
 
 **! Note:** The `nCells` argument must be set to the total number of cells in the Seurat object, not to the number of cells in the cell sets.
 
-We can now inspect the output:
+We can now inspect the output using `qGrab`, a wrapper designed around `qs::qread` which deletes a `.qs` file after reading it:
+
 
 ```{r}
 df <- qGrab('acinarOverlaps.qs')
@@ -100,7 +90,7 @@ head(df)
 
 The number of rows (`1081`) equals the number of all possible unordered pairs that can be generated from a list of `47` genes (`47 * 46 / 2 = 1081`).
 
-Users also have the option of performing both steps—creating cell sets and assessing overlaps of pairs of cell sets—in a single call. This can be accomplished through the `generateOverlaps` function:
+To perform both steps—creating cell sets and assessing overlaps of pairs of cell sets—in a single call, the `generateOverlaps` function can be used:
 
 ```{r}
 cso2 <- generateOverlaps(geneSetExp, percentile = 90)
@@ -116,11 +106,13 @@ po <- processOverlaps(cso)
 head(po)
 ```
 
-`processOverlaps` sequentially performs four main steps by calling four helper functions:
+`processOverlaps` sequentially performs five main steps by calling five helper functions:
 
 1. Pre-filtering: `byCorrectDF`
 
 2. Ranking: `rankOverlaps`
+
+3. Identifying filtering cutoff: `firstExcluded`
 
 3. Filtering: `filterOverlaps`
 
@@ -134,19 +126,17 @@ dim(po2)
 head(po2)
 ```
 
-The overlap data frame has gained an additional column (`pval_adj`). Note also that the number of rows has decreased from `1081` to `619` due to the filtering of insignificant overlaps.
+The overlap data frame has gained an additional column (`pvalAdj`). Note also that the number of rows has decreased from `1081` to `619` due to the filtering of insignificant overlaps.
 
 Next, `rankOverlaps` defines a rank using the following steps:
 
-1. A rank based on adjusted p-value is computed.
+1. Two preliminary overlap ranks are computed based on: 1) **adjusted p-value**; 2) **recorded-over-expected size ratio**.
 
-2. A rank based on recorded-over-expected size ratio is computed.
+2. The preliminary ranks are replaced by **connectivity-based ranks**. For each edge corresponding to an overlap, the p-value rank is **replaced by the minimum p-value rank of the vertices neighboring the edge**, and the same for the ratio rank.
 
-3. An aggregate rank is computed as the average of the two ranks.
+3. A raw aggregate rank is computed as the average of the two ranks.
 
-4. The overlaps are ordered increasingly based on the aggregate rank.
-
-5. A new aggregate rank representing the order imposed by the initial aggregate rank is constructed.
+4. A final aggregate rank representing the order imposed by the initial aggregate rank is constructed.
 
 ```{r}
 po2 <- rankOverlaps(po2)
@@ -155,7 +145,19 @@ head(po2)
 
 The data frame has now gained four additional columns: `pvalRank`, `ratioRank`, `rawAggRank` and `rank`.
 
-Before filtering the overlap data frame, we will call the `firstExcluded` function to store the highest raw aggregate rank recorded among the overlaps that will **not** be retained as top overlaps. This information is useful, though not required, if the `minmax` option is chosen for the subsequent `scoreOverlaps` run. If the default `log` option is chosen instead, the output of `firstExcluded` is not used.
+We can now select the overlaps that will be retained for score calculation. CSOA uses a geometric approach: it plots the frequency of each raw aggregate rank over the number of overlaps, and constructs the upper convex hull of the resulting points. Subsequently, CSOA selects overlaps on the left of the region delineated by the top of the convex hull as top overlaps:
+
+```{r, fig.height=5, fig.width=5}
+overlapCutoffPlot(po2)
+```
+
+Conceptually, this correspond to what could be labelled as a saddled point in the graph of ranks:
+
+```{r, fig.height=5, fig.width=5}
+rankSaddlePlot(po2)
+```
+
+Before the overlaps are filtered, the `firstExcluded` function is used to store the highest raw aggregate rank recorded among the overlaps that will **not** be retained among the top overlaps. This information is useful, though not required, if the `minmax` option is chosen for the subsequent `scoreOverlaps` run. If the default `log` option is chosen instead, the output of `firstExcluded` is not used.
 
 ```{r}
 firstOutRank <- firstExcluded(po2)
@@ -165,6 +167,8 @@ v
 ```
 
 Thus, the raw aggregate rank of overlap `100` (the lowest included one) is `133`, while  the raw aggregate rank of overlap `101` (the highest excluded one) is `134`.
+
+**! Note:** Both `overlapCutoffPlot` and `rankSaddlePlot`, which are not run by `runCSOA`, call `firstExcluded`.
 
 We are now ready to run `filterOverlaps`:
 ```{r}
@@ -313,7 +317,7 @@ dfComputeCellScores <- computeCellScores(po2, normExp,
 
 This parameter saves the output of `computePairScores` as a `.qs` file. Thus, the function can be accessed from any of the three scoring wrappers only by electing to save its output. However, when running `computePairScores` by itself, the `pairFileName` can be left as `NULL` (i.e., the output does not need to be saved).
 
-To access the output of the `cpsOutput.qs` file, we will use `qGrab`, a wrapper designed around `qs::qread` which deletes a `.qs` file after reading it:
+We can now inspect the output:
 
 ```{r}
 df2 <- qGrab('cpsOutput.qs')

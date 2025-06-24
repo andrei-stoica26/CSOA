@@ -15,24 +15,24 @@ networkPlot(
 )
 }
 \arguments{
-\item{overlapDF}{A scored overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
 \item{rankCol}{Name of the rank column}
 
 \item{edgeScale}{Scaling factor used in generating edge weights}
 
-\item{nodePointSize}{Point size of graph nodes}
+\item{nodePointSize}{Point size of graph nodes.}
 
-\item{nodeTextSize}{Text size of graph nodes}
+\item{nodeTextSize}{Text size of graph nodes.}
 
-\item{...}{Additional parameters passed to other functions}
+\item{...}{Additional parameters passed to titlePlot.}
 }
 \value{
-A network plot
+A network plot.
 }
 \description{
-This function interprets the overlaps as edges in the graph and plots the
-graph
+This function plots the graph of the overlap data frame, with genes as vertices
+and overlaps as edges.
 }

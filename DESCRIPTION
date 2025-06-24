@@ -4,7 +4,7 @@ Title: Calculate Per-Cell Gene Set Scores Using Cell Set Overlaps
 Version: 0.1.0
 Author: Andrei-Florian Stoica
 Maintainer: Andrei-Florian Stoica <andreistoica@foxmail.com>
-Description: Cell Set Overlap Analysis (CSOA) calculates a per-cell gene set score by constructing, for each input, a gene set consisting of cells highly expressing the gene, after which all overlaps of pairs of cell sets are computed and scored. The CSOA per-cell score is calculated on the basis of the top (by default, 100) cell set overlaps by summing up, over all overlaps, the product of the overlap score and the min-max-normalized expression of each of the two genes.
+Description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene signature scores in a scRNA-seq dataset. For each gene in the signature, CSOA constructs a set consisting of cells highly expressing the gene, after which all overlaps of pairs of cell sets are computed, ranked, filtered and scored. The CSOA per-cell score is calculated on the basis of the top cell set overlaps by summing up, over all overlaps, the product of the overlap score and the min-max-normalized expression of each of the two genes.
 License: MIT + file LICENSE
 Imports: 
     data.table,

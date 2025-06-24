@@ -10,6 +10,7 @@ scoreCellsMultiple(
   setPairs,
   geneSetNames,
   pvalThr = 0.05,
+  savePlots = FALSE,
   jaccardCutoff = NULL,
   osMethod = "log",
   pairFileTemplate = NULL,
@@ -28,11 +29,13 @@ for which cell sets will be computed}
 
 \item{pvalThr}{p-value threshold}
 
+\item{savePlots}{Whether to save overlap cutoff plots}
+
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
 scores. NULL by default (no filtering of such edges will be performed).}
 
 \item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'}
+and 'minmax'.}
 
 \item{pairFileTemplate}{Character object used in the naming of the files where
 the pair data frames will be saved. Default is NULL (the pair data frames will

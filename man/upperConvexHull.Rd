@@ -2,22 +2,22 @@
 % Please edit documentation in R/convex_hull.R
 \name{upperConvexHull}
 \alias{upperConvexHull}
-\title{Find the upper convex hull of set of points}
+\title{Find the upper convex hull of a set of points}
 \usage{
 upperConvexHull(df, xIndex = 1, valIndex = 2)
 }
 \arguments{
-\item{df}{A data frame}
+\item{df}{A data frame.}
 
-\item{xIndex}{Index of the column representing the x axis}
+\item{xIndex}{Index of the column representing the x axis.}
 
 \item{valIndex}{Index of column storing values used for computing the
-convex hull}
+convex hull.}
 }
 \value{
-A data frame comprising the points on the upper complex hull
+A data frame comprising the points on the upper complex hull.
 }
 \description{
-This function extract the upper convex hull of a set of points from a data
-frame
+This function extracts the upper convex hull of a set of points from a data
+frame.
 }

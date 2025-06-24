@@ -45,38 +45,38 @@ devPlot.ggplot <- function(plotObject, ...)
 devPlot.list <- function(plotObject, ...)
   invisible(lapply(plotObject, devPlot.ggplot))
 
-#' Add an aesthetic title to a plot
+#' Add a centered title to a plot
 #'
-#' This function adds an aesthetic title to a ggplot object
+#' This function adds a centered title to a ggplot object
 #'
-#' @param p A ggplot object
-#' @param title Plot title
-#' @param ... Other arguments passed to element_text
+#' @param p A ggplot object.
+#' @param title Plot title.
+#' @param ... Other arguments passed to element_text.
 #'
-#' @return A ggplot object
+#' @return A ggplot object.
 #'
 #' @export
 #'
 titlePlot <- function(p, title, ...)
   return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
 
-#' Adds a gradient color scale using two Wes Anderson colors
+#' Adds a gradient color scale using two wesanderson colors
 #'
-#' This function a gradient color scale to a ggplot object using a Wes Anderson
+#' This function a gradient color scale to a ggplot object using a wesanderson
 #' palette, an index marking low values, and an index marking high values. The
-#' indices are used to select colors from the Wes Anderson palette of choice.
+#' indices are used to select colors from the wesanderson palette of choice.
 #'
-#' @param p A ggplot object
-#' @param wesPal Wes Anderson palette
-#' @param wesLow Index of color marking low values
-#' @param wesHigh Index of color marking high values
+#' @param p A ggplot object.
+#' @param wesPal A wesanderson palette.
+#' @param wesLow Index of color marking low values.
+#' @param wesHigh Index of color marking high values.
 #' @param palType Palette type: color or fill, continuous or discrete. Accepted
 #' values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
 #' a warning and does not change the color scheme if a different value is passed
-#' here
-#' @param ... Arguments passed to other functions
+#' here.
+#' @param ... Arguments passed to other functions.
 #'
-#' @return A ggplot object with a new color scheme
+#' @return A ggplot object with a new color scheme.
 #'
 #' @export
 #'
@@ -103,17 +103,17 @@ wesBinaryGradient <- function(p, wesPal = 'Royal1', wesLow = 3, wesHigh = 2, pal
 #' This function customizes the appearance of Seurat's FeaturePlot for improved
 #' distinctiveness and aesthetics.
 #'
-#' @param seuratObj A SeuratObj
-#' @param feature Seurat feature
-#' @param title Plot title
-#' @param idClass Column to be used for labelling
+#' @param seuratObj A SeuratObj.
+#' @param feature Seurat feature.
+#' @param title Plot title.
+#' @param idClass Column to be used for labelling.
 #' @param label Whether to label the identity classes
-#' @param labelSize Size of labels
-#' @param repel Whether to make names of labels repel
-#' @param titleSize Title size
-#' @param ... Other arguments passed to wesBinaryGradient
+#' @param labelSize Size of labels.
+#' @param repel Whether to make names of labels repel.
+#' @param titleSize Title size.
+#' @param ... Other arguments passed to wesBinaryGradient.
 #'
-#' @return A ggplot object
+#' @return A ggplot object.
 #'
 #' @export
 #'
@@ -128,17 +128,17 @@ featureWes <- function(seuratObj, feature, title = feature, idClass = 'orig.iden
 
 #' Plot the overlaps as a network
 #'
-#' This function interprets the overlaps as edges in the graph and plots the
-#' graph
+#' This function plots the graph of the overlap data frame, with genes as vertices
+#' and overlaps as edges.
 #'
 #' @inheritParams warnUnfiltered
-#' @param title Plot title
+#' @param title Plot title.
 #' @inheritParams networkPlotDF
-#' @param nodePointSize Point size of graph nodes
-#' @param nodeTextSize Text size of graph nodes
-#' @param ... Additional parameters passed to other functions
+#' @param nodePointSize Point size of graph nodes.
+#' @param nodeTextSize Text size of graph nodes.
+#' @param ... Additional parameters passed to titlePlot.
 #'
-#' @return A network plot
+#' @return A network plot.
 #'
 #' @export
 #'
@@ -162,11 +162,11 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' This functions draws a gene-circle plot for an overlap data frame.
 #'
 #' @inheritParams edgeLists.list
-#' @param title Plot title
-#' @param groupStr Column used for grouping
+#' @param title Plot title.
+#' @param groupStr Column used for grouping.
 #' @inheritParams circleCoords
 #'
-#' @return A ggplot object
+#' @return A ggplot object.
 #'
 #' @export
 #'
@@ -221,15 +221,15 @@ birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', point
 
 #' Plot a simple heatmap
 #'
-#' This function plots a simple heatmap with clustering but no dendograms
+#' This function plots a simple heatmap, with clustering but no dendograms.
 #'
-#' @param mat A matrix
+#' @param mat A matrix.
 #' @param aesNames A character vector of size 3 representing the y, x and fill
-#' aes elements
-#' @param title Plot title
-#' @param axisTextSize Axis text size
-#' @param palType Palette type
-#' @param ... Arguments passed to other functions
+#' aes elements.
+#' @param title Plot title.
+#' @param axisTextSize Axis text size.
+#' @param palType Palette type.
+#' @param ... Additional arguments passed to wesBinaryGradient.
 #'
 #' @return A ggplot object
 #'
@@ -250,27 +250,42 @@ basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap',
 }
 
 
-#' Plot a simple heatmap
+#' Plot the selection of overlaps
 #'
-#' This function plots a simple heatmap with clustering but no dendograms.
+#' This plots shows the process of selecting the overlap rank cutoff, showcasing
+#' the convex hull of the points representing the frequencies of each rank.
 #'
-#' @param df A data frame with rank and score columns
+#' @inheritParams findRankCutoff
+#' @param rankCutoff Rank cutoff
 #' @param title Plot title
-#' @param lineColor Line color
-#' @param pointColor Point color
-#' @param pointSize Point size
-#' @param axisTitleSize Axis title size
 #'
 #' @return A ggplot object
 #'
 #' @export
 #'
-rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4', pointColor = 'red', pointSize = 1, axisTitleSize = 10){
-  p <- ggplot(df, aes(x = rank, y = score)) + geom_line(color = lineColor) + geom_point(color = pointColor, size = pointSize) +
-    labs(x = 'Overlap rank', y = 'Overlap score')
-  p <-  p <- p + theme_classic() + theme(axis.text.x = element_text(size = axisTitleSize - 1),
-                                         axis.text.y = element_text(size = axisTitleSize - 1),
-                                         axis.title = element_text(size = axisTitleSize))
+overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
+  maxFreq <- max(freqDF$freq)
+
+  xMin <- min(freqDF$rank)
+  xMax <- max(freqDF$rank)
+  yMin <- min(freqDF$freq)
+  yMax <- max(freqDF$freq)
+
+  hull <- upperConvexHull(freqDF)
+  hullSegments <- pointsToSegments(hull)
+  plg <- hullToPolygon(hull, rankCutoff)
+  plgOut <- hullToPolygon(hull, rankCutoff, 'out')
+
+  p <- ggplot() +  theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
+    labs(x = 'Overlap rank', y = 'Frequency') +
+    geom_polygon(data = plg, aes(x=rank, y=freq, fill='Accepted overlaps'), alpha = 0.2, ) +
+    geom_polygon(data = plgOut, aes(x=rank, y=freq, fill='Discarded overlaps'), alpha = 0.2) +
+    geom_segment(data = hullSegments, aes(x = x, y = y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
+    geom_point(data = freqDF, aes(rank, freq), color = 'black', size = 1, shape = 24) +
+    scale_fill_manual(values = c('purple', 'gold'), labels = c('Accepted overlaps', 'Discarded overlaps')) +
+    geom_vline(xintercept = rankCutoff, color = 'blue', size = 0.3, linetype = 'dashed') +
+    theme(legend.title = element_blank(),
+          legend.position = 'bottom')
   p <- titlePlot(p, title)
   return(p)
 }
@@ -278,9 +293,11 @@ rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurp
 #' Display the choice of the overlap rank cutoff
 #'
 #' This function plots the raw aggregate rank against the rank while displaying
-#' also the rank ctuoff point, visually resembling a saddle point.
+#' also the rank cutoff point, visually resembling a saddle point.
 #'
-#' @param df A ranked overlap data frame
+#' @param overlapDF A ranked overlap data frame
+#' @param firstOutRawRank The raw rank of the highest-ranked overlap that was not
+#' recorded among top overlaps.
 #' @param title Plot title
 #' @param pointColor Point color
 #'
@@ -288,12 +305,12 @@ rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurp
 #'
 #' @export
 #'
-rankSaddlePlot <- function(df, title = 'Rank saddle plot', pointColor = 'red'){
-  retainedRawRanks <- df$rawAggRank[df$rawAggRank < firstExcluded(df)]
+rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot', pointColor = 'red'){
+  retainedRawRanks <- overlapDF$rawAggRank[overlapDF$rawAggRank < firstOutRawRank]
   yInt <- max(retainedRawRanks)
-  xInt <- unique(subset(df, rawAggRank == yInt)$rank)
+  xInt <- unique(subset(overlapDF, rawAggRank == yInt)$rank)
   nOverlaps <- length(retainedRawRanks)
-  p <- ggplot(df, aes(x = rank, y = rawAggRank)) + geom_point(size = 0.3, color = pointColor) + theme_minimal() +
+  p <- ggplot(overlapDF, aes(x = rank, y = rawAggRank)) + geom_point(size = 0.3, color = pointColor) + theme_minimal() +
     labs(x = 'Overlap rank', y = 'Overlap raw aggregate rank') +
     geom_hline(yintercept = yInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
     geom_vline(xintercept = xInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
@@ -303,43 +320,27 @@ rankSaddlePlot <- function(df, title = 'Rank saddle plot', pointColor = 'red'){
   return(p)
 }
 
-#' Plot the selection of overlaps
+#' Plot overlap scores
 #'
-#' This plots shows the process of selecting the overlap rank cutoff, showcasing
-#' the convex hull of the points representing the frequencies of each rank.
+#' This function plots overlap scores versus ranks.
 #'
-#' @param df A ranked overlap data frame
-#' @param title Plot title
+#' @param df A data frame with rank and score columns.
+#' @param title Plot title.
+#' @param lineColor Line color.
+#' @param pointColor Point color.
+#' @param pointSize Point size.
+#' @param axisTitleSize Axis title size.
 #'
-#' @return A ggplot object
+#' @return A ggplot object.
 #'
 #' @export
 #'
-overlapCutoffPlot <- function(df, title = 'Overlap cutoff plot'){
-  freqDF <- data.frame(rank = unique(df$rank), freq = as.numeric(table(df$rank)))
-  maxFreq <- max(freqDF$freq)
-  freqSub <- subset(freqDF, freq == maxFreq)
-  xInt <- mean(c(max(freqSub$rank), min(freqSub$rank)))
-
-  xMin <- min(freqDF$rank)
-  xMax <- max(freqDF$rank)
-  yMin <- min(freqDF$freq)
-  yMax <- max(freqDF$freq)
-
-  hull <- upperConvexHull(freqDF)
-  hullSegments <- pointsToSegments(hull)
-  plg <- hullToPolygon(hull, xInt)
-  plgOut <- hullToPolygon(hull, xInt, 'out')
-
-  p <- ggplot() +  theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
-    labs(x = 'Overlap rank', y = 'Frequency') +
-    geom_polygon(data = plg, aes(x=rank, y=freq, fill='Accepted overlaps'), alpha = 0.2, ) +
-    geom_polygon(data = plgOut, aes(x=rank, y=freq, fill='Discarded overlaps'), alpha = 0.2) +
-    geom_segment(data = hullSegments, aes(x = x, y = y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
-    geom_point(data = freqDF, aes(rank, freq), color = 'black', size = 1, shape = 24) +
-    scale_fill_manual(values = c('purple', 'gold'), labels = c('Accepted overlaps', 'Discarded overlaps')) +
-    geom_vline(xintercept = xInt, color = 'blue', size = 0.3, linetype = 'dashed') +
-    theme(legend.title = element_blank())
+rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4', pointColor = 'red', pointSize = 1, axisTitleSize = 10){
+  p <- ggplot(df, aes(x = rank, y = score)) + geom_line(color = lineColor) + geom_point(color = pointColor, size = pointSize) +
+    labs(x = 'Overlap rank', y = 'Overlap score')
+  p <-  p <- p + theme_classic() + theme(axis.text.x = element_text(size = axisTitleSize - 1),
+                                         axis.text.y = element_text(size = axisTitleSize - 1),
+                                         axis.title = element_text(size = axisTitleSize))
   p <- titlePlot(p, title)
   return(p)
 }

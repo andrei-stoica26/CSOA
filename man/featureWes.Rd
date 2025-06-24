@@ -17,26 +17,26 @@ featureWes(
 )
 }
 \arguments{
-\item{seuratObj}{A SeuratObj}
+\item{seuratObj}{A SeuratObj.}
 
-\item{feature}{Seurat feature}
+\item{feature}{Seurat feature.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
-\item{idClass}{Column to be used for labelling}
+\item{idClass}{Column to be used for labelling.}
 
 \item{label}{Whether to label the identity classes}
 
-\item{labelSize}{Size of labels}
+\item{labelSize}{Size of labels.}
 
-\item{repel}{Whether to make names of labels repel}
+\item{repel}{Whether to make names of labels repel.}
 
-\item{titleSize}{Title size}
+\item{titleSize}{Title size.}
 
-\item{...}{Other arguments passed to wesBinaryGradient}
+\item{...}{Other arguments passed to wesBinaryGradient.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
 This function customizes the appearance of Seurat's FeaturePlot for improved

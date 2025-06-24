@@ -4,10 +4,20 @@
 \alias{rankSaddlePlot}
 \title{Display the choice of the overlap rank cutoff}
 \usage{
-rankSaddlePlot(df, title = "Rank saddle plot", pointColor = "red")
+rankSaddlePlot(
+  overlapDF,
+  firstOutRawRank,
+  title = "Rank saddle plot",
+  pointColor = "red"
+)
 }
 \arguments{
-\item{df}{A ranked overlap data frame}
+\item{overlapDF}{A ranked overlap data frame}
+
+\item{firstOutRawRank}{The raw rank of the highest-ranked overlap that was not
+recorded among top overlaps.}
+
+\item{title}{Plot title}
 
 \item{pointColor}{Point color}
 }
@@ -16,5 +26,5 @@ A ggplot object
 }
 \description{
 This function plots the raw aggregate rank against the rank while displaying
-also the rank ctuoff point, visually resembling a saddle point.
+also the rank cutoff point, visually resembling a saddle point.
 }

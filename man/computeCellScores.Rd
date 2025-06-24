@@ -14,10 +14,10 @@ computeCellScores(
 )
 }
 \arguments{
-\item{overlapDF}{A scored overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
 \item{normExp}{A min-max normalized expression matrix of the genes involved in
-top overlaps}
+top overlaps.}
 
 \item{cellNames}{Cell names}
 

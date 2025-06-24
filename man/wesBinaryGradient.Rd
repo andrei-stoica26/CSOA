@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{wesBinaryGradient}
 \alias{wesBinaryGradient}
-\title{Adds a gradient color scale using two Wes Anderson colors}
+\title{Adds a gradient color scale using two wesanderson colors}
 \usage{
 wesBinaryGradient(
   p,
@@ -14,26 +14,26 @@ wesBinaryGradient(
 )
 }
 \arguments{
-\item{p}{A ggplot object}
+\item{p}{A ggplot object.}
 
-\item{wesPal}{Wes Anderson palette}
+\item{wesPal}{A wesanderson palette.}
 
-\item{wesLow}{Index of color marking low values}
+\item{wesLow}{Index of color marking low values.}
 
-\item{wesHigh}{Index of color marking high values}
+\item{wesHigh}{Index of color marking high values.}
 
 \item{palType}{Palette type: color or fill, continuous or discrete. Accepted
 values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
 a warning and does not change the color scheme if a different value is passed
-here}
+here.}
 
-\item{...}{Arguments passed to other functions}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-A ggplot object with a new color scheme
+A ggplot object with a new color scheme.
 }
 \description{
-This function a gradient color scale to a ggplot object using a Wes Anderson
+This function a gradient color scale to a ggplot object using a wesanderson
 palette, an index marking low values, and an index marking high values. The
-indices are used to select colors from the Wes Anderson palette of choice.
+indices are used to select colors from the wesanderson palette of choice.
 }

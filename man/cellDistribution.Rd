@@ -4,26 +4,25 @@
 \alias{cellDistribution}
 \title{Show the distribution of cell sets among cells}
 \usage{
-cellDistribution(cellSets, allCells = Reduce(union, cellSets))
+cellDistribution(cellSets, allCells)
 
-cellDistribution(cellSets, allCells = Reduce(union, cellSets))
+cellDistribution(cellSets, allCells)
 }
 \arguments{
-\item{cellSets}{Cell sets}
+\item{cellSets}{Cell sets.}
 
-\item{allCells}{Names of all cells in the dataset. If not specified, assumed
-to be the union of the cell sets}
+\item{allCells}{Names of all cells in the dataset.}
 }
 \value{
 A logical matrix with genes as rows and cells as columns
 
 A data frame representing the distribution of cells from input sets
-among all the sets in the dataset
+among all the sets in the dataset.
 }
 \description{
 This function returns a matrix that shows the presence of cell sets among
 cells.
 
 This function builds a binary data frame showing the distribution of cells in
-input sets among all cells in the dataset
+input sets among all cells in the dataset.
 }

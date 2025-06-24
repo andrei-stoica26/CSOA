@@ -7,15 +7,15 @@
 computePCPairScores(overlapDF, normExp)
 }
 \arguments{
-\item{overlapDF}{A scored overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
 \item{normExp}{A min-max normalized expression matrix of the genes involved in
-top overlaps}
+top overlaps.}
 }
 \value{
-A data frame with the same dimensions as normExp
+A data frame with the same dimensions as normExp.
 }
 \description{
 This function scores each gene pair corresponding to a top overlap in each
-cell
+cell.
 }

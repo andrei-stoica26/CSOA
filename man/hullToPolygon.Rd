@@ -8,17 +8,17 @@ hullToPolygon(hull, rankCutoff, type = "in")
 }
 \arguments{
 \item{hull}{A data frame representing an upper convex hull of a set of points
-with columns rank and freq}
+with columns rank and freq.}
 
 \item{rankCutoff}{Rank cutoff}
 
 \item{type}{Whether to compute the polygon corresponding to the retained
 overlaps ('in', default value) or the one corresponding to the discarded
-overlaps (any other choice)}
+overlaps (any other value).}
 }
 \value{
-A data frame of polygon vertices
+A data frame of polygon vertices.
 }
 \description{
-This function constructs a data frame of segments from a data frame of points
+This function constructs a data frame of segments from a data frame of points.
 }

@@ -14,22 +14,22 @@ basicHeatmap(
 )
 }
 \arguments{
-\item{mat}{A matrix}
+\item{mat}{A matrix.}
 
 \item{aesNames}{A character vector of size 3 representing the y, x and fill
-aes elements}
+aes elements.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
-\item{axisTextSize}{Axis text size}
+\item{axisTextSize}{Axis text size.}
 
-\item{palType}{Palette type}
+\item{palType}{Palette type.}
 
-\item{...}{Arguments passed to other functions}
+\item{...}{Additional arguments passed to wesBinaryGradient.}
 }
 \value{
 A ggplot object
 }
 \description{
-This function plots a simple heatmap with clustering but no dendograms
+This function plots a simple heatmap, with clustering but no dendograms.
 }

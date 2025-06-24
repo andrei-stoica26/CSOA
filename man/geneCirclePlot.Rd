@@ -16,7 +16,7 @@ geneCirclePlot(
 \arguments{
 \item{overlapObj}{An overlap data frame or list of overlap data frames}
 
-\item{groupStr}{Column used for grouping}
+\item{groupStr}{Column used for grouping.}
 
 \item{groupNames}{Names of groups. If provided, must be a vector of the same
 length as the list of overlap data frames}
@@ -24,13 +24,13 @@ length as the list of overlap data frames}
 \item{cutoff}{Number of retained edges from each overlap data frame after
 refiltering. If NULL (as default), no refiltering will be performed}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
 \item{extraCircles}{Number of circles drawn beyond those needed to include the
 points representing the genes. Default is 0}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
 This functions draws a gene-circle plot for an overlap data frame.

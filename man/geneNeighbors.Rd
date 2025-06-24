@@ -8,8 +8,6 @@ geneNeighbors(overlapDF)
 }
 \arguments{
 \item{overlapDF}{An overlap data frame}
-
-\item{b}{A vector}
 }
 \value{
 A numeric value

@@ -8,7 +8,7 @@ birankPlot(
   pairScoreDF,
   title = "Overlap and gene pair ranks",
   pointColor = "deeppink3",
-  pointSize = 1.5
+  pointSize = 0.5
 )
 }
 \arguments{
@@ -20,8 +20,6 @@ overlapRank and pairRank (numeric)}
 \item{pointColor}{Point color}
 
 \item{pointSize}{Point size}
-
-\item{labelSize}{Label size}
 }
 \value{
 A ggplot object

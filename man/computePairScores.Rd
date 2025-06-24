@@ -12,7 +12,7 @@ computePairScores(
 )
 }
 \arguments{
-\item{overlapDF}{A scored overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
 \item{pcPairScores}{A date frame of pair scores in each cell for each pair
 in the overlap data frame}

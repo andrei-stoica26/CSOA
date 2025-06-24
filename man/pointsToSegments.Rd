@@ -7,15 +7,15 @@
 pointsToSegments(pointsDF, xIndex = 1, yIndex = 2)
 }
 \arguments{
-\item{pointsDF}{A data frame with the x and y coordinates of the points}
+\item{pointsDF}{A data frame with the x and y coordinates of the points.}
 
-\item{xIndex}{Index of the column representing the x axis}
+\item{xIndex}{Index of the column representing the x axis.}
 
-\item{yIndex}{Index of the column representing the y axis}
+\item{yIndex}{Index of the column representing the y axis.}
 }
 \value{
-A data frame of segments
+A data frame of segments.
 }
 \description{
-This function constructs a data frame of segments from a data frame of points
+This function constructs a data frame of segments from a data frame of points.
 }

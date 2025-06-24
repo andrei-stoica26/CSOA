@@ -7,7 +7,7 @@
 networkPlotDF(overlapDF, rankCol = "rank", edgeScale = 2)
 }
 \arguments{
-\item{overlapDF}{A scored overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
 \item{rankCol}{Name of the rank column}
 

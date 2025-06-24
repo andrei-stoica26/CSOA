@@ -7,15 +7,15 @@
 upperConvexSemihullIndices(df, valIndex = 2)
 }
 \arguments{
-\item{df}{A data frame}
+\item{df}{A data frame.}
 
 \item{valIndex}{Index of column storing values used for computing the
-convex hull}
+convex hull.}
 }
 \value{
-A numeric vector of indices
+A numeric vector of indices.
 }
 \description{
 This function finds the indices of points on left sector of the upper convex
-hull
+hull.
 }

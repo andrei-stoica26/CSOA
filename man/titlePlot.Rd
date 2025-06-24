@@ -2,20 +2,20 @@
 % Please edit documentation in R/visualization.R
 \name{titlePlot}
 \alias{titlePlot}
-\title{Add an aesthetic title to a plot}
+\title{Add a centered title to a plot}
 \usage{
 titlePlot(p, title, ...)
 }
 \arguments{
-\item{p}{A ggplot object}
+\item{p}{A ggplot object.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
-\item{...}{Other arguments passed to element_text}
+\item{...}{Other arguments passed to element_text.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
-This function adds an aesthetic title to a ggplot object
+This function adds a centered title to a ggplot object
 }

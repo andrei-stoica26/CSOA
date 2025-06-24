@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{rankScorePlot}
 \alias{rankScorePlot}
-\title{Plot a simple heatmap}
+\title{Plot overlap scores}
 \usage{
 rankScorePlot(
   df,
@@ -14,21 +14,21 @@ rankScorePlot(
 )
 }
 \arguments{
-\item{df}{A data frame with rank and score columns}
+\item{df}{A data frame with rank and score columns.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 
-\item{lineColor}{Line color}
+\item{lineColor}{Line color.}
 
-\item{pointColor}{Point color}
+\item{pointColor}{Point color.}
 
-\item{pointSize}{Point size}
+\item{pointSize}{Point size.}
 
-\item{axisTitleSize}{Axis title size}
+\item{axisTitleSize}{Axis title size.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
-This function plots a simple heatmap with clustering but no dendograms.
+This function plots overlap scores versus ranks.
 }

@@ -146,7 +146,7 @@ geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
 ```
 
-To visualize the results of CSOA on multiple gene sets, we define `patchworkPlot`, a function intended to display a plot composed of multiple subplots generated with the same function (specified using the `fun` parameter) as follows:
+To visualize the results of CSOA on multiple gene sets, we define the `patchworkPlot` function, intended to display a plot composed of multiple subplots generated with the same function (specified using the `fun` parameter) as follows:
 
 ```{r}
 patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
@@ -187,7 +187,12 @@ sapply(geneSetNames,
 
 CSOA provides `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
 
-The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette. The colors are chosen using arguments `wesPal` (the name of the palette), `wesLow` (the index of the color chosen for the feature minimum) and `wesHigh` (the index of the color chosen for the feature maximum). Labels of Seurat identity classes are displayed on the plot using the `idClass` argument.
+The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette, specified using the following arguments:
+-`wesPal`: The name of the palette
+`wesLow`: The index of the color chosen for the feature minimum
+`wesHigh`: The index of the color chosen for the feature maximum. 
+
+The `idClass` argument can be used to display labels of Seurat identity classes on the plot.
 
 To enable feature plot visualization, we will perform dimensionality reduction on the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
 
@@ -204,7 +209,8 @@ seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = 'harmony')
 Now we can visualize the CSOA results as feature plots:
 
 ```{r message=F, warning=F, fig.height=6, fig.width=6}
-patchworkPlot(seuratObj, geneSetNames, featureWes, idClass = 'label')  
+patchworkPlot(seuratObj, geneSetNames, featureWes, wesPal = 'Darjeeling1', 
+              wesLow = 5, wesHigh = 1, idClass = 'label')  
 ```
 
 # Session information {-}

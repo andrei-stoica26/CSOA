@@ -47,18 +47,17 @@ networkPlotDF <- function(overlapDF, rankCol = 'rank', edgeScale = 2){
 #' Build a data frame showing the distribution of cells in sets among all cells
 #'
 #' This function builds a binary data frame showing the distribution of cells in
-#' input sets among all cells in the dataset
+#' input sets among all cells in the dataset.
 #'
-#' @param cellSets Cell sets
-#' @param allCells Names of all cells in the dataset. If not specified, assumed
-#' to be the union of the cell sets
+#' @param cellSets Cell sets.
+#' @param allCells Names of all cells in the dataset.
 #'
 #' @return A data frame representing the distribution of cells from input sets
-#' among all the sets in the dataset
+#' among all the sets in the dataset.
 #'
 #' @export
 #'
-cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
+cellDistribution <- function(cellSets, allCells){
   df <- data.table::transpose(data.frame(lapply(cellSets, function(x) allCells %in% x)))
   rownames(df) <- names(cellSets)
   colnames(df) <- allCells

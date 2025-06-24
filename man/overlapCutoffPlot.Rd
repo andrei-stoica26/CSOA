@@ -4,12 +4,14 @@
 \alias{overlapCutoffPlot}
 \title{Plot the selection of overlaps}
 \usage{
-overlapCutoffPlot(df, title = "Overlap cutoff plot")
+overlapCutoffPlot(freqDF, rankCutoff, title = "Overlap cutoff plot")
 }
 \arguments{
-\item{df}{A ranked overlap data frame}
+\item{freqDF}{A frequency data frame of overlap ranks.}
 
-\item{title}{Point title}
+\item{rankCutoff}{Rank cutoff}
+
+\item{title}{Plot title}
 }
 \value{
 A ggplot object

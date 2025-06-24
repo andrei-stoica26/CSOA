@@ -63,35 +63,6 @@ cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
 
-#' Find the connectivity of each gene
-#'
-#' This function finds the connectivity of each gene from an overlap data frame
-#' ranked using p-values and recorded-over-expected ratios
-#'
-#' @param overlapDF Overlap data frame with the pvalRank and ratioRank columns
-#' @param asRanks Whether to replace connectivity scores by ranks
-#'
-#' @return A data frame with genes involved in the overlaps as rownames, and two
-#' columns, corresponding to connectivity ranks (by default) or scores (if
-#' asRanks is set to FALSE) for both p-value and ratio
-#'
-#' @export
-#'
-geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
-  genes <- overlapGenes(overlapDF)
-  df <- data.table::transpose(data.frame(lapply(genes, function(gene){
-    geneDF <- subset(overlapDF, gene1 == gene | gene2 == gene)
-    return(c(min(geneDF$pvalRank), min(geneDF$ratioRank)))
-  })))
-  rownames(df) <- genes
-  colnames(df) <- c('connPvalRank', 'connRatioRank')
-  if (asRanks){
-    df <- rankReplace(df, 'connPvalRank')
-    df <- rankReplace(df, 'connRatioRank')
-  }
-  return(df)
-}
-
 #' Get all genes from an overlap data frame
 #'
 #' This function gets all genes from an overlap data frame

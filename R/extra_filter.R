@@ -81,7 +81,7 @@ breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = F){
     message(paste0(prevNEdges - nEdges), ' edges with low Jaccard scores have been removed.')
   }
   overlapDF <- rankOverlaps(overlapDF)
-  if (doConnComp)
+  if (doConnComp)f
     overlapDF <- connectedComponents(overlapDF)
   return(overlapDF)
 }
