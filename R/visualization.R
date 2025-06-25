@@ -264,12 +264,10 @@ basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap',
 #' @export
 #'
 overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
-  maxFreq <- max(freqDF$freq)
-
   xMin <- min(freqDF$rank)
   xMax <- max(freqDF$rank)
-  yMin <- min(freqDF$freq)
-  yMax <- max(freqDF$freq)
+  yMin <- min(freqDF$n)
+  yMax <- max(freqDF$n)
 
   hull <- upperConvexHull(freqDF)
   hullSegments <- pointsToSegments(hull)
@@ -278,10 +276,10 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
 
   p <- ggplot() +  theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
     labs(x = 'Overlap rank', y = 'Frequency') +
-    geom_polygon(data = plg, aes(x=rank, y=freq, fill='Accepted overlaps'), alpha = 0.2, ) +
-    geom_polygon(data = plgOut, aes(x=rank, y=freq, fill='Discarded overlaps'), alpha = 0.2) +
-    geom_segment(data = hullSegments, aes(x = x, y = y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
-    geom_point(data = freqDF, aes(rank, freq), color = 'black', size = 1, shape = 24) +
+    geom_polygon(data = plg, aes(x, y, fill='Accepted overlaps'), alpha = 0.2, ) +
+    geom_polygon(data = plgOut, aes(x, y, fill='Discarded overlaps'), alpha = 0.2) +
+    geom_segment(data = hullSegments, aes(x, y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
+    geom_point(data = freqDF, aes(rank, n), color = 'black', size = 1, shape = 24) +
     scale_fill_manual(values = c('purple', 'gold'), labels = c('Accepted overlaps', 'Discarded overlaps')) +
     geom_vline(xintercept = rankCutoff, color = 'blue', size = 0.3, linetype = 'dashed') +
     theme(legend.title = element_blank(),

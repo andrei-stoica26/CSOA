@@ -9,9 +9,9 @@ pointsToSegments(pointsDF, xIndex = 1, yIndex = 2)
 \arguments{
 \item{pointsDF}{A data frame with the x and y coordinates of the points.}
 
-\item{xIndex}{Index of the column representing the x axis.}
+\item{xIndex}{Index of the column storing the x coordinates of the points.}
 
-\item{yIndex}{Index of the column representing the y axis.}
+\item{yIndex}{Index of column storing the y coordinates of the points.}
 }
 \value{
 A data frame of segments.

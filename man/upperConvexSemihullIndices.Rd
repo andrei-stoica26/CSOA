@@ -4,16 +4,16 @@
 \alias{upperConvexSemihullIndices}
 \title{Find the indices of points on the left sector of the upper convex hull}
 \usage{
-upperConvexSemihullIndices(df, valIndex = 2)
+upperConvexSemihullIndices(df, yIndex = 2)
 }
 \arguments{
 \item{df}{A data frame.}
 
-\item{valIndex}{Index of column storing values used for computing the
-convex hull.}
+\item{yIndex}{Index of column storing the y coordinates of the points.}
 }
 \value{
-A numeric vector of indices.
+A numeric vector of indices representing the points in the upper
+convex semihull.
 }
 \description{
 This function finds the indices of points on left sector of the upper convex

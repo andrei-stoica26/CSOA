@@ -112,7 +112,7 @@ head(po)
 
 2. Ranking: `rankOverlaps`
 
-3. Identifying filtering cutoff: `firstExcluded`
+3. Identifying filtering cutoff: `prepareFiltering`
 
 3. Filtering: `filterOverlaps`
 
@@ -151,7 +151,7 @@ We can now select the overlaps that will be retained for score calculation. CSOA
 overlapCutoffPlot(po2)
 ```
 
-Conceptually, this correspond to what could be labelled as a saddled point in the graph of ranks:
+Conceptually, this correspond to what could be labelled as a saddle point in the graph of ranks:
 
 ```{r, fig.height=5, fig.width=5}
 rankSaddlePlot(po2)

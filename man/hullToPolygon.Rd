@@ -4,13 +4,13 @@
 \alias{hullToPolygon}
 \title{Construct a data frame of segments from a data frame of points}
 \usage{
-hullToPolygon(hull, rankCutoff, type = "in")
+hullToPolygon(hull, xInt, type = "in")
 }
 \arguments{
 \item{hull}{A data frame representing an upper convex hull of a set of points
 with columns rank and freq.}
 
-\item{rankCutoff}{Rank cutoff}
+\item{xInt}{The x coordinate of the point where a vertical line will be drawn}
 
 \item{type}{Whether to compute the polygon corresponding to the retained
 overlaps ('in', default value) or the one corresponding to the discarded

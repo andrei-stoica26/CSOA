@@ -4,15 +4,14 @@
 \alias{upperConvexHull}
 \title{Find the upper convex hull of a set of points}
 \usage{
-upperConvexHull(df, xIndex = 1, valIndex = 2)
+upperConvexHull(df, xIndex = 1, yIndex = 2)
 }
 \arguments{
 \item{df}{A data frame.}
 
-\item{xIndex}{Index of the column representing the x axis.}
+\item{xIndex}{Index of the column storing the x coordinates of the points.}
 
-\item{valIndex}{Index of column storing values used for computing the
-convex hull.}
+\item{yIndex}{Index of column storing the y coordinates of the points.}
 }
 \value{
 A data frame comprising the points on the upper complex hull.

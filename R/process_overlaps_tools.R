@@ -70,7 +70,7 @@ rankOverlaps <- function(overlapDF){
 #' @export
 #'
 findRankCutoff <- function(freqDF){
-  freqSub <- subset(freqDF, freq == max(freq))
+  freqSub <- subset(freqDF, n == max(n))
   rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
   return(rankCutoff)
 }
@@ -87,7 +87,7 @@ findRankCutoff <- function(freqDF){
 #' @export
 #'
 prepareFiltering <- function(overlapDF, savePlots = FALSE){
-  freqDF <- data.frame(rank = unique(overlapDF$rank), freq = as.numeric(table(overlapDF$rank)))
+  freqDF <- dplyr::count(overlapDF, rank)
   rankCutoff <- findRankCutoff(freqDF)
 
   outDF <- subset(overlapDF, rank > rankCutoff)
