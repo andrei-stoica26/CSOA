@@ -309,7 +309,7 @@ rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot
   xInt <- unique(subset(overlapDF, rawAggRank == yInt)$rank)
   nOverlaps <- length(retainedRawRanks)
   p <- ggplot(overlapDF, aes(x = rank, y = rawAggRank)) + geom_point(size = 0.3, color = pointColor) + theme_minimal() +
-    labs(x = 'Overlap rank', y = 'Overlap raw aggregate rank') +
+    labs(x = 'Overlap rank', y = 'Overlap raw rank') +
     geom_hline(yintercept = yInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
     geom_vline(xintercept = xInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
     annotate('rect', xmin=0, xmax=xInt, ymin=0, ymax=yInt, alpha=0.2, fill='purple') +

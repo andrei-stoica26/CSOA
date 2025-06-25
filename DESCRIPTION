@@ -54,7 +54,6 @@ Collate:
 Suggests: 
     BiocStyle,
     knitr,
-    harmony,
     patchwork,
     rmarkdown,
     scRNAseq,

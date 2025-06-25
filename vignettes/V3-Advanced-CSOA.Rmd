@@ -21,6 +21,8 @@ First, we will repeat the setup from the **Getting started with CSOA** tutorial.
 
 ```{r message=F, warning=F, results=F}
 library(CSOA)
+library(ggplot2)
+library(patchwork)
 library(scRNAseq)
 library(scuttle)
 library(stringr)
@@ -43,7 +45,7 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
 
 A distinctive feature of CSOA is that the calculation of per-cell scores does not necessarily use all the genes in the input gene signature. If a gene did not register any top overlap, it will not feature in the calculation of CSOA scores. 
 
-We now run CSOA with the option of calculating the contribution of individual gene pairs to the CSOA score toggled on:
+We now run CSOA with the option of calculating the contribution of individual gene pairs to the CSOA score toggled on using `pairFileName`:
 
 ```{r}
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar', pairFileName='acinarPairs')
@@ -75,9 +77,11 @@ We aim to compare the results with those obtained using the original `47` acinar
 
 ```{r}
 printStats <- function(seuratObj, col1, col2){
-  print(paste0('Pearson correlation: ', cor(seuratObj@meta.data[[col1]], seuratObj@meta.data[[col2]])))
+  print(paste0('Pearson correlation: ', cor(seuratObj@meta.data[[col1]], 
+                                            seuratObj@meta.data[[col2]])))
   absDiffs <- abs(seuratObj@meta.data[[col1]] - seuratObj@meta.data[[col2]])
-  absDiffsStats <- sapply(list(mean, median, max, min), function(fun) fun(absDiffs))
+  absDiffsStats <- sapply(list(mean, median, max, min), 
+                          function(fun) fun(absDiffs))
   names(absDiffsStats) <- paste0(c('mean', 'median', 'max', 'min'), 'AbsDiff')
   print(absDiffsStats)
 }
@@ -96,15 +100,7 @@ It is instructive to think why the results between the two runs were not identic
 
 We can further refine gene signatures by eliminating overlaps which account only for a small percent of the total score, and subsequently setting the corresponding genes as new input genes.
 
-We return to the `acinarPairs` data frame. First, we can explore the correlation between the original ranking of overlaps (`overlapRank`) and the ranking of contributions of the corresponding gene pairs to the CSOA score (`pairRank`):
-
-```{r, fig.height=4, fig.width=4}
-cor(acinarPairs$overlapRank, acinarPairs$pairRank)
-birankPlot(acinarPairs)
-
-```
-
-The `revCumsum` column shows how much of the sum of CSOA scores is accounted for by the current overlap and all the overlaps of a lower contribution to CSOA scores (`pairScore`). We can use the `revCumsum` column to find that `90%` of the CSOA score is accounted for by the top-scoring `128` gene pairs:
+We return to the `acinarPairs` data frame. The `revCumsum` column shows that `90%` of the total CSOA score is accounted for by the top-scoring `128` gene pairs:
 
 ```{r}
 acinarPairsSub <- subset(acinarPairs, revCumsum > 10)
@@ -135,7 +131,7 @@ This section will demonstrate CSOA's ability to extract the most biologically me
 set.seed(123)
 ```
 
-We will proceed by replacing randomly chosen genes among the top `24` acinar markers with random genes from the Seurat object, and running CSOA using the resulting gene set. We subsequently reiterate this process with a higher number of replaced genes:
+We will proceed by replacing randomly chosen genes among the top `24` acinar markers with random genes from the Seurat object, and running CSOA using the resulting gene set.
 
 First, we build a function for this task:
 
@@ -152,28 +148,16 @@ runCSOAReplace <- function(seuratObj, markers, nReplacedGenes,
 }
 ```
 
-Now we run CSOA on a set starting from the top `24` acinar markers, in which `6` randomly chosen genes have been replaced by random genes. The results are quite close to those obtained using the original `24` markers:
+Now we run CSOA on a set in which half of top `24` acinar markers (randomly chosen) have been replaced by random genes. The results are very close to those obtained using the original `24` markers, though with an increase in the maximum absolute difference—CSOA no longer recognizes a very few acinar cells as such, because of the lower number of input acinar markers. 
 
-
-```{r, warning=FALSE}
-nReplacedGenes <- 6
-seuratObj <- runCSOAReplace(seuratObj, genes90, nReplacedGenes)
-
-newCol <- paste0('CSOA_replace', nReplacedGenes)
-printStats(seuratObj, 'CSOA_acinar3', newCol)
-VlnPlot(seuratObj, newCol, group.by='label')
-```
-
-Next, we replace `12` of the top `24` acinar markers with random genes and run CSOA again. The results remain very close overall, but we begin to see an increase in the maximum absolute difference—CSOA is no longer able to recognize a few acinar cells as such, because of the low number of input acinar markers. 
-
-```{r, warning=FALSE}
+```{r, warning=FALSE, out.height='100%', out.width='100%'}
 nReplacedGenes <- 12
 seuratObj <- runCSOAReplace(seuratObj, genes90, nReplacedGenes, 
                             'acinarPairsReplace')
 
 newCol <- paste0('CSOA_replace', nReplacedGenes)
 printStats(seuratObj, 'CSOA_acinar3', newCol)
-VlnPlot(seuratObj, newCol, group.by='label')
+VlnPlot(seuratObj, newCol, group.by='label') + NoLegend()
 ```
 
 The noise introduced by random genes did not directly affect CSOA results at all. Using the `overlapGenes` function, we can verify that none of the random genes participated in the `23` top overlaps:
@@ -182,50 +166,27 @@ The noise introduced by random genes did not directly affect CSOA results at all
 length(setdiff(overlapGenes(qGrab('acinarPairsReplace.qs')), genes90))
 ```
 
-We now replace `18` of the top `24` acinar markers with random genes and run CSOA again. The same trend persists: the results remain overall very close to the original ones, but the maximum absolute differences has doubled, indicating that CSOA has failed to recognize a few additional acinar cells.
+We now replace all but `2` of the top `24` acinar markers with random genes and run CSOA again. The mean, median and minimum absolute differences remain very small, and  the correlation with the original results remains very high. However, the maximum absolute difference has become substantial, indicating that an additional small number of cells could no longer be detected as acinar cells. Noise now makes an effect, though a small one: a single random gene (`PTGR1`) introduces two overlaps into CSOA scoring, which together account for `27.8%` of the total CSOA score.
 
-```{r, warning=FALSE}
-nReplacedGenes <- 18
-seuratObj <- runCSOAReplace(seuratObj, genes90, nReplacedGenes, 
-                            'acinarPairsReplace')
-
-newCol <- paste0('CSOA_replace', nReplacedGenes)
-printStats(seuratObj, 'CSOA_acinar3', newCol)
-VlnPlot(seuratObj, newCol, group.by='label')
-```
-
-
-Finally, we replace all but `2` of the top `24` acinar markers with random genes and run CSOA again. CSOA now retains a single significant overlap, which is, however, sufficient to identify the acinar cells. The mean, median and minimum absolute differences remain very small, and  the correlation with the original results remains very high, but the maximum absolute difference has become substantial, indicating that CSOA now fails to identity more cells as acinar. Noise makes no direct impact.
-
-```{r, warning=FALSE}
+```{r, warning=FALSE, out.height='100%', out.width='100%'}
 nReplacedGenes <- 22
 seuratObj <- runCSOAReplace(seuratObj, genes90, nReplacedGenes, 'acinarPairsReplace')
 
 newCol <- paste0('CSOA_replace', nReplacedGenes)
 printStats(seuratObj, 'CSOA_acinar3', newCol)
+dfReplace <- qGrab('acinarPairsReplace.qs')
+setdiff(overlapGenes(dfReplace), genes90)
+dfReplace
 VlnPlot(seuratObj, newCol, group.by='label') + NoLegend()
 ```
 
-Noise now directly impacts CSOA results, as a random gene succeeds in introducing two overlaps into CSOA scoring:
-
-```{r}
-dfReplace <- qGrab('acinarPairsReplace.qs')
-setdiff(overlapGenes(dfReplace), genes90)
-```
-
-However, the effect of these two random overlaps is very minor. Cumulatively, the two random overlaps account for less than ```0.27``` of the CSOA score:
-
-```{r}
-dfReplace
-```
-
-These results have implications upon the construction of input gene sets for CSOA. Due to CSOA's noise-filtering ability, it is generally better to err on the side of **including more genes in the input**, though this will incur higher computational costs.
+These results have implications upon the construction of input gene sets for CSOA. Due to CSOA's efficient noise-filtering ability, it is generally better to err on the side of **including more genes in the input**, even though this will incur higher computational costs.
 
 # Operating with gene sets that characterize multiple subpopulations
 
 Cell signatures do not necessarily characterize a single cell type or state. Therefore, it is desirable that a gene set analysis method is able to recognize the different cell types or states characterized by different genes in the input set. 
 
-To illustrate this functionality of CSOA, we will first construct a mixed signature using the acinar and stellate cell markers selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
+To illustrate this functionality of CSOA, we will first construct a mixed signature using acinar and stellate cell markers selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
 
 ```{r, warning=FALSE}
 
@@ -241,14 +202,14 @@ mixedMarkers <- union(acinarMarkers, stellateMarkers)
 
 Now we run CSOA with the mixed markers as input. As expected, we see enrichment of CSOA scores among both acinar and stellate cells:
 
-```{r, warning=FALSE, , fig.height=4, fig.width=4}
+```{r, warning=FALSE, out.height='100%', out.width='100%'}
 seuratObj <- runCSOA(seuratObj, mixedMarkers, 'CSOA_mixed', pairFileName='mixedPairs')
 VlnPlot(seuratObj, 'CSOA_mixed', group.by='label') + NoLegend()
 ```
 
 It is now helpful to interpret the set of genes and overlaps as a **graph** with the genes as vertices and the overlaps as edges. We can build and visualize the graph as follows:
 
-```{r}
+```{r, out.height='100%', out.width='100%'}
 dfNetwork <- qGrab('mixedPairs.qs')
 networkPlot(dfNetwork, rankCol='overlapRank')
 ```
@@ -264,11 +225,14 @@ dplyr::count(dfNetwork, component)
 
 Next, we are interested in scoring the major gene modules in order to ascertain the identity of the cells they characterize. We can score the major components separately as follows:
 
-```{r, fig.height=4, fig.width=4}
+```{r, out.height='100%', out.width='100%'}
 components <- c(1, 2)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
-VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend()
-VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend()
+p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
+  theme(axis.text.y = element_blank())
+p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
+  theme(axis.text.y = element_blank())
+p1 / p2
 
 ```
 
@@ -308,7 +272,7 @@ seuratObj <- runCSOA(seuratObj, mixedMarkers, 'CSOA_mixed', jaccardCutoff = 1/3,
 ```
 This function has reduced the number of overlaps from 760 to 486 by selectively removing overlaps for which the neighbors of the corresponding genes overlapped little, as calculated using the Jaccard score. The resulting graph has two connected components:
 
-```{r}
+```{r, out.height='100%', out.width='100%'}
 dfNetwork <- qGrab('mixedPairs.qs')
 dfNetwork <- connectedComponents(dfNetwork)
 dplyr::count(dfNetwork, component)
@@ -316,35 +280,31 @@ networkPlot(dfNetwork, rankCol='overlapRank')
 ```
 
 As expected, the two components correspond to acinar and ductal cells, respectively:
-```{r, fig.height=4, fig.width=4}
+```{r, out.height='100%', out.width='100%'}
 components <- c(1, 2)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
-VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend()
-VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend()
+p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
+  theme(axis.text.y = element_blank())
+p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
+  theme(axis.text.y = element_blank())
+p1 / p2
 
 ```
 
 # Visualizing gene participation in top overlaps
 
-We are also likely to be interested in which genes participate the most often in the top overlaps. CSOA offers plotting functions to display this information:
+To display gene participation in top overlaps, CSOA provides the `geneCirclePlot` function:
 
-```{r}
+```{r, out.height='100%', out.width='100%'}
 geneCirclePlot(acinarPairs, 
                title = 'Top 100 overlap genes - Acinar markers', 
                extraCircles = 2)
 ```
 
-We can also visualize the genes recording top overlaps for the mixed acinar-ductal gene set, grouped by connected component:
+Additionally, we can visualize and compare the genes involved in the top overlaps across multiple gene sets. We will reload the alpha and gamma markers from the **Getting started with CSOA** tutorial, and run again CSOA with four gene sets. To facilitate visualization, we will select the top `15` overlaps for each gene set:
 
-```{r}
-geneCirclePlot(dfNetwork, 'component', 
-               title = 'Top 100 overlap genes - Mixed acinar-ductal markers', 
-               extraCircles = 2)
-```
 
-Additionally, we can visualize and compare the genes involved in the top overlaps across multiple gene sets. First, we will reload the alpha and gamma markers from the **Getting started with CSOA** tutorial, and run again CSOA with four gene sets:
-
-```{r}
+```{r, message=FALSE, out.height='100%', out.width='100%'}
 alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
                   'CHGA', 'SCGB2A1', 'GLS', 'FAP', 'DPP4', 'GPR119',
                   'PAX6', 'NEUROD1', 'LOXL4', 'PLCE1', 'GC', 'KLHL41',
@@ -366,19 +326,14 @@ seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames,
                              pairFileTemplate='pairs', 
                              keepOverlapOrder=TRUE)
 
-```
-
-We can now visualize information from all the four resulting overlap data frames in the circle plot. To facilitate visualization, we have chosen the top `25` overlaps for each gene set rather than the full `100` used in the calculation of CSOA scores. Correspondingly, the reported numbers of overlaps are now counted only among the top `25` overlaps—they do not include overlaps linking a gene that has registered an overlap in the top `25` with another one which has not.
-
-```{r}
 geneCirclePlot(lapply(paste0('pairs', geneSetNames, '.qs'), qGrab),
                groupStr='Gene set',
                groupNames=str_remove(geneSetNames, 'CSOA_'),
-               cutoff=25,
-               title='Top 25 overlap genes',
+               cutoff=15,
+               title='Top 15 overlap genes',
                extraCircles=2)
-```
 
+```
 
 # Session information {-}
 ```{r}

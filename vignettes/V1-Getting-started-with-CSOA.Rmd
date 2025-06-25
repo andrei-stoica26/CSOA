@@ -30,7 +30,7 @@ BiocManager::install("andrei-stoica26/CSOA")
 ```
 
 # Prerequisites
-In addition to CSOA, you need to install [harmony](https://github.com/immunogenomics/harmony), [patchwork](https://patchwork.data-imaginist.com/index.html),
+In addition to CSOA, you need to install [patchwork](https://patchwork.data-imaginist.com/index.html),
 [scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html) and [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) for this tutorial.
 
 
@@ -45,7 +45,6 @@ CSOA requires the input scRNA-seq data to be normalized and log-transformed. We 
 ```{r message=F, warning=F, results=F}
 library(CSOA)
 library(ggplot2)
-library(harmony)
 library(patchwork)
 library(scRNAseq)
 library(scuttle)
@@ -146,27 +145,20 @@ geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
 ```
 
-To visualize the results of CSOA on multiple gene sets, we define the `patchworkPlot` function, intended to display a plot composed of multiple subplots generated with the same function (specified using the `fun` parameter) as follows:
+We can now visualize the results:
 
-```{r}
-patchworkPlot <- function(seuratObj, geneSetNames, fun, ...){
-  plots <- lapply(geneSetNames, function(x) {
-  fun(seuratObj, x, ...) + NoLegend() +
+```{r, , out.height='100%', out.width='100%', fig.height=6, fig.width=6}
+plots <- lapply(geneSetNames, function(x) {
+  VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
     theme(axis.text = element_text(size=10),
           axis.title.x = element_blank(),
           plot.title = element_text (size=11))
-    })
-  (plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
-}
+})
+    
+(plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
 ```
 
-Next, we call the `patchworkPlot` function. For creating each subplot, we use again the `VlnPlot` function from `Seurat`.
-
-```{r warning=F, fig.height=6, fig.width=6}
-patchworkPlot(seuratObj, geneSetNames, VlnPlot, group.by = 'label') 
-```
-
-Additionally, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
+Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
 
 ```{r}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
@@ -174,43 +166,13 @@ sapply(geneSetNames,
        function(x) identical(seuratObj@meta.data[[x]], colData(sceObj)[[x]]))
 ```
 
-CSOA can also score multiple gene sets directly on an expression matrix. The results will again be available as a data frame.
+It can also score multiple gene sets directly on an expression matrix. The results will again be available as a data frame:
 
 ```{r}
 df <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
 head(df)
 sapply(geneSetNames, 
        function(x) identical(seuratObj@meta.data[[x]], df[[x]]))
-```
-
-# Feature plot visualization
-
-CSOA provides `featureWes`, an adaptation of `FeaturePlot` from `Seurat` with enhanced distinctiveness.
-
-The function builds a continuous scale based on two colors chosen from any [wesanderson](https://github.com/karthik/wesanderson) palette, specified using the following arguments:
--`wesPal`: The name of the palette
-`wesLow`: The index of the color chosen for the feature minimum
-`wesHigh`: The index of the color chosen for the feature maximum. 
-
-The `idClass` argument can be used to display labels of Seurat identity classes on the plot.
-
-To enable feature plot visualization, we will perform dimensionality reduction on the Seurat object. As the data came from four human subjects, integration is necessary. We will employ `harmony` for this task.
-
-```{r message=F, warning=F, results=F}
-
-seuratObj <- FindVariableFeatures(seuratObj)
-seuratObj <- ScaleData(seuratObj)
-seuratObj <- RunPCA(seuratObj)
-seuratObj <- RunHarmony(seuratObj, group.by.vars = 'orig.ident')
-seuratObj <- RunUMAP(seuratObj, dims = 1:20, reduction = 'harmony')
-
-```
-
-Now we can visualize the CSOA results as feature plots:
-
-```{r message=F, warning=F, fig.height=6, fig.width=6}
-patchworkPlot(seuratObj, geneSetNames, featureWes, wesPal = 'Darjeeling1', 
-              wesLow = 5, wesHigh = 1, idClass = 'label')  
 ```
 
 # Session information {-}
