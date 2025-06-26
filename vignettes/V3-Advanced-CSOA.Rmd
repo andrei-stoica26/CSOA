@@ -272,12 +272,16 @@ The violin plot shows enrichment in both the acinar and ductal groups, but the o
 ```{r}
 seuratObj <- runCSOA(seuratObj, mixedMarkers, 'CSOA_mixed', jaccardCutoff = 1/3, pairFileName='mixedPairs')
 ```
-This function has reduced the number of overlaps from 760 to 486 by selectively removing overlaps for which the neighbors of the corresponding genes overlapped little, as calculated using the Jaccard score. The resulting graph has two connected components, which correspond to acinar and ductal cells, respectively:
+This function has reduced the number of overlaps from 760 to 486 by selectively removing overlaps for which the neighbors of the corresponding genes overlapped little, as calculated using the Jaccard score. The resulting graph has two connected components:
 
-```{r, message=FALSE, warning=FALSE, out.height='60%', out.width='60%', fig.height=7, fig.width=6}
+```{r, out.height='80%', out.width='80%', fig.height=5, fig.width=5}
 dfNetwork <- qGrab('mixedPairs.qs')
+networkPlot(dfNetwork, rankCol='overlapRank')
+```
+These correspond to acinar and ductal cells, respectively:
+
+```{r, message=FALSE, warning=FALSE, out.height='60%', out.width='60%', fig.height=7, fig.width=6}  
 dfNetwork <- connectedComponents(dfNetwork)
-dplyr::count(dfNetwork, component)
 components <- unique(dfNetwork$component)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
 p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
@@ -286,6 +290,7 @@ p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
   theme(axis.text.y = element_blank())
 p1 / p2
 ```
+
 
 # Visualizing gene participation in top overlaps
 
