@@ -59,7 +59,7 @@ sapply(cellSets, length)
 
 We can now visualize the distribution of the cell sets among all the cells:
 
-```{r, out.height='100%', out.width='100%'}
+```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=5}
 mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
 basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
              title='Distribution of cell sets among all cells',
@@ -118,7 +118,7 @@ head(po)
 
 4. Scoring: `scoreOverlaps`
 
-`byCorrectDF` first performs the [Benjamini-Yekutieli correction for multiple testing](https://projecteuclid.org/journals/annals-of-statistics/volume-29/issue-4/The-control-of-the-false-discovery-rate-in-multiple-testing/10.1214/aos/1013699998.full). This slightly increases all p-values, but without changing their relative order. Subsequently, `byCorrectDF` filters out insignificant overlaps, with a significance level set by default at `0.05`:
+`byCorrectDF` performs the Benjamini-Yekutieli correction for multiple testing and filters out insignificant overlaps:
 
 ```{r}
 po2 <- byCorrectDF(cso)
@@ -126,9 +126,7 @@ dim(po2)
 head(po2)
 ```
 
-The overlap data frame has gained a new column (`pvalAdj`). The number of rows has decreased from `1081` to `619` due to the filtering of insignificant overlaps.
-
-Next, `rankOverlaps` is used to define a rank using the following steps:
+`rankOverlaps` defines an overlap rank using the following steps:
 
 1. Two preliminary overlap ranks are computed based on: 1) **adjusted p-value**; 2) **recorded-over-expected size ratio**.
 
@@ -143,16 +141,14 @@ po2 <- rankOverlaps(po2)
 head(po2)
 ```
 
-We will now select the overlaps that will be retained for score calculation. CSOA defines the overlap rank cutoff as the highest-frequency rank, if unique; if multiple ranks share the maximum frequency, CSOA takes the average of their minimum and maximum. 
+This rank is used to select top overlaps. CSOA defines the overlap rank cutoff as the highest-frequency rank, if unique, and as the average of the minimum and maximum of the highest-frequency ranks otherwise. Geometrically, this entails taking the highest point of the upper convex hull of the set of points on a grid with overlap ranks on the `x` axis and frequencies on the `y` axis:
 
-Geometrically, this can be interpreted as taking the highest point of the upper convex hull determined by points on a grid with overlap ranks on the `x` axis and frequencies on the `y` axis. We use the `overlapCutoffPlot` function to visualize this procedure:
-
-```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=6}
+```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=5}
 freqDF <- dplyr::count(po2, rank)
 overlapCutoffPlot(freqDF, findRankCutoff(freqDF))
 ```
 
-We can now run `prepareFiltering`, a wrapper around `findRankCutoff` which returns the highest raw rank of the overlaps that were **not** selected (`firstOutRawRank`). This information can be used later by the `scoreOverlaps` function if the scoring method (`osMethod`) is changed from the default `log` to `minmax`. 
+Next, we run `prepareFiltering`, a wrapper around `findRankCutoff` which returns the highest raw rank of the non-selected overlaps:
 
 ```{r}
 firstOutRawRank <- prepareFiltering(po2)
@@ -168,46 +164,36 @@ po2 <- filterOverlaps(po2, firstOutRawRank)
 dim(po2)
 ```
 
-Next, `scoreOverlaps` is applied with the default `log` overlap scoring method. The resulting data frame is identical with the one generated earlier using `processOverlaps`, as default parameters were used in both cases. 
+Next, `scoreOverlaps` is applied with the default `log` overlap scoring method, which assigns scores starting at `1` and decreasing logarithmically towards `0` for each unique rank (though `0` is not reached but interpreted as the score of the first non-top overlap). The resulting data frame is identical with the one generated earlier using `processOverlaps`. 
 
-```{r}
+```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
 po2 <- scoreOverlaps(po2)
 head(po2)
 identical(po, po2)
-```
-
-The `log` method assigns values starting at `1` and decreasing logarithmically towards `0`, corresponding to each unique rank. Overlaps with the same rank receive the same score. The figure of `0` is not reached, but is interpreted as the score of this first non-top overlap. We can plot the scores versus the ranks using `rankScorePlot`:
-
-```{r, out.height='100%', out.width='100%'}
 rankScorePlot(po2, 'Overlap scores computed using the log method')
 ```
-The alternative scoring option is `minmax`, which performs inverted minmax normalization of the ranks of the top overlaps and the previously computed `firstOutRawRank`:
 
-```{r, out.height='100%', out.width='100%'}
+Alternatively, overlaps can be scored by performing inverted minmax normalization of the ranks of the top overlaps and `firstOutRawRank`:
+
+```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
 po2Minmax <- scoreOverlaps(po2, 'minmax', firstOutRawRank)
 rankScorePlot(po2Minmax, 'Overlap scores computed using the minmax method')
 head(po2Minmax)
 ```
 
-For both methods, scores are positive, the largest score is `1`, higher-ranked overlaps have higher scores, and equally-ranked overlaps have equal scores.
+Both methods return positive scores with `1` as the largest value, higher scores for higher-ranked overlaps, and equal scores for equally-ranked overlaps.
 
 # Scoring the cells
 
-The `overlapGenes` function selects all genes that registered at least one top overlap. In general, these are **not** the same as the original input genes, because not all input genes register top overlaps. Here, we observe that `27` out of the original `47` input genes have registered top overlaps:
+Only input genes that registered a top overlap participate in the scoring of cells. We select these genes using `overlapGenes`, and we minmax-normalize their expression:
 ```{r}
 genes <- overlapGenes(po2)
 length(genes)
 length(acinarMarkers)
-setdiff(acinarMarkers, genes)
-```
-
-We extract and minmax-normalize the expression of these `27` genes:
-
-```{r}
 normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
 ```
 
-We can now compute the per-cell scores of each gene pair corresponding to a top overlap by multiplying these three quantities:
+We now compute the per-cell scores of each gene pair corresponding to a top overlap by multiplying these three quantities:
 
 1. The overlap score of the gene pair;
 
@@ -220,7 +206,7 @@ pcPairScores <- computePCPairScores(po2, normExp)
 dim(pcPairScores)
 ```
 
-Next, we compute the CSOA score for each cell by summing the columns of `pcPairScores` and performing minmax normalization to bring the results to `[0, 1]`. We use the `computePCSetScores` function for this task, with the cell names taken from the `geneSetExp` expression matrix. The result is a data frame with a score column:
+The per-cell CSOA score is the minmax-normalized sum of the columns of `pcPairScores`:
 
 ```{r}
 df <- computePCSetScores(pcPairScores, cellNames = colnames(geneSetExp), 
@@ -228,16 +214,16 @@ df <- computePCSetScores(pcPairScores, cellNames = colnames(geneSetExp),
 head(df)
 ```
 
-To attach the scores to the `Seurat` object, we run `storeCellScores`:
+Finally, we attach the CSOA scores to the `Seurat` object:
 
-```{r, message=F, warning=F, out.height='100%', out.width='100%'}
+```{r, message=F}
 seuratObj <- storeCellScores(seuratObj, df)
-VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label') + NoLegend()
+head(seuratObj$CSOA_acinar)
 ```
 
 # The usage of scoring wrappers
 
-CSOA offers multiple wrappers for scoring the cells, starting and ending at different parts of the pipeline. These allow users to explore intermediary outputs and alter intermediary inputs.
+CSOA offers several wrappers for scoring the cells. They start and end at different parts of the pipeline, allowing users to explore intermediary outputs and alter intermediary inputs.
 
 The `scoreCells` function requires an unprocessed overlap data frame—the output of `cellSetsOverlaps` or its wrapper `generateOverlaps`—and returns the output of `computePCSetScores`:
 
@@ -246,7 +232,7 @@ dfScoreCells <- scoreCells(geneSetExp, cso, 'CSOA_acinar')
 identical(dfScoreCells$CSOA_acinar, df$CSOA_acinar)
 ```
 
-The `computeCellScores` function starts further downstream, requiring a processed overlap data frame (the output of `processOverlaps`), the minmax-normalized expression matrix of top overlap genes, as well as the cell names. It likewise returns the output of `computePCSetScores`:
+The `computeCellScores` function starts further downstream. It requires a processed overlap data frame (the output of `processOverlaps`), the minmax-normalized expression matrix of top overlap genes, and the cell names. It likewise returns the output of `computePCSetScores`:
 
 ```{r}
 dfComputeCellScores <- computeCellScores(po2, normExp, 
@@ -255,7 +241,7 @@ dfComputeCellScores <- computeCellScores(po2, normExp,
 identical(dfComputeCellScores$CSOA_acinar, df$CSOA_acinar)
 ```
 
-Finally, the `runCSOA` wrapper introduced in **Getting started with CSOA** runs the whole pipeline, including `storeCellScores`, the step after `computePCSetScores`:  
+Finally, the `runCSOA` wrapper runs the whole pipeline including `storeCellScores`:  
 
 ```{r}
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
