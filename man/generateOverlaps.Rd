@@ -18,10 +18,10 @@ for which cell sets will be computed}
 \item{percentile}{A non-negative number below 100}
 
 \item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
-pairs will be assessed}
+pairs will be assessed.}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the overlap data frame will not be saved).}
 }
 \value{
 A data frame listing statistics for all cell set overlaps

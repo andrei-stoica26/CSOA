@@ -54,8 +54,8 @@ scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames,
 #' @export
 #'
 runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90,
-                            overlapFileName = NULL, pvalThr = 0.05, savePlots = FALSE,
-                            jaccardCutoff = NULL, osMethod = 'log',
+                            overlapFileName = NULL, pvalThr = 0.05,
+                            savePlots = FALSE, jaccardCutoff = NULL, osMethod = 'log',
                             pairFileTemplate = NULL, keepOverlapOrder = FALSE){
   geneSets <- lapply(geneSets, sort)
   setPairs <- lapply(geneSets, getPairs)
@@ -63,7 +63,8 @@ runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90,
   genes <- Reduce(union, geneSets)
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs, overlapFileName)
-  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames, pvalThr, savePlots,
-                                jaccardCutoff, osMethod, pairFileTemplate, keepOverlapOrder)
+  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF, setPairs, geneSetNames,
+                                pvalThr, savePlots, jaccardCutoff, osMethod,
+                                pairFileTemplate, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

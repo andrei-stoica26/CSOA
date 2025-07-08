@@ -1,3 +1,4 @@
+#' @importFrom BiocParallel bplapply MulticoreParam SnowParam
 #' @importFrom data.table transpose
 #' @importFrom qs qsave
 #' @importFrom stringr str_c
@@ -5,44 +6,52 @@
 #'
 NULL
 
-#' Compute the overlap of two cell sets
+#' Compute the pairwise overlaps of a list of cell sets
 #'
-#' This function performs the overlap
-#' column of p-values. Additionally, the function filters the dataframe based on
-#' p-values, unless pvalThr is set as NULL.
+#' This function performs the pairwise overlaps of a list of cell sets.
 #'
-#' @param pairCellSets A named list of two character arrays
-#' @param nCells An integer
+#' @param cellSets A named list of two character arrays.
+#' @param pairs Pairs.
+#' @param nCells An integer.
 #'
 #' @return A vector comprising the names of genes, the cell counts, the recorded and
 #' expected shared cells, the recorded-over-expected ratio, and the hypergeometric
-#' p-value
+#' p-value.
 #'
-pairOverlap <- function(pairCellSets, nCells){
-  xCount <- length(pairCellSets[[1]])
-  yCount <- length(pairCellSets[[2]])
-  recorded <- length(intersect(pairCellSets[[1]], pairCellSets[[2]]))
+pairOverlap <- function(cellSets, pairs, nCells){
+  gene1 <- vapply(pairs, `[[`, character(1), 1)
+  gene2 <- vapply(pairs, `[[`, character(1), 2)
+
+  set1 <- cellSets[gene1]
+  set2 <- cellSets[gene2]
+
+  xCount <- lengths(set1)
+  yCount <- lengths(set2)
+
+  recorded <- mapply(function(a, b) length(intersect(a, b)), set1, set2)
   expected <- xCount * yCount / nCells
-  ratio <-  recorded / expected
-  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount, FALSE)
-  res <- c(names(pairCellSets)[1], names(pairCellSets)[2], xCount, yCount,
-           recorded, expected, ratio, pval)
-  return(res)
+  ratio <- recorded / expected
+  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount, lower.tail = FALSE)
+
+  df <- data.frame(gene1 = gene1, gene2 = gene2, ncells1 = xCount,
+                   ncells2 = yCount, shared_cells = recorded,
+                   exp_shared_cells = expected, ratio = ratio, pval = pval)
+  return(df)
 }
 
 #' Calculates the significance of overlaps of pairs of cells sets
 #'
 #' This function computes the statistical significance of overlaps of pairs of
-#' cell sets
+#' cell sets.
 #'
-#' @param cellSets A list of character arrays
-#' @param nCells The total number of cells in the Seurat object
+#' @param cellSets A list of character arrays.
+#' @param nCells The total number of cells in the Seurat object.
 #' @param pairs Pairs of cell sets to be assessed. If NULL (as default), all
-#' pairs will be assessed
+#' pairs will be assessed.
 #' @param overlapFileName The name of the file where the overlap data frame
-#' will be saved. Default is NULL (the overlap data frame will not be saved)
+#' will be saved. Default is NULL (the overlap data frame will not be saved).
 #'
-#' @return A data frame listing statistics for all cell set overlaps
+#' @return A data frame listing statistics for all cell set overlaps.
 #'
 #' @export
 #'
@@ -51,14 +60,7 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = N
   genes <- names(cellSets)
   if(is.null(pairs))
     pairs <- getPairs(genes)
-  df <- lapply(pairs, function(x) pairOverlap(cellSets[x], nCells))
-  df <- data.frame(Reduce(rbind, df))
-  if (ncol(df) == 1)
-    df <- data.table::transpose(df)
-  df[, c(3:8)] <- apply(df[, c(3:8)], 2, as.numeric)
-  colnames(df) <- c('gene1', 'gene2', 'ncells1', 'ncells2', 'shared_cells',
-                    'exp_shared_cells', 'ratio', 'pval')
-  rownames(df) <- 1:length(rownames(df))
+  df <- pairOverlap(cellSets, pairs, nCells)
   if (!is.null(overlapFileName)){
     overlapFile <- paste0(overlapFileName, '.qs')
     message(paste0('Saving overlap file: ', overlapFile, '...'))

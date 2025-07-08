@@ -45,16 +45,16 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #'
 rankOverlaps <- function(overlapDF){
   overlapDF <- overlapDF[order(overlapDF$pval), ]
-  overlapDF$pvalRank <- rank(overlapDF$pval, ties.method='min')
-  overlapDF <- overlapDF[order(overlapDF$ratio, decreasing = TRUE), ]
-  overlapDF$ratioRank <- rank(-overlapDF$ratio, ties.method='min')
+  overlapDF$pvalRank <- dense_rank(overlapDF$pval)
+  overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]
+  overlapDF$ratioRank <- dense_rank(-overlapDF$ratio)
 
   geneConn <- geneBestEdgeRank(overlapDF)
   overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] + geneConn[overlapDF$gene2, 1]) / 2
   overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] + geneConn[overlapDF$gene2, 2]) / 2
   overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2
 
-  overlapDF$rank <- rank(overlapDF$rawAggRank, ties.method = 'min')
+  overlapDF$rank <- dense_rank(overlapDF$rawAggRank)
   overlapDF <- overlapDF[order(overlapDF$rank), ]
   return(overlapDF)
 }

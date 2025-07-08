@@ -21,9 +21,11 @@ NULL
 #'
 #' @export
 #'
-generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL, overlapFileName = NULL){
+generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
+                             overlapFileName = NULL){
   cellSets <- percentileSets(geneSetExp, percentile)
-  overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs, overlapFileName)
+  overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs,
+                                overlapFileName)
   return(overlapDF)
 }
 
@@ -169,14 +171,16 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05,
 #' @export
 #'
 runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90,
-                    overlapFileName = NULL, pvalThr = 0.05, savePlots = FALSE,
-                    jaccardCutoff = NULL, osMethod = 'log', pairFileName = NULL,
-                    keepOverlapOrder = FALSE){
+                    overlapFileName = NULL, pvalThr = 0.05,
+                    savePlots = FALSE, jaccardCutoff = NULL, osMethod = 'log',
+                    pairFileName = NULL, keepOverlapOrder = FALSE){
   if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
     stop('genes must be a character vector of length >= 2')
   geneSetExp <- expMat(scObj, genes)
-  overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL, overlapFileName)
-  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, savePlots, jaccardCutoff, osMethod,
+  overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL,
+                                overlapFileName)
+  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, savePlots,
+                        jaccardCutoff, osMethod,
                         pairFileName, keepOverlapOrder)
   return(storeCellScores(scObj, scoreDF))
 }

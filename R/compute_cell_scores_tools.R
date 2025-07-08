@@ -1,3 +1,8 @@
+#' @importFrom dplyr dense_rank
+#'
+NULL
+
+
 #' Compute per-cell gene pair scores
 #'
 #' This function scores each gene pair corresponding to a top overlap in each
@@ -21,11 +26,15 @@ computePCPairScores <- function(overlapDF, normExp){
   if(max(normExp) != 1 | min(normExp) != 0)
     stop('The maximum value of normExp must be 1 and its minimum must be 0')
   message('Computing per-cell scores for gene pairs...')
-  df <- data.table::transpose(data.frame(lapply(1:nrow(overlapDF), function(i) overlapDF[i, 'score'] *
-                         normExp[overlapDF[i, 'gene1'], ] * normExp[overlapDF[i, 'gene2'], ])))
-  rownames(df) <- paste0(paste0(overlapDF$gene1, '_'), overlapDF$gene2)
-  colnames(df) <- colnames(normExp)
-  return(df)
+  gene1 <- overlapDF$gene1
+  gene2 <- overlapDF$gene2
+  scores <- overlapDF$score
+
+  pcPairScores <- normExp[gene1, , drop=FALSE] * normExp[gene2, , drop=FALSE]
+  pcPairScores <- pcPairScores * scores
+  pcPairScores <- as.data.frame(pcPairScores)
+  rownames(pcPairScores) <- paste0(gene1, "_", gene2)
+  return(pcPairScores)
 }
 
 #' Compute aggregate gene pair scores
@@ -58,7 +67,7 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
   df$pairScore <- pairTotalScores / totalScore * 100
   df <- df[order(df$pairScore, decreasing=TRUE), ]
 
-  df$pairRank <- rank(-df$pairScore, ties.method = 'min')
+  df$pairRank <- dense_rank(-df$pairScore)
   df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
 
   if (keepOverlapOrder)

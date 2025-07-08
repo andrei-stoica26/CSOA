@@ -28,7 +28,7 @@ runCSOA(
 \item{percentile}{A non-negative number below 100}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved)}
+will be saved. Default is NULL (the overlap data frame will not be saved).}
 
 \item{pvalThr}{p-value threshold}
 

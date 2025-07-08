@@ -2,22 +2,22 @@
 % Please edit documentation in R/generate_overlaps_tools.R
 \name{pairOverlap}
 \alias{pairOverlap}
-\title{Compute the overlap of two cell sets}
+\title{Compute the pairwise overlaps of a list of cell sets}
 \usage{
-pairOverlap(pairCellSets, nCells)
+pairOverlap(cellSets, pairs, nCells)
 }
 \arguments{
-\item{pairCellSets}{A named list of two character arrays}
+\item{cellSets}{A named list of two character arrays.}
 
-\item{nCells}{An integer}
+\item{pairs}{Pairs.}
+
+\item{nCells}{An integer.}
 }
 \value{
 A vector comprising the names of genes, the cell counts, the recorded and
 expected shared cells, the recorded-over-expected ratio, and the hypergeometric
-p-value
+p-value.
 }
 \description{
-This function performs the overlap
-column of p-values. Additionally, the function filters the dataframe based on
-p-values, unless pvalThr is set as NULL.
+This function performs the pairwise overlaps of a list of cell sets.
 }

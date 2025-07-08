@@ -166,7 +166,7 @@ qGrab <- function(qsFile){
 #'
 rankReplace <- function(df, colName, rankSign = 1){
   df <- df[order(df[, colName], decreasing=rankSign - 1), ]
-  df[, colName] <- rank(rankSign * df[, colName], ties.method='min')
+  df[, colName] <- dense_rank(rankSign * df[, colName])
   return(df)
 }
 
