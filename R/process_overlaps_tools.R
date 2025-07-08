@@ -157,7 +157,7 @@ scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
 
   if (osMethod == 'minmax'){
     rawRank <- c(overlapDF$rawAggRank, firstOutRawRank)
-    overlapDF$score <- (1 - vMinmax(rawRank))[overlapDF$rank]
+    overlapDF$score <- 1 - vMinmax(rawRank)[seq_len(nrow(overlapDF))]
   }
 
   return(overlapDF)

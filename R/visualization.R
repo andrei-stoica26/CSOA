@@ -2,7 +2,7 @@
 #'@importFrom ggeasy easy_remove_axes
 #'@importFrom ggforce geom_circle
 #'@importFrom ggnewscale new_scale_color new_scale_fill
-#'@importFrom ggplot2 aes annotate coord_fixed element_blank element_text geom_hline geom_line geom_point geom_polygon geom_segment geom_tile geom_vline ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual scale_x_continuous scale_y_continuous theme theme_classic theme_minimal theme_void xlim ylim
+#'@importFrom ggplot2 aes annotate coord_fixed element_blank element_text geom_hline geom_line geom_point geom_polygon geom_segment geom_tile geom_vline ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual scale_size_continuous scale_x_continuous scale_y_continuous theme theme_classic theme_minimal theme_void xlim ylim
 #'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
@@ -343,31 +343,3 @@ rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot
   p <- titlePlot(p, title)
   return(p)
 }
-
-#' Plot overlap scores
-#'
-#' This function plots overlap scores versus ranks.
-#'
-#' @param df A data frame with rank and score columns.
-#' @param title Plot title.
-#' @param lineColor Line color.
-#' @param pointColor Point color.
-#' @param pointSize Point size.
-#' @param axisTitleSize Axis title size.
-#'
-#' @return A ggplot object.
-#'
-#' @export
-#'
-rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4',
-                          pointColor = 'red', pointSize = 1, axisTitleSize = 10){
-  p <- ggplot(df, aes(x=rank, y=score)) +
-    geom_line(color=lineColor) + geom_point(color=pointColor, size=pointSize) +
-    labs(x = 'Overlap rank', y = 'Overlap score')
-  p <-  p <- p + theme_classic() + theme(axis.text.x=element_text(size=axisTitleSize - 1),
-                                         axis.text.y=element_text(size=axisTitleSize - 1),
-                                         axis.title=element_text(size=axisTitleSize))
-  p <- titlePlot(p, title)
-  return(p)
-}
-

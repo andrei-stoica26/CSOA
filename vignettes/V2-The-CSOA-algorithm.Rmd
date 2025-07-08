@@ -53,13 +53,13 @@ Next, a cell set representing the highest-expression cells is constructed for ea
 **! Note:** The percentile is taken over all the cells expressing the gene, not over all the cells in the dataset. Therefore, the cell sets are allowed to vary in size.
 
 ```{r}
-cellSets <- percentileSets(geneSetExp, percentile = 90)
+cellSets <- percentileSets(geneSetExp, percentile=90)
 sapply(cellSets, length)
 ```
 
 We can now visualize the distribution of the cell sets among all the cells:
 
-```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=5}
+```{r, out.height='80%', out.width='80%', fig.height=6, fig.width=5}
 mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
 basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
              title='Distribution of cell sets among all cells',
@@ -169,16 +169,15 @@ Next, `scoreOverlaps` is applied with the default `log` overlap scoring method, 
 ```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
 po2 <- scoreOverlaps(po2)
 head(po2)
+head(po2$score, 30)
 identical(po, po2)
-rankScorePlot(po2, 'Overlap scores computed using the log method')
 ```
 
 Alternatively, overlaps can be scored by performing inverted minmax normalization of the ranks of the top overlaps and `firstOutRawRank`:
 
 ```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
 po2Minmax <- scoreOverlaps(po2, 'minmax', firstOutRawRank)
-rankScorePlot(po2Minmax, 'Overlap scores computed using the minmax method')
-head(po2Minmax)
+head(po2Minmax$score, 30)
 ```
 
 Both methods return positive scores with `1` as the largest value, higher scores for higher-ranked overlaps, and equal scores for equally-ranked overlaps.

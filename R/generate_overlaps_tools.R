@@ -1,4 +1,3 @@
-#' @importFrom BiocParallel bplapply MulticoreParam SnowParam
 #' @importFrom data.table transpose
 #' @importFrom qs qsave
 #' @importFrom stringr str_c
