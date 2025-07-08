@@ -87,9 +87,10 @@ overlapGenes <- function(overlapDF)
 #' @export
 #'
 pointsOnCircle <- function(r, nPoints){
-  angleOffset <- runif(n = 1, min = 0, max = 2 * pi)
+  angleOffset <- runif(n=1, min=0, max=2 * pi)
   theta <- 2 * pi / nPoints
-  points <- lapply(1:nPoints, function(k) c(r * cos(k * theta + angleOffset), r * sin(k * theta + angleOffset)))
+  points <- lapply(1:nPoints, function(k) c(r * cos(k * theta + angleOffset),
+                                            r * sin(k * theta + angleOffset)))
   df <- data.table::transpose(data.frame(points))
   colnames(df) <- c('x', 'y')
   return(df)
@@ -107,7 +108,7 @@ pointsOnCircle <- function(r, nPoints){
 #' @return The output of LayerData if layer exists
 #'
 safeLayerData <- function(seuratObj, layer){
-  layerData <- suppressWarnings(LayerData(seuratObj, layer = layer))
+  layerData <- suppressWarnings(LayerData(seuratObj, layer=layer))
   if (!dim(layerData)[1])
     stop(paste0('The Seurat object has no ', layer, ' layer.'))
   return(layerData)
@@ -164,12 +165,10 @@ qGrab <- function(qsFile){
 #' @export
 #'
 rankReplace <- function(df, colName, rankSign = 1){
-  df <- df[order(df[, colName], decreasing = rankSign - 1), ]
-  df[, colName] <- rank(rankSign * df[, colName], ties.method = 'min')
+  df <- df[order(df[, colName], decreasing=rankSign - 1), ]
+  df[, colName] <- rank(rankSign * df[, colName], ties.method='min')
   return(df)
 }
-
-as.logical(0)
 
 #' Applies kerntools minmax-normalization on a vector using
 #'

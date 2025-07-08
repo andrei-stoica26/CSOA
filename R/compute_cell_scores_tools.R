@@ -56,13 +56,13 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
   totalScore <- sum(pairTotalScores)
 
   df$pairScore <- pairTotalScores / totalScore * 100
-  df <- df[order(df$pairScore, decreasing = TRUE), ]
+  df <- df[order(df$pairScore, decreasing=TRUE), ]
 
   df$pairRank <- rank(-df$pairScore, ties.method = 'min')
   df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
 
   if (keepOverlapOrder)
-    df <- df[order(df$overlapScore, decreasing = TRUE), ]
+    df <- df[order(df$overlapScore, decreasing=TRUE), ]
 
   if (!is.null(pairFileName)){
     pairFile <- paste0(pairFileName, '.qs')

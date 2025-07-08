@@ -106,9 +106,9 @@ wesBinaryGradient <- function(p, wesPal = 'Royal1', wesLow = 3, wesHigh = 2, pal
 #' @param seuratObj A SeuratObj.
 #' @param feature Seurat feature.
 #' @param title Plot title.
-#' @param idClass Column to be used for labelling.
-#' @param label Whether to label the identity classes
-#' @param labelSize Size of labels.
+#' @param idClass Column to be used for labelling. If NULL, no column-based labels
+#' will be generated.
+#' @param labelSize Size of labels. Ignored if idClass is NULL.
 #' @param repel Whether to make names of labels repel.
 #' @param titleSize Title size.
 #' @param ... Other arguments passed to wesBinaryGradient.
@@ -117,10 +117,13 @@ wesBinaryGradient <- function(p, wesPal = 'Royal1', wesLow = 3, wesHigh = 2, pal
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title = feature, idClass = 'orig.ident',
-                       label = TRUE, labelSize = 3, repel = TRUE, titleSize = 12, ...){
-  Idents(seuratObj) <- idClass
-  p <- FeaturePlot(seuratObj, feature, label = label, label.size = labelSize, repel = repel)
+featureWes <- function(seuratObj, feature, title = feature, idClass = NULL,
+                       labelSize = 3, titleSize = 12, ...){
+  if(is.null(idClass))
+    p <- FeaturePlot(seuratObj, feature) else{
+      Idents(seuratObj) <- idClass
+      p <- FeaturePlot(seuratObj, feature, label=TRUE, label.size=labelSize, repel=TRUE)
+    }
   p <- titlePlot(p, title, size = titleSize)
   p <- wesBinaryGradient(p, ...)
   return(p)
@@ -142,17 +145,17 @@ featureWes <- function(seuratObj, feature, title = feature, idClass = 'orig.iden
 #'
 #' @export
 #'
-networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank', edgeScale = 2,
-                        nodePointSize = 10, nodeTextSize = 2.3, ...){
+networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank',
+                        edgeScale = 2, nodePointSize = 10, nodeTextSize = 2.3, ...){
   df <- networkPlotDF(overlapDF, rankCol, edgeScale)
-  tblGraph <- tidygraph::as_tbl_graph(df, directed = FALSE)
-  p <- ggraph(tblGraph, layout = "nicely") +
-    geom_edge_link(aes(width = weight), color = 'green4') +
-    scale_edge_width(range = c(0.1, 0.3)) +
-    geom_node_point(size = nodePointSize, color = 'orange') +
-    geom_node_text(aes(label = name), color = 'black', size = nodeTextSize) +
+  tblGraph <- tidygraph::as_tbl_graph(df, directed=FALSE)
+  p <- ggraph(tblGraph, layout="nicely") +
+    geom_edge_link(aes(width=weight), color='green4') +
+    scale_edge_width(range=c(0.1, 0.3)) +
+    geom_node_point(size=nodePointSize, color='orange') +
+    geom_node_text(aes(label=name), color='black', size=nodeTextSize) +
     theme_void() +
-    theme(legend.position = 'none')
+    theme(legend.position='none')
   p <- titlePlot(p, title, ...)
   return(p)
 }
@@ -177,20 +180,29 @@ geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutof
   message('Plotting genes...')
   legendStep <- as.integer(geneCoordsDF$nEdges[1] / 6) + 1
   p <- ggplot() +
-    geom_circle(aes(x0 = x, y0 = y, r = r, fill = nEdges, color = nEdges), data = circleCoordsDF) +
-    scale_fill_viridis(option = 'viridis', begin = 0.4, breaks = seq(geneCoordsDF$nEdges[1], 1, -legendStep)) +
-    scale_color_viridis(option = 'viridis', begin = 0.4, breaks = seq(geneCoordsDF$nEdges[1], 1, -legendStep), guide = 'none') +
+    geom_circle(aes(x0=x, y0=y, r=r, fill=nEdges, color=nEdges),
+                data = circleCoordsDF) +
+    scale_fill_viridis(option='viridis', begin=0.4,
+                       breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep)) +
+    scale_color_viridis(option='viridis', begin=0.4,
+                        breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep), guide='none') +
     labs(fill = 'Number of top overlaps') +
     theme_classic() + easy_remove_axes() + coord_fixed() +
-    theme(plot.margin = margin(0, 0, 0, 0), legend.title = element_text(size = 10), legend.text = element_text(size = 10)) +
-    geom_text_repel(aes(x, y, label = gene), data = geneCoordsDF, size = 3)
+    theme(plot.margin=margin(0, 0, 0, 0),
+          legend.title=element_text(size=10),
+          legend.text=element_text(size=10)) +
+    geom_text_repel(aes(x, y, label=gene), data=geneCoordsDF, size=3)
   if (!is.null(groupStr))
     p <- p + new_scale_color() +
     new_scale_fill() +
-    geom_point(aes(x, y, color = group), data = geneCoordsDF, size = 0.8) +
-    scale_color_discrete(type = c('red', 'purple1', 'olivedrab1','darkorange1', 'lavender', 'thistle1', 'green1','violetred4',
-                                  'goldenrod1', 'firebrick4')) +
-    labs(color = groupStr) else p <- p + geom_point(aes(x, y), data = geneCoordsDF, color = 'red', size = 0.8)
+    geom_point(aes(x, y, color=group), data = geneCoordsDF, size=0.8) +
+    scale_color_discrete(type=c('red', 'purple1', 'olivedrab1','darkorange1',
+                                'lavender', 'thistle1', 'green1','violetred4',
+                                'goldenrod1', 'firebrick4')) +
+    labs(color=groupStr) else p <- p + geom_point(aes(x, y),
+                                                  data=geneCoordsDF,
+                                                  color='red',
+                                                  size=0.8)
   p <- titlePlot(p, title)
   return(p)
 }
@@ -237,14 +249,14 @@ birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', point
 #'
 basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap', axisTextSize = 7, palType = 'fillCont', ...){
   df <- heatmapDF(mat, aesNames)
-  p <- ggplot(df, aes(x = .data[[aesNames[2]]], y = .data[[aesNames[1]]], fill = .data[[aesNames[3]]])) +
+  p <- ggplot(df, aes(x=.data[[aesNames[2]]], y=.data[[aesNames[1]]], fill=.data[[aesNames[3]]])) +
     geom_tile() +
     theme_minimal() +
-    theme(axis.text.x = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.text.y = element_text(size = axisTextSize),
-          axis.title.y = element_blank())
-  p <- wesBinaryGradient(p, palType = palType, ...)
+    theme(axis.text.x=element_blank(),
+          axis.ticks.y=element_blank(),
+          axis.text.y=element_text(size = axisTextSize),
+          axis.title.y=element_blank())
+  p <- wesBinaryGradient(p, palType=palType, ...)
   p <- titlePlot(p, title)
   return(p)
 }
@@ -275,15 +287,20 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
   plgOut <- hullToPolygon(hull, rankCutoff, 'out')
 
   p <- ggplot() +  theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
-    labs(x = 'Overlap rank', y = 'Frequency') +
-    geom_polygon(data = plg, aes(x, y, fill='Accepted overlaps'), alpha = 0.2, ) +
-    geom_polygon(data = plgOut, aes(x, y, fill='Discarded overlaps'), alpha = 0.2) +
-    geom_segment(data = hullSegments, aes(x, y, xend = xEnd, yend = yEnd), color = 'black' ,linewidth = 0.8) +
-    geom_point(data = freqDF, aes(rank, n), color = 'black', size = 1, shape = 24) +
-    scale_fill_manual(values = c('purple', 'gold'), labels = c('Accepted overlaps', 'Discarded overlaps')) +
-    geom_vline(xintercept = rankCutoff, color = 'blue', size = 0.3, linetype = 'dashed') +
-    theme(legend.title = element_blank(),
-          legend.position = 'bottom')
+    labs(x='Overlap rank', y='Frequency') +
+    geom_polygon(data = plg, aes(x, y, fill='Accepted overlaps'), alpha=0.2, ) +
+    geom_polygon(data = plgOut, aes(x, y, fill='Discarded overlaps'), alpha=0.2) +
+    geom_segment(data = hullSegments, aes(x, y, xend=xEnd, yend=yEnd),
+                 color='black', linewidth=0.8) +
+    geom_point(data = freqDF, aes(rank, n), color = 'black', size=1, shape=24) +
+    scale_fill_manual(values=c('purple', 'gold'),
+                      labels=c('Accepted overlaps', 'Discarded overlaps')) +
+    geom_vline(xintercept=rankCutoff,
+               color='blue',
+               size=0.3,
+               linetype='dashed') +
+    theme(legend.title=element_blank(),
+          legend.position='bottom')
   p <- titlePlot(p, title)
   return(p)
 }
@@ -308,10 +325,19 @@ rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot
   yInt <- max(retainedRawRanks)
   xInt <- unique(subset(overlapDF, rawAggRank == yInt)$rank)
   nOverlaps <- length(retainedRawRanks)
-  p <- ggplot(overlapDF, aes(x = rank, y = rawAggRank)) + geom_point(size = 0.3, color = pointColor) + theme_minimal() +
-    labs(x = 'Overlap rank', y = 'Overlap raw rank') +
-    geom_hline(yintercept = yInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
-    geom_vline(xintercept = xInt, color = 'blue', linetype = 'dashed', linewidth = 0.3) +
+  p <- ggplot(overlapDF, aes(x=rank, y=rawAggRank)) +
+    geom_point(size=0.3, color=pointColor) +
+    theme_minimal() +
+    labs(x='Overlap rank',
+         y='Overlap raw rank') +
+    geom_hline(yintercept=yInt,
+               color='blue',
+               linetype='dashed',
+               linewidth=0.3) +
+    geom_vline(xintercept=xInt,
+               color='blue',
+               linetype='dashed',
+               linewidth=0.3) +
     annotate('rect', xmin=0, xmax=xInt, ymin=0, ymax=yInt, alpha=0.2, fill='purple') +
     annotate("text", x=xInt / 2, y=yInt / 2, label=nOverlaps)
   p <- titlePlot(p, title)
@@ -333,12 +359,14 @@ rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot
 #'
 #' @export
 #'
-rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4', pointColor = 'red', pointSize = 1, axisTitleSize = 10){
-  p <- ggplot(df, aes(x = rank, y = score)) + geom_line(color = lineColor) + geom_point(color = pointColor, size = pointSize) +
+rankScorePlot <- function(df, title = 'Rank-score plot', lineColor = 'mediumpurple4',
+                          pointColor = 'red', pointSize = 1, axisTitleSize = 10){
+  p <- ggplot(df, aes(x=rank, y=score)) +
+    geom_line(color=lineColor) + geom_point(color=pointColor, size=pointSize) +
     labs(x = 'Overlap rank', y = 'Overlap score')
-  p <-  p <- p + theme_classic() + theme(axis.text.x = element_text(size = axisTitleSize - 1),
-                                         axis.text.y = element_text(size = axisTitleSize - 1),
-                                         axis.title = element_text(size = axisTitleSize))
+  p <-  p <- p + theme_classic() + theme(axis.text.x=element_text(size=axisTitleSize - 1),
+                                         axis.text.y=element_text(size=axisTitleSize - 1),
+                                         axis.title=element_text(size=axisTitleSize))
   p <- titlePlot(p, title)
   return(p)
 }

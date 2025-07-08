@@ -19,7 +19,7 @@ heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
   if (!is.matrix(mat))
     stop('mat must be a matrix')
   mat <- cluster_matrix(mat)
-  df <- reshape2::melt(mat, varnames = colNames[1:2], value.name = colNames[3])
+  df <- reshape2::melt(mat, varnames=colNames[1:2], value.name=colNames[3])
   return(df)
 }
 

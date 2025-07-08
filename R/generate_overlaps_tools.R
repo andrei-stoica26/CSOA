@@ -24,8 +24,9 @@ pairOverlap <- function(pairCellSets, nCells){
   recorded <- length(intersect(pairCellSets[[1]], pairCellSets[[2]]))
   expected <- xCount * yCount / nCells
   ratio <-  recorded / expected
-  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount, F)
-  res <- c(names(pairCellSets)[1], names(pairCellSets)[2], xCount, yCount, recorded, expected, ratio, pval)
+  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount, FALSE)
+  res <- c(names(pairCellSets)[1], names(pairCellSets)[2], xCount, yCount,
+           recorded, expected, ratio, pval)
   return(res)
 }
 
@@ -55,7 +56,8 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = N
   if (ncol(df) == 1)
     df <- data.table::transpose(df)
   df[, c(3:8)] <- apply(df[, c(3:8)], 2, as.numeric)
-  colnames(df) <- c('gene1', 'gene2', 'ncells1', 'ncells2', 'shared_cells', 'exp_shared_cells', 'ratio', 'pval')
+  colnames(df) <- c('gene1', 'gene2', 'ncells1', 'ncells2', 'shared_cells',
+                    'exp_shared_cells', 'ratio', 'pval')
   rownames(df) <- 1:length(rownames(df))
   if (!is.null(overlapFileName)){
     overlapFile <- paste0(overlapFileName, '.qs')

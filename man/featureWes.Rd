@@ -8,10 +8,8 @@ featureWes(
   seuratObj,
   feature,
   title = feature,
-  idClass = "orig.ident",
-  label = TRUE,
+  idClass = NULL,
   labelSize = 3,
-  repel = TRUE,
   titleSize = 12,
   ...
 )
@@ -23,17 +21,16 @@ featureWes(
 
 \item{title}{Plot title.}
 
-\item{idClass}{Column to be used for labelling.}
+\item{idClass}{Column to be used for labelling. If NULL, no column-based labels
+will be generated.}
 
-\item{label}{Whether to label the identity classes}
-
-\item{labelSize}{Size of labels.}
-
-\item{repel}{Whether to make names of labels repel.}
+\item{labelSize}{Size of labels. Ignored if idClass is NULL.}
 
 \item{titleSize}{Title size.}
 
 \item{...}{Other arguments passed to wesBinaryGradient.}
+
+\item{repel}{Whether to make names of labels repel.}
 }
 \value{
 A ggplot object.

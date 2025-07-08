@@ -20,6 +20,7 @@ Imports:
     kerntools,
     methods,
     qs,
+    plyr,
     reshape2,
     Seurat,
     SeuratObject,
@@ -44,10 +45,10 @@ Collate:
     'gene_modules.R'
     'generate_overlaps_tools.R'
     'generics.R'
-    'process_overlaps_tools.R'
-    'percentile_sets.R'
     'main.R'
     'multiple_gene_sets.R'
+    'percentile_sets.R'
+    'process_overlaps_tools.R'
     'utils.R'
     'visualization_aux.R'
     'visualization.R'

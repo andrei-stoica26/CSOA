@@ -19,13 +19,16 @@
 #'
 #' @export
 #'
-scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, pvalThr = 0.05, savePlots = FALSE,
-                               jaccardCutoff = NULL, osMethod = 'log', pairFileTemplate = NULL, keepOverlapOrder = FALSE){
+scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames,
+                               pvalThr = 0.05, savePlots = FALSE, jaccardCutoff = NULL,
+                               osMethod = 'log', pairFileTemplate = NULL,
+                               keepOverlapOrder = FALSE){
   if(!is.null(pairFileTemplate))
     pairFileName <- paste0(pairFileTemplate, geneSetNames) else pairFileName <- NULL
   scoreDFList <- lapply(seq_along(setPairs), function(i) {
     setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i], pvalThr, savePlots, jaccardCutoff,
+    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i],
+                          pvalThr, savePlots, jaccardCutoff,
                           osMethod, pairFileName[i], keepOverlapOrder)
     return(scoreDF)
   })
@@ -50,8 +53,9 @@ scoreCellsMultiple <- function(geneSetExp, overlapDF, setPairs, geneSetNames, pv
 #'
 #' @export
 #'
-runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90, overlapFileName = NULL,
-                            pvalThr = 0.05, savePlots = FALSE, jaccardCutoff = NULL, osMethod = 'log',
+runCSOAMultiple <- function(scObj, geneSets, geneSetNames, percentile = 90,
+                            overlapFileName = NULL, pvalThr = 0.05, savePlots = FALSE,
+                            jaccardCutoff = NULL, osMethod = 'log',
                             pairFileTemplate = NULL, keepOverlapOrder = FALSE){
   geneSets <- lapply(geneSets, sort)
   setPairs <- lapply(geneSets, getPairs)

@@ -16,7 +16,7 @@ geneDegreesCore <- function(edgesDF){
   })))
   colnames(df) <- c('gene', 'nEdges', 'group')
   df$nEdges <- as.integer(df$nEdges)
-  df <- df[order(df$nEdges, decreasing = TRUE), ]
+  df <- df[order(df$nEdges, decreasing=TRUE), ]
   return(df)
 }
 
@@ -33,7 +33,7 @@ geneDegreesCore <- function(edgesDF){
 geneDegrees <- function(edgesDFs){
   dfList <- lapply(edgesDFs, geneDegreesCore)
   df <- Reduce(rbind, dfList)
-  df <- df[order(df$nEdges, decreasing = TRUE), ]
+  df <- df[order(df$nEdges, decreasing=TRUE), ]
   return(df)
 }
 
@@ -57,7 +57,7 @@ distFreq <- function(degreesDF){
   if (degreesDF$nEdges[1] != degreesDF$nEdges[2])
     center <- degreesDF$nEdges[1]
   df <- dplyr::count(degreesDF, nEdges)
-  df <- df[order(df$nEdges, decreasing = T), ]
+  df <- df[order(df$nEdges, decreasing=TRUE), ]
   df$nEdges <- center - df$nEdges
   colnames(df) <- c('Dist', 'Freq')
   return(df)

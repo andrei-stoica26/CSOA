@@ -128,9 +128,9 @@ head(po2)
 
 `rankOverlaps` defines an overlap rank using the following steps:
 
-1. Two preliminary overlap ranks are computed based on: 1) **adjusted p-value**; 2) **recorded-over-expected size ratio**.
+1. Two preliminary overlap ranks are computed based on: 1) adjusted p-value; 2) recorded-over-expected size ratio.
 
-2. The preliminary ranks are replaced by **connectivity-based ranks** (`pvalRank`, `ratioRank`). For each edge corresponding to an overlap, the p-value rank is **replaced by the minimum p-value rank of the vertices neighboring the edge**, and the same for the ratio rank.
+2. The preliminary ranks are replaced by **connectivity-based ranks** (`pvalRank`, `ratioRank`). For each edge corresponding to an overlap, the p-value rank is replaced by the minimum p-value rank of the vertices neighboring the edge, and the same for the ratio rank.
 
 3. A raw aggregate rank (`rawAggRank`) is computed as the average of `pvalRank` and `ratioRank`.
 
