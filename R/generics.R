@@ -19,7 +19,8 @@ devPlot <- function(plotObject, ...)
 #' This function extracts the data expression matrix from object as a
 #' non-sparse matrix
 #'
-#' @param scObj A Seurat object, SingleCellExperiment object, or expression matrix
+#' @param scObj A Seurat object, SingleCellExperiment object, or
+#' expression matrix
 #' @param ... Arguments passed to other methods
 #'
 #' @return An expression matrix.
@@ -29,19 +30,21 @@ devPlot <- function(plotObject, ...)
 expMat <- function(scObj, ...)
   UseMethod(generic='expMat', object=scObj)
 
-#' Extract the edge list from overlap data frame or list of overlap data frames
+#' Extract the edge list from overlap data frame or list of overlap
+#' data frames
 #'
-#' This function creates a list of data frames with three columns: gene1, gene2,
-#' and group. If overlapObj is an overlap data frame, the groups correspond to
-#' the connected components. If it is a list of overlap data frames, the groups
-#' must be specified as groupNames.
+#' This function creates a list of data frames with three columns:
+#' gene1, gene2 and group. If overlapObj is an overlap data frame,
+#' the groups correspond to the connected components. If it is a
+#' list of overlap data frames, the groups must be specified as
+#' groupNames.
 #'
 #' @param overlapObj An overlap data frame or list of overlap data frames
 #' @param ... Arguments passed to other methods
 #'
 #' @return A list of data frames
 #'
-#' @export
+#' @keywords internal
 #'
 edgeLists <- function(overlapObj, ...)
   UseMethod(generic='edgeLists', object=overlapObj)

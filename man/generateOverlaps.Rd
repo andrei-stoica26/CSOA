@@ -12,7 +12,8 @@ generateOverlaps(
 )
 }
 \arguments{
-\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows
+restricted to the genes
 for which cell sets will be computed}
 
 \item{percentile}{A non-negative number below 100}
@@ -27,8 +28,9 @@ will be saved. Default is NULL (the overlap data frame will not be saved).}
 A data frame listing statistics for all cell set overlaps
 }
 \description{
-This function builds a set of cells for each input gene by first selecting all
-the cells expressing the gene and then retaining only the cells expressing the
-gene at the input percentile. Subsequently, overlaps of pairs of the constructed
-cell sets are assessed for statistical significance.
+This function builds a set of cells for each input gene by first selecting
+all the cells expressing the gene and then retaining only the cells
+expressing the gene at the input percentile. Subsequently, overlaps of
+pairs of the constructed cell sets are assessed for statistical
+significance.
 }

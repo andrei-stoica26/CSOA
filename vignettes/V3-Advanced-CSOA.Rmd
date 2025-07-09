@@ -79,8 +79,8 @@ We aim to compare the results with those obtained using the original `47` acinar
 
 ```{r}
 printStats <- function(seuratObj, col1, col2){
-  print(paste0('Pearson correlation: ', cor(seuratObj[[]][[col1]], 
-                                            seuratObj[[]][[col2]])))
+  paste0('Pearson correlation: ', cor(seuratObj[[]][[col1]], 
+                                            seuratObj[[]][[col2]]))
   absDiffs <- abs(seuratObj[[]][[col1]] - seuratObj[[]][[col2]])
   absDiffsStats <- sapply(list(mean, median, max, min), 
                           function(fun) fun(absDiffs))

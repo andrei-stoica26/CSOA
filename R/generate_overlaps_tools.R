@@ -12,9 +12,11 @@ NULL
 #' @param pairs Pairs.
 #' @param nCells An integer.
 #'
-#' @return A vector comprising the names of genes, the cell counts, the recorded and
-#' expected shared cells, the recorded-over-expected ratio, and the hypergeometric
-#' p-value.
+#' @return A vector comprising the names of genes, the cell counts,
+#' the recorded and expected shared cells, the recorded-over-expected ratio,
+#' and the hypergeometric p-value.
+#'
+#' @noRd
 #'
 pairOverlap <- function(cellSets, pairs, nCells){
   gene1 <- vapply(pairs, `[[`, character(1), 1)
@@ -29,11 +31,13 @@ pairOverlap <- function(cellSets, pairs, nCells){
   recorded <- mapply(function(a, b) length(intersect(a, b)), set1, set2)
   expected <- xCount * yCount / nCells
   ratio <- recorded / expected
-  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount, lower.tail = FALSE)
+  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount,
+                 lower.tail = FALSE)
 
   df <- data.frame(gene1 = gene1, gene2 = gene2, ncells1 = xCount,
                    ncells2 = yCount, shared_cells = recorded,
-                   exp_shared_cells = expected, ratio = ratio, pval = pval)
+                   exp_shared_cells = expected, ratio = ratio,
+                   pval = pval)
   return(df)
 }
 
@@ -53,7 +57,8 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 #' @export
 #'
-cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = NULL){
+cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
+                             overlapFileName = NULL){
   message('Assessing gene overlaps...')
   genes <- names(cellSets)
   if(is.null(pairs))

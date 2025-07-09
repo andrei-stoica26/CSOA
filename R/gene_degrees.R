@@ -6,7 +6,7 @@
 #'
 #' @return A gene degrees data frame
 #'
-#' @export
+#' @noRd
 #'
 geneDegreesCore <- function(edgesDF){
   genes <- union(edgesDF$gene1, edgesDF$gene2)
@@ -25,7 +25,7 @@ geneDegreesCore <- function(edgesDF){
 #'
 #' @return A gene degrees data frame
 #'
-#' @export
+#' @noRd
 #'
 geneDegrees <- function(edgesDFs){
   dfList <- lapply(edgesDFs, geneDegreesCore)
@@ -46,7 +46,7 @@ geneDegrees <- function(edgesDFs){
 #'
 #' @return A data frame of gene distances
 #'
-#' @export
+#' @noRd
 #'
 distFreq <- function(degreesDF){
   message('Finding frequencies of gene degrees...')
@@ -69,7 +69,7 @@ distFreq <- function(degreesDF){
 #'
 #' @return A data frame containing the coordinates of the genes
 #'
-#' @export
+#' @noRd
 #'
 geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
   edgesDFs <- edgeLists(overlapObj, groupNames, cutoff)
@@ -89,13 +89,13 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
 #' of edges
 #'
 #' @param geneCoordsDF Dataframe wih gene coordinates
-#' @param extraCircles Number of circles drawn beyond those needed to include the
-#' points representing the genes. Default is 0
+#' @param extraCircles Number of circles drawn beyond those needed to include
+#' the points representing the genes. Default is 0
 #'
 #' @return A data frame containing the radius and the number of edges for each
 #' circle
 #'
-#' @export
+#' @keywords internal
 #'
 circleCoords <- function(geneCoordsDF, extraCircles = 0){
   minDegree <- geneCoordsDF$nEdges[nrow(geneCoordsDF)] - extraCircles

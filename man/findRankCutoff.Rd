@@ -13,5 +13,7 @@ findRankCutoff(freqDF)
 Rank cutoff.
 }
 \description{
-This function finds the cutoff for rank-based filtering of overlaps.
+This function finds the cutoff for rank-based
+filtering of overlaps.
 }
+\keyword{internal}

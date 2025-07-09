@@ -17,28 +17,30 @@ scoreCells(
 )
 }
 \arguments{
-\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows
+restricted to the genes
 for which cell sets will be computed}
 
 \item{overlapDF}{A data frame created with generate_overlaps}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 
-\item{pvalThr}{p-value threshold}
+\item{pvalThr}{p-value threshold.}
 
 \item{saveCutoffPlot}{Whether to save overlap cutoff plot}
 
-\item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
-scores. NULL by default (no filtering of such edges will be performed).}
+\item{jaccardCutoff}{A cutoff used in the filtering of edges with low
+Jaccard scores. NULL by default (no filtering of such edges
+will be performed).}
 
-\item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'.}
+\item{osMethod}{The method used to compute overlap scores.
+Options are 'log' and 'minmax'.}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
-file, as opposed to changing it to a pair score-based order. Ignored if
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair
+score file, as opposed to changing it to a pair score-based order. Ignored if
 pairFileName is NULL}
 }
 \value{

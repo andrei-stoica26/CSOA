@@ -7,16 +7,19 @@
 networkPlotDF(overlapDF, rankCol = "rank", edgeScale = 2)
 }
 \arguments{
-\item{overlapDF}{An overlap data frame.}
+\item{overlapDF}{Overlap data frame.}
 
-\item{rankCol}{Name of the rank column}
+\item{rankCol}{Name of the rank column.}
 
-\item{edgeScale}{Scaling factor used in generating edge weights}
+\item{edgeScale}{Scaling factor used in generating
+edge weights.}
 }
 \value{
-A data frame ready to serve as input to networkPlot
+A data frame ready to serve as input to
+networkPlot.
 }
 \description{
-This function prepares a ranked and filtered overlap data frame for network
-plot.
+This function prepares a ranked and filtered overlap
+data frame for network plot.
 }
+\keyword{internal}

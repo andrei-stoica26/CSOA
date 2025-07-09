@@ -19,7 +19,8 @@ runCSOA(
 )
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or
+expression matrix}
 
 \item{genes}{Vector of genes. Must include at least two genes}
 
@@ -30,30 +31,33 @@ runCSOA(
 \item{overlapFileName}{The name of the file where the overlap data frame
 will be saved. Default is NULL (the overlap data frame will not be saved).}
 
-\item{pvalThr}{p-value threshold}
+\item{pvalThr}{p-value threshold.}
 
 \item{saveCutoffPlot}{Whether to save overlap cutoff plot}
 
-\item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
-scores. NULL by default (no filtering of such edges will be performed).}
+\item{jaccardCutoff}{A cutoff used in the filtering of edges with low
+Jaccard scores. NULL by default (no filtering of such edges
+will be performed).}
 
-\item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'.}
+\item{osMethod}{The method used to compute overlap scores.
+Options are 'log' and 'minmax'.}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
-file, as opposed to changing it to a pair score-based order. Ignored if
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair
+score file, as opposed to changing it to a pair score-based order. Ignored if
 pairFileName is NULL}
 }
 \value{
-An object of the same class as scObj with a CSOA score assigned for each cell
+An object of the same class as scObj with a CSOA score assigned
+for each cell
 }
 \description{
-This function generates cell set overlaps for an input gene set based on
-percentiles of gene expression, computes the significance of these overlaps,
-ranks, filters and scores the overlaps based on this significance, and builds
-a per-cell score by summing the products of the scores of these overlaps and
-the custom-normalized per-cell expressions of the corresponding pairs of genes.
+This function generates cell set overlaps for an input gene set
+based on percentiles of gene expression, computes the significance
+of these overlaps, ranks, filters and scores the overlaps based on
+this significance, and builds a per-cell score by summing the products
+of the scores of these overlaps and thecustom-normalized per-cell
+expressions of the corresponding pairs of genes.
 }

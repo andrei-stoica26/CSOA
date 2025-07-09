@@ -15,21 +15,22 @@ processOverlaps(
 \arguments{
 \item{overlapDF}{A data frame created with generate_overlaps}
 
-\item{pvalThr}{p-value threshold}
+\item{pvalThr}{p-value threshold.}
 
 \item{saveCutoffPlot}{Whether to save overlap cutoff plot}
 
-\item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
-scores. NULL by default (no filtering of such edges will be performed).}
+\item{jaccardCutoff}{A cutoff used in the filtering of edges with low
+Jaccard scores. NULL by default (no filtering of such edges
+will be performed).}
 
-\item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'.}
+\item{osMethod}{The method used to compute overlap scores.
+Options are 'log' and 'minmax'.}
 }
 \value{
 A data frame consisting of filtered, ranked and scored cell sets
 overlaps
 }
 \description{
-This function filters, ranks and scores previously generated overlaps of cell
-sets
+This function filters, ranks and scores previously generated
+overlaps of cell sets
 }

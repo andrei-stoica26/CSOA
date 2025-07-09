@@ -1,25 +1,16 @@
-#' Compute the Jaccard similarity index of two sets
+#' @importFrom bayesbio jaccardSets
 #'
-#' This function computes the Jaccard similarity index of two sets
-#'
-#' @param a A vector
-#' @param b A vector
-#' @return A numeric value
-#'
-#'
-jaccard <- function(a, b) {
-  intersection <- length(intersect(a, b))
-  union <- length(a) + length(b) - intersection
-  return (intersection/union)
-}
+NULL
 
 #' Compute all the neighbors of all genes in an overlap data frame
 #'
-#' This function computes all the neighbors of all genes in an overlap data frame
+#' This function computes all the neighbors of all genes in an overlap data
+#' frame
 #'
 #' @param overlapDF An overlap data frame
 #' @return A numeric value
 #'
+#' @noRd
 #'
 geneNeighbors <- function(overlapDF){
   genes <- overlapGenes(overlapDF)
@@ -41,13 +32,13 @@ geneNeighbors <- function(overlapDF){
 #'
 #' @return An overlap data frame with an added column of neighbor Jaccard scores
 #'
-#' @export
-#'
+#' @noRd
 #'
 neighborJaccard <- function(overlapDF){
   neighbors <- geneNeighbors(overlapDF)
   overlapDF$neighborJac <- mapply(function(x, y)
-    jaccard(neighbors[[x]], neighbors[[y]]), overlapDF$gene1, overlapDF$gene2)
+    jaccardSets(neighbors[[x]], neighbors[[y]]),
+    overlapDF$gene1, overlapDF$gene2)
   return(overlapDF)
 }
 
@@ -65,11 +56,11 @@ neighborJaccard <- function(overlapDF){
 #'
 #' @export
 #'
-#'
 breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
   prevNEdges <- -1
   nEdges <- nrow(overlapDF)
-  message(nEdges, ' overlap', rep('s', nEdges != 1), ' have been selected for Jaccard-based filtering.')
+  message(nEdges, ' overlap', rep('s', nEdges != 1),
+          ' have been selected for Jaccard-based filtering.')
   while(prevNEdges != nEdges){
     overlapDF <- neighborJaccard(overlapDF)
     overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]

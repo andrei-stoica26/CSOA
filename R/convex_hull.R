@@ -10,6 +10,7 @@
 #' @return A numeric vector of indices representing the points in the upper
 #' convex semihull.
 #'
+#' @noRd
 #'
 upperConvexSemihullIndices <- function(df, yIndex = 2){
   lineIndices <- which.min(df[, yIndex])
@@ -37,7 +38,7 @@ upperConvexSemihullIndices <- function(df, yIndex = 2){
 #'
 #' @return A data frame comprising the points on the upper complex hull.
 #'
-#' @export
+#' @noRd
 #'
 upperConvexHull <- function(df, xIndex = 1, yIndex = 2){
   if (length(colnames(df)) < xIndex)
@@ -58,14 +59,15 @@ upperConvexHull <- function(df, xIndex = 1, yIndex = 2){
 
 #' Construct a data frame of segments from a data frame of points
 #'
-#' This function constructs a data frame of segments from a data frame of points.
+#' This function constructs a data frame of segments from a data frame of
+#' points.
 #'
 #' @param pointsDF A data frame with the x and y coordinates of the points.
 #' @inheritParams upperConvexHull
 #'
 #' @return A data frame of segments.
 #'
-#' @export
+#' @noRd
 #'
 pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
   df <- data.frame(x = pointsDF[seq_len(nrow(pointsDF) - 1), xIndex],
@@ -77,7 +79,8 @@ pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
 
 #' Construct a data frame of segments from a data frame of points
 #'
-#' This function constructs a data frame of segments from a data frame of points.
+#' This function constructs a data frame of segments from a data frame of
+#' points.
 #'
 #' @param hull A data frame representing an upper convex hull of a set of points
 #' with columns rank and freq.
@@ -88,7 +91,7 @@ pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
 #'
 #' @return A data frame of polygon vertices.
 #'
-#' @export
+#' @noRd
 #'
 hullToPolygon <- function(hull, xInt, type = 'in'){
   yMax <- max(hull$y)

@@ -9,8 +9,8 @@ filterOverlaps(overlapDF, firstOutRawRank = NULL)
 \arguments{
 \item{overlapDF}{A ranked overlap data frame}
 
-\item{firstOutRawRank}{The raw aggregate rank of the first overlap that will be
-excluded}
+\item{firstOutRawRank}{The raw aggregate rank of the
+first overlap that will be excluded}
 }
 \value{
 A filtered overlap data frame

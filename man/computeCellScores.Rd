@@ -26,14 +26,15 @@ top overlaps.}
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
-file, as opposed to changing it to a pair score-based order. Ignored if
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair
+score file, as opposed to changing it to a pair score-based order. Ignored if
 pairFileName is NULL}
 }
 \value{
 A Seurat object with a CSOA score assigned for each cell
 }
 \description{
-This function uses the scored data frame of overlaps to compute a CSOA score
+This function uses the scored data frame of overlaps to
+compute a CSOA score
 for each cell in a Seurat object
 }

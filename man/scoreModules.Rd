@@ -7,19 +7,22 @@
 scoreModules(scObj, df, components, colStrTemplate = "CSOA_component", ...)
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or
+expression matrix}
 
 \item{df}{A data frame with gene1, gene2 and component columns}
 
 \item{components}{Vector of connected components that will be scored}
 
-\item{colStrTemplate}{Character used in the naming of the component gene sets}
+\item{colStrTemplate}{Character used in the naming of the component
+gene sets}
 
 \item{...}{Additional parameters to other functions}
 }
 \value{
-An object of the same class as scObj with CSOA scores corresponding to
-the genes defining each connected components assinged for each cell
+An object of the same class as scObj with CSOA scores
+corresponding to the genes defining each connected components
+assigned for each cell
 }
 \description{
 This function runs CSOA on the connected components of the graph having the

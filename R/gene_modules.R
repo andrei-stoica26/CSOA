@@ -18,7 +18,7 @@ connectedComponents <- function(df, colName = 'component'){
   rownames(df) <- seq(dim(df)[1])
   vertices <- overlapGenes(df)
   seen <- c()
-  nextComp = 1
+  nextComp <- 1
   for (v in vertices){
     if (v %in% seen)
       next
@@ -30,7 +30,8 @@ connectedComponents <- function(df, colName = 'component'){
       seen <- c(seen, v)
       newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
       df[newEdges, colName] <- nextComp
-      neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1), c(currVertices, seen))
+      neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1),
+                           c(currVertices, seen))
       currVertices <- c(currVertices, neighbors)
       currVertices <- currVertices[-1]
     }
@@ -47,16 +48,20 @@ connectedComponents <- function(df, colName = 'component'){
 #' @inheritParams runCSOA
 #' @param df A data frame with gene1, gene2 and component columns
 #' @param components Vector of connected components that will be scored
-#' @param colStrTemplate Character used in the naming of the component gene sets
+#' @param colStrTemplate Character used in the naming of the component
+#' gene sets
 #' @param ... Additional parameters to other functions
 #'
-#' @return An object of the same class as scObj with CSOA scores corresponding to
-#' the genes defining each connected components assinged for each cell
+#' @return An object of the same class as scObj with CSOA scores
+#' corresponding to the genes defining each connected components
+#' assigned for each cell
 #'
 #' @export
 #'
-scoreModules <- function(scObj, df, components, colStrTemplate = 'CSOA_component', ...){
-  geneSets <- lapply(components, function(i) overlapGenes(subset(df, component == i)))
+scoreModules <- function(scObj, df, components,
+                         colStrTemplate = 'CSOA_component', ...){
+  geneSets <- lapply(components,
+                     function(i) overlapGenes(subset(df, component == i)))
   geneSetNames <- paste0(colStrTemplate, components)
   return(runCSOAMultiple(scObj, geneSets, geneSetNames, ...))
 }
@@ -66,13 +71,16 @@ scoreModules <- function(scObj, df, components, colStrTemplate = 'CSOA_component
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' @rdname edgeLists
-#' @export
+#'
+#' @keywords internal
 #'
 edgeLists.default <- function(overlapObj, ...)
-  stop('Unrecognized input type: overlapObj must be a data frame or a list of data frames.')
+  stop('Unrecognized input type: overlapObj must be',
+  ' data frame or a list of data frames.')
 
 #' @rdname edgeLists
-#' @export
+#'
+#' @keywords internal
 #'
 edgeLists.data.frame <- function(overlapObj, ...){
   if (!'component' %in% colnames(overlapObj))
@@ -83,13 +91,14 @@ edgeLists.data.frame <- function(overlapObj, ...){
   return(components)
 }
 
-#' @param groupNames Names of groups. If provided, must be a vector of the same
-#' length as the list of overlap data frames
+#' @param groupNames Names of groups. If provided, must be a vector
+#' of the same length as the list of overlap data frames
 #' @param cutoff Number of retained edges from each overlap data frame after
 #' refiltering. If NULL (as default), no refiltering will be performed
 #'
 #' @rdname edgeLists
-#' @export
+#'
+#' @keywords internal
 #'
 edgeLists.list <- function(overlapObj, groupNames, cutoff = NULL, ...){
   overlapObj <- lapply(seq_along(groupNames), function(i) {

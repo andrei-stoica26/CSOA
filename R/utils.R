@@ -7,17 +7,19 @@
 #'
 NULL
 
-#' Adjust a dataframe column of p-values with Benjamini-Yekutieli
+#' Adjust a dataframe column of p-values with
+#' Benjamini-Yekutieli
 #'
-#' This function performs the Benjamini-Yekutieli correction for multiple
-#' testing in a dataframe column of p-values. It also offers an option of
-#' filtering the dataframe based on p-values.
+#' This function performs the Benjamini-Yekutieli
+#' correction for multiple testing in a dataframe
+#' column of p-values and filters the data-frame
+#' based on p-values.
 #'
-#' @param df A dataframe with a column of p-values
-#' @param pvalThr p-value threshold
-#' @param colStr Name of the column of p-values
+#' @param df A dataframe with a column of p-values.
+#' @param pvalThr p-value threshold.
+#' @param colStr Name of the column of p-values.
 #'
-#' @return The data frame with Benjamini-Yekutieli-corrected p-values
+#' @return The data frame with Benjamini-Yekutieli-corrected p-values.
 #'
 #' @export
 #'
@@ -31,14 +33,14 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 
 #' Get all unordered pairs of two elements from a vector
 #'
-#' This function returns all unorderded pairs of two elements from a vector as
-#' a list of vectors of length 2
+#' This function returns all unorderded pairs of two elements
+#' from a vector as a list of vectors of length 2
 #'
 #' @param v A vector
 #'
 #' @return A list of vectors of length 2
 #'
-#' @export
+#' @noRd
 #'
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
@@ -52,40 +54,46 @@ getPairs <- function(v)
 #' @return A character vector of genes
 #'
 #' @export
+#'
 overlapGenes <- function(overlapDF)
   return(union(overlapDF$gene1, overlapDF$gene2))
 
 #' Generate the coordinates of points on a circle centered at origin
 #'
-#' This function generates nPoints on a circle of radius r centered at origin
+#' This function generates nPoints on a circle of radius r
+#' centered at origin.
 #'
-#' @param r Radius
-#' @param nPoints Number of points
+#' @param r Radius.
+#' @param nPoints Number of points.
 #'
-#' @return A data frame with the coordinates of the points
+#' @return A data frame with the coordinates of the points.
 #'
-#' @export
+#' @noRd
 #'
 pointsOnCircle <- function(r, nPoints){
   angleOffset <- runif(n=1, min=0, max=2 * pi)
   theta <- 2 * pi / nPoints
-  points <- lapply(seq(nPoints), function(k) c(r * cos(k * theta + angleOffset),
-                                            r * sin(k * theta + angleOffset)))
+  points <- lapply(seq(nPoints),
+                   function(k) c(r * cos(k * theta + angleOffset),
+                                 r * sin(k * theta + angleOffset)))
   res <- do.call(rbind, points)
   colnames(res) <- c('x', 'y')
   return(res)
 }
 
-#' Run LayerData from Seurat and return an error when the requested layer does
-#' not exist
+#' Run LayerData from Seurat and return an error
+#' when the requested layer does not exist
 #'
-#' This function calls LayerData from Seurat and returns an error when the
-#' requested layer does not exist
+#' This function calls LayerData from Seurat and
+#' returns an error when the requested layer
+#' does not exist
 #'
 #' @param seuratObj A Seurat object
 #' @param layer Layer
 #'
 #' @return The output of LayerData if layer exists
+#'
+#' @noRd
 #'
 safeLayerData <- function(seuratObj, layer){
   layerData <- LayerData(seuratObj, layer=layer)
@@ -96,18 +104,22 @@ safeLayerData <- function(seuratObj, layer){
 
 #' Filter matrix using rows and convert the matrix to non-sparse
 #'
-#' This internal functions selects input rows from a matrix in sorted name order.
-#' If the rows parameter is set to NULL.
+#' This internal functions selects input rows from a
+#' matrix in sorted name order. If rows is set to NULL,
+#' it selects all rows.
 #'
 #' @param matObj Matrix object
 #' @param rows Rows
 #'
 #' @return A non-sparse matrix
 #'
+#' @noRd
+#'
 matrixRowFilter <- function(matObj, rows = NULL){
   if(!is.null(rows)){
     if(length(setdiff(rows, rownames(matObj))))
-      stop('Some input genes do not exist in the expression matrix.')
+      stop('Some input genes do not exist in the',
+      'expression matrix.')
     matObj <- matObj[sort(rows), ]
     return(as.matrix(matObj))
   }
@@ -116,9 +128,11 @@ matrixRowFilter <- function(matObj, rows = NULL){
 
 #' Read and delete a .qs file
 #'
-#' This functions reads a .qs file, deletes it, and returns it content
+#' This functions reads a .qs file, deletes it,
+#' and returns it content
 #'
-#' @param qsFile Name of .qs file including its path
+#' @param qsFile Name of .qs file including
+#' its path
 #'
 #' @return The content of the .qs file
 #'
@@ -132,7 +146,8 @@ qGrab <- function(qsFile){
 
 #' Extract gene pairs from overlap matrix
 #'
-#' This function extracts the gene pairs from an overlap matrix
+#' This function extracts the gene pairs
+#' from an overlap matrix
 #'
 #' @inheritParams rankOverlaps
 #'
@@ -141,48 +156,56 @@ qGrab <- function(qsFile){
 #' @export
 #'
 overlapPairs <- function(overlapDF)
-  return(apply(overlapDF, 1, function(x) as.character(x[c(1, 2)]), simplify=FALSE))
+  return(apply(overlapDF, 1, function(x)
+    as.character(x[c(1, 2)]), simplify=FALSE))
 
 #' Extract subset defined using gene pairs from overlap matrix
 #'
-#' This function extracts the subset determined by input gene pairs from an
+#' This function extracts the subset determined by input
+#' gene pairs from an
 #' overlap matrix
 #'
 #' @inheritParams rankOverlaps
 #' @param pairs Gene pairs corresponding to the extracted overlaps
 #'
-#' @return An overlap data frame corresponding to the selected gene pairs
+#' @return An overlap data frame corresponding to the
+#' selected gene pairs
 #'
-#' @export
+#' @noRd
 #'
 overlapSlice <- function(overlapDF, pairs)
   return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
 
-#' Helper function to ensure easy testing of different rank methods
+#' Helper function to ensure easy testing of different
+#' rank methods
 #'
-#' This function controls the choice of rank functions everywhere in the package.
+#' This function controls the choice of rank functions
+#' everywhere in the package.
 #'
 #' @param v Vector
 #'
 #' @return Ranked vector
 #'
+#' @noRd
 #'
 rankFun <- function(v)
   return(rank(v, ties.method='min'))
 
 #' Replace a column by its rank
 #'
-#' This functions orders a data frame by the values in a column and replaces
+#' This functions orders a data frame by the values
+#' in a column and replaces
 #' them by the resulting rank.
 #'
 #' @param df A data frame
 #' @param colName The name of a numeric column
-#' @param rankSign 1 to rank the column increasingly, -1 to rank it decreasingly
+#' @param rankSign 1 to rank the column increasingly, -1
+#' to rank it decreasingly
 #'
-#' @return The data frame ordered by colName (decreasingly by default), in which the original
-#' values of colName have been replaced by ranks
+#' @return The data frame ordered by colName (decreasingly by default),
+#' in which the original values of colName have been replaced by ranks
 #'
-#' @export
+#' @noRd
 #'
 rankReplace <- function(df, colName, rankSign = 1){
   df <- df[order(df[, colName], decreasing=rankSign - 1), ]
@@ -198,27 +221,36 @@ rankReplace <- function(df, colName, rankSign = 1){
 #'
 #' @return A minmax-normalized vector
 #'
-#' @export
+#' @noRd
 #'
 vMinmax <- function(v)
   return(as.numeric(kerntools::minmax(as.matrix(v))))
 
-#' Raise a warning that the overlap data frame may have been not filtered.
+#' Raise a warning that the overlap data frame may have
+#' been not filtered.
 #'
-#' This function raises a warning that the overlap data frame may have been not
+#' This function raises a warning that the overlap data
+#' frame may have been not
 #' filtered based on the number of overlaps.
 #'
 #' @inheritParams computeCellScores
-#' @param raiseWarning If the data frame contains more overlaps than this number,
-#' users will be warned that they may have introduced the raw overlap data frame
+#' @param raiseWarning If the data frame contains more
+#' overlaps than this number, users will be warned that
+#' they may have introduced the raw overlap data frame
 #' as input.
 #'
-#' @return No value. This function is called for its side effect (issuing a warning if needed).
+#' @return No value. This function is called for its
+#' side effect (issuing a warning if needed).
 #'
-warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
+#' @noRd
+#'
+warnUnfiltered <- function(overlapDF, raiseWarning = 1500)
   if (nrow(overlapDF) > raiseWarning)
-    warning('The number of overlaps in the data frame is very large (', nrow(overlapDF),
-                   '). Are you sure you filtered the overlap data frame?')
+    warning('The number of overlaps in the',
+            'data frame is very large (',
+            nrow(overlapDF),
+            '). Are you sure you filtered',
+            'the overlap data frame?')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics
@@ -232,7 +264,10 @@ warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
 #' @export
 #'
 expMat.default <- function(scObj, genes = NULL, ...)
-  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay, a matrix or a dgCMatrix object.')
+  stop('Unrecognized input type: scObj must be a',
+       'Seurat object with a data assay,',
+       'a SingleCellExperiment with a logcounts assay,',
+       'a matrix or a dgCMatrix object.')
 
 #' @rdname expMat
 #' @export

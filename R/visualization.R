@@ -55,7 +55,7 @@ devPlot.list <- function(plotObject, ...)
 #'
 #' @return A ggplot object.
 #'
-#' @export
+#' @noRd
 #'
 titlePlot <- function(p, title, ...)
   return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
@@ -80,7 +80,11 @@ titlePlot <- function(p, title, ...)
 #'
 #' @export
 #'
-wesBinaryGradient <- function(p, wesPal = 'Royal1', wesLow = 3, wesHigh = 2, palType = 'colorCont', ...){
+wesBinaryGradient <- function(p,
+                              wesPal = 'Royal1',
+                              wesLow = 3,
+                              wesHigh = 2,
+                              palType = 'colorCont', ...){
   if(!palType %in% c('colorCont', 'fillCont', 'colDis', 'fillDis')){
     warning('Unrecognized palette type (see ?CSOA::wesBinaryGradient for the available palette types). The color scheme will
             not be changed')
@@ -133,9 +137,8 @@ featureWes <- function(seuratObj, feature, title = feature, idClass = NULL,
 #' This function plots the graph of the overlap data frame, with genes as vertices
 #' and overlaps as edges.
 #'
-#' @inheritParams warnUnfiltered
-#' @param title Plot title.
 #' @inheritParams networkPlotDF
+#' @param title Plot title.
 #' @param nodePointSize Point size of graph nodes.
 #' @param nodeTextSize Text size of graph nodes.
 #' @param ... Additional parameters passed to titlePlot.

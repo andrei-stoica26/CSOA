@@ -9,6 +9,7 @@ Authors@R: person('Andrei-Florian', 'Stoica',
 Description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene signature scores in a scRNA-seq dataset. For each gene in the signature, CSOA constructs a set consisting of cells highly expressing the gene, after which all overlaps of pairs of cell sets are computed, ranked, filtered and scored. The CSOA per-cell score is calculated on the basis of the top cell set overlaps by summing up, over all overlaps, the product of the overlap score and the min-max-normalized expression of each of the two genes.
 License: MIT + file LICENSE
 Imports: 
+    bayesbio,
     dplyr,
     ggeasy,
     ggforce,
@@ -58,6 +59,11 @@ Suggests:
     rmarkdown,
     scRNAseq,
     scuttle
+biocViews: 
+    Software,
+    SingleCell,
+    GeneSetEnrichment,
+    GeneExpression
 VignetteBuilder: knitr
 URL: https://github.com/andrei-stoica26/CSOA
 BugReports: https://github.com/andrei-stoica26/CSOA/issues

@@ -15,13 +15,14 @@ networkPlot(
 )
 }
 \arguments{
-\item{overlapDF}{An overlap data frame.}
+\item{overlapDF}{Overlap data frame.}
 
 \item{title}{Plot title.}
 
-\item{rankCol}{Name of the rank column}
+\item{rankCol}{Name of the rank column.}
 
-\item{edgeScale}{Scaling factor used in generating edge weights}
+\item{edgeScale}{Scaling factor used in generating
+edge weights.}
 
 \item{nodePointSize}{Point size of graph nodes.}
 

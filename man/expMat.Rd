@@ -22,7 +22,8 @@ expMat(scObj, ...)
 \method{expMat}{matrix}(scObj, ...)
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or
+expression matrix}
 
 \item{...}{Arguments passed to other methods}
 

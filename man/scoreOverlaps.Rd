@@ -9,19 +9,21 @@ scoreOverlaps(overlapDF, osMethod = "log", firstOutRawRank = NULL)
 \arguments{
 \item{overlapDF}{A filtered overlap data frame.}
 
-\item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'.}
+\item{osMethod}{The method used to compute overlap scores.
+Options are 'log' and 'minmax'.}
 
-\item{firstOutRawRank}{The raw rank of the highest-ranked overlap that was not
-recorded among top overlaps. Ignored if osMethod is set to 'log'.}
+\item{firstOutRawRank}{The raw rank of the highest-ranked
+overlap that was not recorded among top overlaps. Ignored
+if osMethod is set to 'log'.}
 }
 \value{
 A data frame with ranked overlaps.
 }
 \description{
-This function scores cell set overlaps based on their ranks. The score of
-the top overlap is set to 1, and the score decreases logarithmically towards
-0, which corresponds to the score of the first overlap not included in the
-filtered data frame (i.e., if the filtered data frame contains 100 overlaps,
-the 101st overlap corresponds to a score of 0).
+This function scores cell set overlaps based on their ranks.
+The score of the top overlap is set to 1, and the score decreases
+logarithmically towards 0, which corresponds to the score of the
+first overlap not included in the filtered data frame (i.e., if
+the filtered data frame contains 100 overlaps, the 101st overlap
+corresponds to a score of 0).
 }

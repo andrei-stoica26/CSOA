@@ -13,5 +13,6 @@ overlapPairs(overlapDF)
 A list of gene pairs
 }
 \description{
-This function extracts the gene pairs from an overlap matrix
+This function extracts the gene pairs
+from an overlap matrix
 }

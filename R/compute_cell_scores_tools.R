@@ -15,11 +15,13 @@ computePCPairScores <- function(overlapDF, normExp){
   if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
     stop('Columns gene1, gene2 and score must exist in overlapDF.')
   if(max(overlapDF$score) != 1 | min(overlapDF$score) <= 0)
-    stop('The maximum of the score column in overlapDF must be 1 and its minimum must be positive.')
+    stop('The maximum of the score column in overlapDF must be 1',
+         'and its minimum must be positive.')
   if(!is.numeric(normExp) | !is.matrix(normExp))
     stop('normExp must be a numeric matrix.')
   if(max(normExp) != 1 | min(normExp) != 0)
-    stop('The maximum value of normExp must be 1 and its minimum must be 0.')
+    stop('The maximum value of normExp must be 1',
+    'and its minimum must be 0.')
   message('Computing per-cell scores for gene pairs...')
   gene1 <- overlapDF$gene1
   gene2 <- overlapDF$gene2
@@ -34,23 +36,24 @@ computePCPairScores <- function(overlapDF, normExp){
 
 #' Compute aggregate gene pair scores
 #'
-#' This function assesses the relative contribution of each gene pair to the CSOA
-#' score
+#' This function assesses the relative contribution of each gene pair to the
+#' CSOA score
 #'
 #' @inheritParams computeCellScores
 #' @param pcPairScores A date frame of pair scores in each cell for each pair
 #' in the overlap data frame
 #' @param pairFileName The name of the file where the pair data frame
 #' will be saved. Default is NULL (the pair data frame will not be saved)
-#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair score
-#' file, as opposed to changing it to a pair score-based order. Ignored if
+#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair
+#' score file, as opposed to changing it to a pair score-based order. Ignored if
 #' pairFileName is NULL
 #'
 #' @return A data frame with overlap and pair scores and ranks
 #'
-#' @export
+#' @keywords internal
 #'
-computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keepOverlapOrder = FALSE){
+computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
+                              keepOverlapOrder = FALSE){
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
     stop('Values in pcPairScores must be between 0 and 1.')
   df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]

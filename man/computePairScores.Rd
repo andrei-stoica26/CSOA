@@ -20,14 +20,15 @@ in the overlap data frame}
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
-file, as opposed to changing it to a pair score-based order. Ignored if
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair
+score file, as opposed to changing it to a pair score-based order. Ignored if
 pairFileName is NULL}
 }
 \value{
 A data frame with overlap and pair scores and ranks
 }
 \description{
-This function assesses the relative contribution of each gene pair to the CSOA
-score
+This function assesses the relative contribution of each gene pair to the
+CSOA score
 }
+\keyword{internal}

@@ -18,39 +18,42 @@ scoreCellsMultiple(
 )
 }
 \arguments{
-\item{geneSetExp}{A gene expression non-sparse matrix with the rows restricted to the genes
+\item{geneSetExp}{A gene expression non-sparse matrix with the rows
+restricted to the genes
 for which cell sets will be computed}
 
 \item{overlapDF}{A data frame created with generate_overlaps}
 
-\item{setPairs}{A list of overlaps corresponding to each input gene set}
+\item{setPairs}{A list of overlaps corresponding to each input gene set.}
 
-\item{geneSetNames}{Character vector of names of gene sets}
+\item{geneSetNames}{Character vector of names of gene sets.}
 
-\item{pvalThr}{p-value threshold}
+\item{pvalThr}{p-value threshold.}
 
 \item{saveCutoffPlot}{Whether to save overlap cutoff plot}
 
-\item{jaccardCutoff}{A cutoff used in the filtering of edges with low Jaccard
-scores. NULL by default (no filtering of such edges will be performed).}
+\item{jaccardCutoff}{A cutoff used in the filtering of edges with low
+Jaccard scores. NULL by default (no filtering of such edges
+will be performed).}
 
-\item{osMethod}{The method used to compute overlap scores. Options are 'log'
-and 'minmax'.}
+\item{osMethod}{The method used to compute overlap scores.
+Options are 'log' and 'minmax'.}
 
-\item{pairFileTemplate}{Character object used in the naming of the files where
-the pair data frames will be saved. Default is NULL (the pair data frames will
-not be saved)}
+\item{pairFileTemplate}{Character object used in the naming of the files
+where the pair data frames will be saved. Default is NULL (the pair
+data frames will not be saved).}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair score
-file, as opposed to changing it to a pair score-based order. Ignored if
-pairFileTemplate is NULL}
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the
+pair score file, as opposed to changing it to a pair score-based order.
+Ignored if pairFileTemplate is NULL.}
 }
 \value{
-A data frame whose columns correspond to the CSOA scores of the input
-gene sets
+A data frame whose columns correspond to the CSOA scores of the
+input gene sets.
 }
 \description{
-This function scores an overlap data frame generated using multiple gene sets.
+This function scores an overlap data frame generated using multiple
+gene sets.
 The overlap data frame is split based on the overlaps corresponding to
 each gene set and scored, and the output is rejoined as a data frame.
 }

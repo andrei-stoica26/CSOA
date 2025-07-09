@@ -19,7 +19,8 @@ storeCellScores(scObj, ...)
 \method{storeCellScores}{matrix}(scObj, scoreDF, ...)
 }
 \arguments{
-\item{scObj}{A Seurat object, SingleCellExperiment object, or expression matrix}
+\item{scObj}{A Seurat object, SingleCellExperiment object, or
+expression matrix}
 
 \item{...}{Arguments passed to other methods}
 

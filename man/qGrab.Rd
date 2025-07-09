@@ -7,11 +7,13 @@
 qGrab(qsFile)
 }
 \arguments{
-\item{qsFile}{Name of .qs file including its path}
+\item{qsFile}{Name of .qs file including
+its path}
 }
 \value{
 The content of the .qs file
 }
 \description{
-This functions reads a .qs file, deletes it, and returns it content
+This functions reads a .qs file, deletes it,
+and returns it content
 }

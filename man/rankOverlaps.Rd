@@ -13,6 +13,7 @@ rankOverlaps(overlapDF)
 A data frame with ranked overlaps
 }
 \description{
-This function ranks cell set overlaps by taking the average of the adjusted
-p-value rank and the ratio of shared cells over expected shared cells rank.
+This function ranks cell set overlaps by taking the average of
+the adjusted p-value rank and the ratio of shared cells over
+expected shared cells rank.
 }

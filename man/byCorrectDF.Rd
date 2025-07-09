@@ -2,22 +2,24 @@
 % Please edit documentation in R/utils.R
 \name{byCorrectDF}
 \alias{byCorrectDF}
-\title{Adjust a dataframe column of p-values with Benjamini-Yekutieli}
+\title{Adjust a dataframe column of p-values with
+Benjamini-Yekutieli}
 \usage{
 byCorrectDF(df, pvalThr = 0.05, colStr = "pval")
 }
 \arguments{
-\item{df}{A dataframe with a column of p-values}
+\item{df}{A dataframe with a column of p-values.}
 
-\item{pvalThr}{p-value threshold}
+\item{pvalThr}{p-value threshold.}
 
-\item{colStr}{Name of the column of p-values}
+\item{colStr}{Name of the column of p-values.}
 }
 \value{
-The data frame with Benjamini-Yekutieli-corrected p-values
+The data frame with Benjamini-Yekutieli-corrected p-values.
 }
 \description{
-This function performs the Benjamini-Yekutieli correction for multiple
-testing in a dataframe column of p-values. It also offers an option of
-filtering the dataframe based on p-values.
+This function performs the Benjamini-Yekutieli
+correction for multiple testing in a dataframe
+column of p-values and filters the data-frame
+based on p-values.
 }

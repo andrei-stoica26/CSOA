@@ -15,5 +15,6 @@ prepareFiltering(overlapDF, saveCutoffPlot = FALSE)
 A numeric value
 }
 \description{
-This function finds the raw aggregate rank of the highest non-top overlap.
+This function finds the raw aggregate rank of the
+highest non-top overlap.
 }
