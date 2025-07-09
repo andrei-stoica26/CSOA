@@ -59,7 +59,7 @@ sapply(cellSets, length)
 
 We can now visualize the distribution of the cell sets among all the cells:
 
-```{r, out.height='80%', out.width='80%', fig.height=6, fig.width=5}
+```{r, out.height='90%', out.width='90%', fig.height=6, fig.width=5}
 mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
 basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
              title='Distribution of cell sets among all cells',
@@ -150,7 +150,7 @@ overlapCutoffPlot(freqDF, findRankCutoff(freqDF))
 
 Next, we run `prepareFiltering`, a wrapper around `findRankCutoff` which returns the highest raw rank of the non-selected overlaps:
 
-```{r}
+```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
 firstOutRawRank <- prepareFiltering(po2)
 tempDF <- subset(po2, rawAggRank < firstOutRawRank)
 v <- c(tempDF$rawAggRank[nrow(tempDF)], firstOutRawRank)
@@ -166,16 +166,16 @@ dim(po2)
 
 Next, `scoreOverlaps` is applied with the default `log` overlap scoring method, which assigns scores starting at `1` and decreasing logarithmically towards `0` for each unique rank (though `0` is not reached but interpreted as the score of the first non-top overlap). The resulting data frame is identical with the one generated earlier using `processOverlaps`. 
 
-```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
+```{r}
 po2 <- scoreOverlaps(po2)
-head(po2)
-head(po2$score, 30)
 identical(po, po2)
+unique(po2$rawAggRank)
+head(po2$score, 30)
 ```
 
 Alternatively, overlaps can be scored by performing inverted minmax normalization of the ranks of the top overlaps and `firstOutRawRank`:
 
-```{r, out.height='100%', out.width='100%', fig.height=5, fig.width=6}
+```{r}
 po2Minmax <- scoreOverlaps(po2, 'minmax', firstOutRawRank)
 head(po2Minmax$score, 30)
 ```

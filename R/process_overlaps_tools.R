@@ -45,16 +45,16 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #'
 rankOverlaps <- function(overlapDF){
   overlapDF <- overlapDF[order(overlapDF$pval), ]
-  overlapDF$pvalRank <- dense_rank(overlapDF$pval)
+  overlapDF$pvalRank <- rankFun(overlapDF$pval)
   overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]
-  overlapDF$ratioRank <- dense_rank(-overlapDF$ratio)
+  overlapDF$ratioRank <- rankFun(-overlapDF$ratio)
 
   geneConn <- geneBestEdgeRank(overlapDF)
   overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] + geneConn[overlapDF$gene2, 1]) / 2
   overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] + geneConn[overlapDF$gene2, 2]) / 2
   overlapDF$rawAggRank <- (overlapDF$pvalRank + overlapDF$ratioRank) / 2
 
-  overlapDF$rank <- dense_rank(overlapDF$rawAggRank)
+  overlapDF$rank <- rankFun(overlapDF$rawAggRank)
   overlapDF <- overlapDF[order(overlapDF$rank), ]
   return(overlapDF)
 }
@@ -80,25 +80,24 @@ findRankCutoff <- function(freqDF){
 #' This function finds the raw aggregate rank of the highest non-top overlap.
 #'
 #' @param overlapDF A ranked overlap data frame
-#' @param savePlots Whether to save overlap cutoff plots
+#' @param saveCutoffPlot Whether to save overlap cutoff plot
 #'
 #' @return A numeric value
 #'
 #' @export
 #'
-prepareFiltering <- function(overlapDF, savePlots = FALSE){
+prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
   freqDF <- dplyr::count(overlapDF, rank)
   rankCutoff <- findRankCutoff(freqDF)
+
+  if(saveCutoffPlot)
+    devPlot(overlapCutoffPlot, freqDF, rankCutoff)
 
   outDF <- subset(overlapDF, rank > rankCutoff)
   if (nrow(outDF))
     firstOutRawRank <- outDF$rawAggRank[1] else
       firstOutRawRank <- 2 * overlapDF$rawAggRank[nrow(overlapDF)] - overlapDF$rawAggRank[nrow(overlapDF) - 1]
 
-  if(savePlots){
-    devPlot(overlapCutoffPlot, freqDF, rankCutoff)
-    devPlot(rankSaddlePlot, overlapDF, firstOutRawRank)
-  }
   return(firstOutRawRank)
 }
 

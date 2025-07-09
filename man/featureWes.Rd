@@ -29,8 +29,6 @@ will be generated.}
 \item{titleSize}{Title size.}
 
 \item{...}{Other arguments passed to wesBinaryGradient.}
-
-\item{repel}{Whether to make names of labels repel.}
 }
 \value{
 A ggplot object.

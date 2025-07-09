@@ -109,7 +109,6 @@ wesBinaryGradient <- function(p, wesPal = 'Royal1', wesLow = 3, wesHigh = 2, pal
 #' @param idClass Column to be used for labelling. If NULL, no column-based labels
 #' will be generated.
 #' @param labelSize Size of labels. Ignored if idClass is NULL.
-#' @param repel Whether to make names of labels repel.
 #' @param titleSize Title size.
 #' @param ... Other arguments passed to wesBinaryGradient.
 #'
@@ -301,45 +300,6 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
                linetype='dashed') +
     theme(legend.title=element_blank(),
           legend.position='bottom')
-  p <- titlePlot(p, title)
-  return(p)
-}
-
-#' Display the choice of the overlap rank cutoff
-#'
-#' This function plots the raw aggregate rank against the rank while displaying
-#' also the rank cutoff point, visually resembling a saddle point.
-#'
-#' @param overlapDF A ranked overlap data frame
-#' @param firstOutRawRank The raw rank of the highest-ranked overlap that was not
-#' recorded among top overlaps.
-#' @param title Plot title
-#' @param pointColor Point color
-#'
-#' @return A ggplot object
-#'
-#' @export
-#'
-rankSaddlePlot <- function(overlapDF, firstOutRawRank, title = 'Rank saddle plot', pointColor = 'red'){
-  retainedRawRanks <- overlapDF$rawAggRank[overlapDF$rawAggRank < firstOutRawRank]
-  yInt <- max(retainedRawRanks)
-  xInt <- unique(subset(overlapDF, rawAggRank == yInt)$rank)
-  nOverlaps <- length(retainedRawRanks)
-  p <- ggplot(overlapDF, aes(x=rank, y=rawAggRank)) +
-    geom_point(size=0.3, color=pointColor) +
-    theme_minimal() +
-    labs(x='Overlap rank',
-         y='Overlap raw rank') +
-    geom_hline(yintercept=yInt,
-               color='blue',
-               linetype='dashed',
-               linewidth=0.3) +
-    geom_vline(xintercept=xInt,
-               color='blue',
-               linetype='dashed',
-               linewidth=0.3) +
-    annotate('rect', xmin=0, xmax=xInt, ymin=0, ymax=yInt, alpha=0.2, fill='purple') +
-    annotate("text", x=xInt / 2, y=yInt / 2, label=nOverlaps)
   p <- titlePlot(p, title)
   return(p)
 }

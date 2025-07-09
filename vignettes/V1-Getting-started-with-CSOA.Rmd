@@ -75,7 +75,7 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
 
 Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to visualize the results using `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells in the dataset:
 
-```{r warning=FALSE, out.height='60%', out.width='60%', fig.height=4, fig.width=5}
+```{r warning=FALSE, out.height='80%', out.width='80%', fig.height=4, fig.width=5}
 seuratObj <- as.Seurat(sceObj)
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
 VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label') + NoLegend()

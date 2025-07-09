@@ -28,7 +28,6 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   return(df)
 }
 
-
 #' Show the distribution of cell sets among cells
 #'
 #' This function returns a matrix that shows the presence of cell sets among
@@ -150,6 +149,18 @@ qGrab <- function(qsFile){
   return(res)
 }
 
+#' Helper function to ensure easy testing of different rank methods
+#'
+#' This function controls the choice of rank functions everywhere in the package.
+#'
+#' @param v Vector
+#'
+#' @return Ranked vector
+#'
+#'
+rankFun <- function(v)
+  return(rank(v, ties.method='min'))
+
 #' Replace a column by its rank
 #'
 #' This functions orders a data frame by the values in a column and replaces
@@ -166,7 +177,7 @@ qGrab <- function(qsFile){
 #'
 rankReplace <- function(df, colName, rankSign = 1){
   df <- df[order(df[, colName], decreasing=rankSign - 1), ]
-  df[, colName] <- dense_rank(rankSign * df[, colName])
+  df[, colName] <- rankFun(rankSign * df[, colName])
   return(df)
 }
 

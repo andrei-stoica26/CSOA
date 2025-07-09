@@ -4,12 +4,12 @@
 \alias{prepareFiltering}
 \title{Find the raw aggregate rank of the highest non-top overlap}
 \usage{
-prepareFiltering(overlapDF, savePlots = FALSE)
+prepareFiltering(overlapDF, saveCutoffPlot = FALSE)
 }
 \arguments{
 \item{overlapDF}{A ranked overlap data frame}
 
-\item{savePlots}{Whether to save overlap cutoff plots}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
 }
 \value{
 A numeric value

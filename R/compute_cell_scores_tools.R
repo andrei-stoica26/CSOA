@@ -1,8 +1,3 @@
-#' @importFrom dplyr dense_rank
-#'
-NULL
-
-
 #' Compute per-cell gene pair scores
 #'
 #' This function scores each gene pair corresponding to a top overlap in each
@@ -67,7 +62,7 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
   df$pairScore <- pairTotalScores / totalScore * 100
   df <- df[order(df$pairScore, decreasing=TRUE), ]
 
-  df$pairRank <- dense_rank(-df$pairScore)
+  df$pairRank <- rankFun(-df$pairScore)
   df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
 
   if (keepOverlapOrder)
