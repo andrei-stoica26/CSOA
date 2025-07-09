@@ -1,4 +1,3 @@
-#' @importFrom data.table transpose
 #' @importFrom qs qsave
 #' @importFrom stringr str_c
 #' @importFrom stats phyper

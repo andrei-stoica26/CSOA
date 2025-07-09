@@ -28,26 +28,6 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   return(df)
 }
 
-#' Show the distribution of cell sets among cells
-#'
-#' This function returns a matrix that shows the presence of cell sets among
-#' cells.
-#'
-#' @param cellSets A list of character vectors
-#' @param allCells A character vector. If not specified, the union of the cell
-#' sets
-#'
-#' @return A logical matrix with genes as rows and cells as columns
-#'
-#' @export
-#'
-cellDistribution <- function(cellSets, allCells = Reduce(union, cellSets)){
-  df <- data.table::transpose(data.frame(lapply(cellSets, function(x) allCells %in% x)))
-  rownames(df) <- names(cellSets)
-  colnames(df) <- allCells
-  return(as.matrix(df))
-}
-
 #' Get all unordered pairs of two elements from a vector
 #'
 #' This function returns all unorderded pairs of two elements from a vector as
@@ -88,11 +68,11 @@ overlapGenes <- function(overlapDF)
 pointsOnCircle <- function(r, nPoints){
   angleOffset <- runif(n=1, min=0, max=2 * pi)
   theta <- 2 * pi / nPoints
-  points <- lapply(1:nPoints, function(k) c(r * cos(k * theta + angleOffset),
+  points <- lapply(seq(nPoints), function(k) c(r * cos(k * theta + angleOffset),
                                             r * sin(k * theta + angleOffset)))
-  df <- data.table::transpose(data.frame(points))
-  colnames(df) <- c('x', 'y')
-  return(df)
+  res <- do.call(rbind, points)
+  colnames(res) <- c('x', 'y')
+  return(res)
 }
 
 #' Run LayerData from Seurat and return an error when the requested layer does
@@ -148,6 +128,34 @@ qGrab <- function(qsFile){
   file.remove(qsFile)
   return(res)
 }
+
+#' Extract gene pairs from overlap matrix
+#'
+#' This function extracts the gene pairs from an overlap matrix
+#'
+#' @inheritParams rankOverlaps
+#'
+#' @return A list of gene pairs
+#'
+#' @export
+#'
+overlapPairs <- function(overlapDF)
+  return(apply(overlapDF, 1, function(x) as.character(x[c(1, 2)]), simplify=FALSE))
+
+#' Extract subset defined using gene pairs from overlap matrix
+#'
+#' This function extracts the subset determined by input gene pairs from an
+#' overlap matrix
+#'
+#' @inheritParams rankOverlaps
+#' @param pairs Gene pairs corresponding to the extracted overlaps
+#'
+#' @return An overlap data frame corresponding to the selected gene pairs
+#'
+#' @export
+#'
+overlapSlice <- function(overlapDF, pairs)
+  return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
 
 #' Helper function to ensure easy testing of different rank methods
 #'

@@ -19,17 +19,17 @@ NULL
 #'
 geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
   genes <- overlapGenes(overlapDF)
-  df <- data.table::transpose(data.frame(lapply(genes, function(gene){
-    geneDF <- subset(overlapDF, gene1 == gene | gene2 == gene)
+  mat <- do.call(rbind, lapply(genes, function(gene){
+    geneDF <- overlapDF[overlapDF$gene1 == gene | overlapDF$gene2 == gene, ]
     return(c(min(geneDF$pvalRank), min(geneDF$ratioRank)))
-  })))
-  rownames(df) <- genes
-  colnames(df) <- c('connPvalRank', 'connRatioRank')
+  }))
+  rownames(mat) <- genes
+  colnames(mat) <- c('connPvalRank', 'connRatioRank')
   if (asRanks){
-    df <- rankReplace(df, 'connPvalRank')
-    df <- rankReplace(df, 'connRatioRank')
+    mat <- rankReplace(mat, 'connPvalRank')
+    mat <- rankReplace(mat, 'connRatioRank')
   }
-  return(df)
+  return(mat)
 }
 
 #' Rank cell set overlaps
@@ -161,31 +161,3 @@ scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
 
   return(overlapDF)
 }
-
-#' Extract gene pairs from overlap matrix
-#'
-#' This function extracts the gene pairs from an overlap matrix
-#'
-#' @inheritParams rankOverlaps
-#'
-#' @return A list of gene pairs
-#'
-#' @export
-#'
-overlapPairs <- function(overlapDF)
-  return(as.list(data.table::transpose(overlapDF[, c(1, 2)])))
-
-#' Extract subset delineated using gene pairs from overlap matrix
-#'
-#' This function extracts the subset determined by input gene pairs from an
-#' overlap matrix
-#'
-#' @inheritParams rankOverlaps
-#' @param pairs Gene pairs corresponding to the extracted overlaps
-#'
-#' @return An overlap data frame corresponding to the selected gene pairs
-#'
-#' @export
-#'
-overlapSlice <- function(overlapDF, pairs)
-  return(overlapDF[which(overlapPairs(overlapDF) %in% pairs),])
