@@ -4,14 +4,16 @@
 \alias{connectedComponents}
 \title{Find the connected components of the graph determined by the overlaps}
 \usage{
-connectedComponents(df)
+connectedComponents(df, colName = "component")
 }
 \arguments{
-\item{df}{A data frame with gene1 and gene2 columns}
+\item{df}{A data frame with gene1 and gene2 columns.}
+
+\item{colName}{Name of the connected components column to be added.}
 }
 \value{
 An overlap data frame with a column indicated the number of the
-connected component
+connected component.
 }
 \description{
 This function finds the connected components of the graph having the filtered

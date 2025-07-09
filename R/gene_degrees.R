@@ -10,12 +10,9 @@
 #'
 geneDegreesCore <- function(edgesDF){
   genes <- union(edgesDF$gene1, edgesDF$gene2)
-  df <- data.table::transpose(data.frame(sapply(genes, function(x){
-    geneGraph <- subset(edgesDF, gene1 == x | gene2 == x)
-    return(c(x, nrow(geneGraph), geneGraph$group[1]))
-  })))
-  colnames(df) <- c('gene', 'nEdges', 'group')
-  df$nEdges <- as.integer(df$nEdges)
+  df <- as.data.frame(table(c(edgesDF$gene1, edgesDF$gene2)))
+  colnames(df) <- c('gene', 'nEdges')
+  df$group <- as.factor(edgesDF$group[1])
   df <- df[order(df$nEdges, decreasing=TRUE), ]
   return(df)
 }
@@ -32,7 +29,7 @@ geneDegreesCore <- function(edgesDF){
 #'
 geneDegrees <- function(edgesDFs){
   dfList <- lapply(edgesDFs, geneDegreesCore)
-  df <- Reduce(rbind, dfList)
+  df <- do.call(rbind, dfList)
   df <- df[order(df$nEdges, decreasing=TRUE), ]
   return(df)
 }
@@ -79,10 +76,9 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
   degreesDF <- geneDegrees(edgesDFs)
   distFreqDF <- distFreq(degreesDF)
   message('Finding gene coordinates...')
-  df <- data.frame(matrix(nrow = 0, ncol = 3))
-  for (i in seq_len(nrow(distFreqDF)))
-    df <- rbind(df, pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i]))
-  df <- Reduce(cbind, list(degreesDF[, 1, drop = F], df, degreesDF[, 2:3]))
+  circlePoints <- do.call(rbind, lapply(seq_len(nrow(distFreqDF)), function(i)
+    pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i])))
+  df <- cbind(degreesDF[, 1, drop=FALSE], circlePoints, degreesDF[, 2:3])
   df[, 5] <- as.factor(df[, 5])
   return(df)
 }

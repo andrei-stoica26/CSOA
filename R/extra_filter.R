@@ -23,12 +23,13 @@ jaccard <- function(a, b) {
 #'
 geneNeighbors <- function(overlapDF){
   genes <- overlapGenes(overlapDF)
-  return(sapply(genes, function(gene){
-    geneLeft <- subset(overlapDF, gene1 == gene)
-    geneRight <- subset(overlapDF, gene2 == gene)
-    neighbors <- c(geneLeft$gene2, geneRight$gene1)
-    return(neighbors)
-  }))
+  neighbors <- lapply(genes, function(gene) {
+    leftNeighbors <- overlapDF$gene2[overlapDF$gene1 == gene]
+    rightNeighbors <- overlapDF$gene1[overlapDF$gene2 == gene]
+    return(union(leftNeighbors, rightNeighbors))
+  })
+  names(neighbors) <- genes
+  return(neighbors)
 }
 
 #' Compute the Jaccard score of the neighbor sets of each gene in an overlap
@@ -45,13 +46,8 @@ geneNeighbors <- function(overlapDF){
 #'
 neighborJaccard <- function(overlapDF){
   neighbors <- geneNeighbors(overlapDF)
-  overlapDF$neighborJac <- sapply(1:nrow(overlapDF), function(i) {
-    neighbors1 <- neighbors[[overlapDF[i, ]$gene1]]
-    neighbors2 <- neighbors[[overlapDF[i, ]$gene2]]
-    return(jaccard(neighbors1, neighbors2))
-    }
-    , USE.NAMES = F)
-
+  overlapDF$neighborJac <- mapply(function(x, y)
+    jaccard(neighbors[[x]], neighbors[[y]]), overlapDF$gene1, overlapDF$gene2)
   return(overlapDF)
 }
 
@@ -75,7 +71,7 @@ breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = F){
   nEdges <- nrow(overlapDF)
   while(prevNEdges != nEdges){
     overlapDF <- neighborJaccard(overlapDF)
-    overlapDF <- subset(overlapDF, neighborJac > cutoff)
+    overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]
     prevNEdges <- nEdges
     nEdges <- nrow(overlapDF)
     message(paste0(prevNEdges - nEdges), ' edges with low Jaccard scores have been removed.')

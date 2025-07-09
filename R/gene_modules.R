@@ -3,17 +3,18 @@
 #' This function finds the connected components of the graph having the filtered
 #' overlaps as edges
 #'
-#' @param df A data frame with gene1 and gene2 columns
+#' @param df A data frame with gene1 and gene2 columns.
+#' @param colName Name of the connected components column to be added.
 #' @return An overlap data frame with a column indicated the number of the
-#' connected component
+#' connected component.
 #'
 #' @export
 #'
-connectedComponents <- function(df){
+connectedComponents <- function(df, colName = 'component'){
   warnUnfiltered(df)
   if(!nrow(df))
     stop('Error: The dataframe has no rows.')
-  df$component <- -1
+  df[[colName]] <- -1
   rownames(df) <- 1:dim(df)[1]
   vertices <- overlapGenes(df)
   seen <- c()
@@ -28,7 +29,7 @@ connectedComponents <- function(df){
       rightdf <- subset(df, gene2 == v)
       seen <- c(seen, v)
       newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
-      df$component[newEdges] <- nextComp
+      df[newEdges, colName] <- nextComp
       neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1), c(currVertices, seen))
       currVertices <- c(currVertices, neighbors)
       currVertices <- currVertices[-1]
@@ -75,16 +76,11 @@ edgeLists.default <- function(overlapObj, ...)
 #'
 edgeLists.data.frame <- function(overlapObj, ...){
   if (!'component' %in% colnames(overlapObj))
-    overlapObj <- connectedComponents(overlapObj)
-  components <- unique(overlapObj$component)
-  overlapObj <- lapply(components, function(i) {
-    df <- subset(overlapObj, component == i)
-    df <- df[, c('gene1', 'gene2', 'component')]
-    colnames(df)[3] <- 'group'
-    return(df)
-    })
-  names(overlapObj) <- components
-  return(overlapObj)
+    overlapObj <- connectedComponents(overlapObj, 'group')
+  overlapObj <- overlapObj[, c('gene1', 'gene2', 'group')]
+  components <- split(overlapObj, overlapObj$group)
+  names(components) <- unique(overlapObj$group)
+  return(components)
 }
 
 #' @param groupNames Names of groups. If provided, must be a vector of the same

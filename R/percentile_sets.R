@@ -27,7 +27,7 @@ percentileSets <- function(geneSetExp, percentile=90){
   fraction <- percentile / 100
   message('Computing percentile sets...')
   expList <- lapply(genes, function(x){
-    geneExp <-  geneSetExp[x, ]
+    geneExp <- geneSetExp[x, ]
     geneExp <- geneExp[geneExp > 0]
     thresh <- as.numeric(quantile(geneExp, fraction))
     return(names(geneExp[geneExp > thresh]))
