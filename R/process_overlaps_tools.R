@@ -90,13 +90,31 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
   freqDF <- dplyr::count(overlapDF, rank)
   rankCutoff <- findRankCutoff(freqDF)
 
-  if(saveCutoffPlot)
+  if(saveCutoffPlot){
+    if (nrow(freqDF) < 2)
+      stop('overlapCutoffPlot requires at least two points')
+
+    freqs <- freqDF$n
+    nFreq <- length(unique(freqs))
+
+    if (nFreq < 2)
+      stop('overlapCutoffPlot requires at least two distinct rank frequencies')
+
+    maxFreq <- max(freqs)
+    maxApps <- which(freqs %in% maxFreq)
+    if (length(maxApps) == 1)
+      if (maxApps %in% c(1, nrow(freqDF)))
+        stop('overlapCutoffPlot requires that the maximum rank frequency is reached at a non-extremal point')
+
     devPlot(overlapCutoffPlot, freqDF, rankCutoff)
+  }
 
   outDF <- subset(overlapDF, rank > rankCutoff)
   if (nrow(outDF))
     firstOutRawRank <- outDF$rawAggRank[1] else
-      firstOutRawRank <- 2 * overlapDF$rawAggRank[nrow(overlapDF)] - overlapDF$rawAggRank[nrow(overlapDF) - 1]
+      if (nrow(overlapDF) > 1)
+        firstOutRawRank <- 2 * overlapDF$rawAggRank[nrow(overlapDF)] - overlapDF$rawAggRank[nrow(overlapDF) - 1] else
+          firstOutRawRank <- NULL
 
   return(firstOutRawRank)
 }
@@ -139,7 +157,7 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' @export
 #'
 scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
-  message(paste0(nrow(overlapDF), ' overlaps will be used in the calculation of CSOA scores.'))
+  message(paste0(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) > 1), ' will be used in the calculation of CSOA scores.'))
   if (nrow(overlapDF) == 1){
     overlapDF$score <- 1
     return(overlapDF)

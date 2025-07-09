@@ -48,8 +48,13 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
 #' @export
 #'
 processOverlaps <- function(overlapDF, pvalThr = 0.05, saveCutoffPlot = FALSE, jaccardCutoff = NULL, osMethod = 'log'){
+
   if (nrow(overlapDF) > 1)
     overlapDF <- byCorrectDF(overlapDF, pvalThr) else overlapDF$pval_adj <- overlapDF$pval
+
+  if (!nrow(overlapDF))
+    return(overlapDF)
+
   overlapDF <- rankOverlaps(overlapDF)
   firstOutRawRank <- prepareFiltering(overlapDF, saveCutoffPlot)
   overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
@@ -57,6 +62,7 @@ processOverlaps <- function(overlapDF, pvalThr = 0.05, saveCutoffPlot = FALSE, j
     overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
     firstOutRawRank <- NULL
   }
+
   overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
   return(overlapDF)
 }
@@ -145,6 +151,13 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05,
                        pairFileName = NULL, keepOverlapOrder = FALSE){
   overlapDF <- processOverlaps(overlapDF, pvalThr, saveCutoffPlot, jaccardCutoff,
                                osMethod)
+
+  if(!nrow(overlapDF)){
+    warning('No significant overlaps were identified. All cells will get a score of 0')
+    scoreDF <- data.frame(setNames(list(rep(0, dim(geneSetExp)[2])), colStr))
+    return(scoreDF)
+  }
+
   message('Normalizing expression matrix by rows...')
   genes <- overlapGenes(overlapDF)
   normExp <- kerntools::minmax(geneSetExp[genes, ], rows=TRUE)

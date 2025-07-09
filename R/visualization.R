@@ -280,6 +280,11 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
   yMin <- min(freqDF$n)
   yMax <- max(freqDF$n)
 
+  if (nrow(freqDF) < 2)
+    stop('overlapCutoffPlot requires at least two points')
+
+  colors <- c('purple', 'gold')
+
   hull <- upperConvexHull(freqDF)
   hullSegments <- pointsToSegments(hull)
   plg <- hullToPolygon(hull, rankCutoff)
@@ -292,11 +297,11 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
     geom_segment(data = hullSegments, aes(x, y, xend=xEnd, yend=yEnd),
                  color='black', linewidth=0.8) +
     geom_point(data = freqDF, aes(rank, n), color = 'black', size=1, shape=24) +
-    scale_fill_manual(values=c('purple', 'gold'),
+    scale_fill_manual(values=colors,
                       labels=c('Accepted overlaps', 'Discarded overlaps')) +
     geom_vline(xintercept=rankCutoff,
                color='blue',
-               size=0.3,
+               linewidth=0.3,
                linetype='dashed') +
     theme(legend.title=element_blank(),
           legend.position='bottom')

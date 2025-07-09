@@ -13,6 +13,9 @@
 #'
 upperConvexSemihullIndices <- function(df, yIndex = 2){
   lineIndices <- which.min(df[, yIndex])
+  maxIndex <- which.max(df[, yIndex])
+  if(lineIndices >= maxIndex)
+    return(maxIndex)
   maxVal <- df[lineIndices, yIndex]
   if (nrow(df) > 1){
     for (i in seq_len(nrow(df)))
@@ -93,12 +96,16 @@ hullToPolygon <- function(hull, xInt, type = 'in'){
     df <- subset(hull, x <= xInt)
     if(df$x[nrow(df)] != xInt)
       df <- rbind(df, c(xInt, yMax))
-    df <- rbind(df, c(xInt, min(df$y)))
+    yMin <- min(df$y)
+    if (yMax != yMin)
+      df <- rbind(df, c(xInt, yMin))
   } else{
-    df <- subset(hull, x > xInt)
+    df <- subset(hull, x >= xInt)
     if(df$x[nrow(df)] != xInt)
       df <- rbind(c(xInt, yMax), df)
-    df <- rbind(c(xInt, min(df$y)), df)
+    yMin <- min(df$y)
+    if (yMax != yMin)
+      df <- rbind(c(xInt, yMin), df)
   }
   return(df)
 }
