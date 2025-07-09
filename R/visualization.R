@@ -165,67 +165,50 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #'
 #' @inheritParams edgeLists.list
 #' @param title Plot title.
-#' @param groupStr Column used for grouping.
+#' @param groupLegendName The title of the group legend; if NULL, no groups will
+#' be distinguished.
 #' @inheritParams circleCoords
 #'
 #' @return A ggplot object.
 #'
 #' @export
 #'
-geneCirclePlot <- function(overlapObj, groupStr = NULL, groupNames = NULL, cutoff = NULL, title = 'Top overlap genes plot',
-                           extraCircles = 0){
+geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL, cutoff = NULL,
+                           title = 'Top overlap genes plot',
+                           extraCircles = 2){
+
   geneCoordsDF <- geneCoords(overlapObj, groupNames, cutoff)
+  colors <- c('red', 'purple1', 'olivedrab1','darkorange1', 'lavender', 'thistle1',
+              'green1','violetred4','goldenrod1', 'firebrick4')
+  nColors <- length(colors)
+  if(!is.null(groupLegendName) & length(unique(geneCoordsDF$group)) > nColors)
+    stop('Only up to ', nColors, ' groups are allowed.')
+
   circleCoordsDF <- circleCoords(geneCoordsDF, extraCircles)
-  message('Plotting genes...')
+
   legendStep <- as.integer(geneCoordsDF$nEdges[1] / 6) + 1
   p <- ggplot() +
     geom_circle(aes(x0=x, y0=y, r=r, fill=nEdges, color=nEdges),
-                data = circleCoordsDF) +
+                data=circleCoordsDF) +
     scale_fill_viridis(option='viridis', begin=0.4,
                        breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep)) +
     scale_color_viridis(option='viridis', begin=0.4,
                         breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep), guide='none') +
-    labs(fill = 'Number of top overlaps') +
+    labs(fill='Number of top overlaps') +
     theme_classic() + easy_remove_axes() + coord_fixed() +
     theme(plot.margin=margin(0, 0, 0, 0),
           legend.title=element_text(size=10),
           legend.text=element_text(size=10)) +
     geom_text_repel(aes(x, y, label=gene), data=geneCoordsDF, size=3)
-  if (!is.null(groupStr))
+  if (!is.null(groupLegendName))
     p <- p + new_scale_color() +
     new_scale_fill() +
     geom_point(aes(x, y, color=group), data = geneCoordsDF, size=0.8) +
-    scale_color_discrete(type=c('red', 'purple1', 'olivedrab1','darkorange1',
-                                'lavender', 'thistle1', 'green1','violetred4',
-                                'goldenrod1', 'firebrick4')) +
-    labs(color=groupStr) else p <- p + geom_point(aes(x, y),
+    scale_color_discrete(type=colors) +
+    labs(color=groupLegendName) else p <- p + geom_point(aes(x, y),
                                                   data=geneCoordsDF,
                                                   color='red',
                                                   size=0.8)
-  p <- titlePlot(p, title)
-  return(p)
-}
-
-#' Plot the gene pair rank versus the overlap rank
-#'
-#' This functions plots the gene pair rank versus the overlap rank
-#'
-#' @param pairScoreDF A dataframe with columns gene1, gene2 (character),
-#' overlapRank and pairRank (numeric)
-#' @param title Plot title
-#' @param pointColor Point color
-#' @param pointSize Point size
-#'
-#' @return A ggplot object
-#'
-#' @export
-#'
-birankPlot <- function(pairScoreDF, title = 'Overlap and gene pair ranks', pointColor = 'deeppink3', pointSize = 0.5){
-  p <- ggplot(pairScoreDF, aes(overlapRank, pairRank)) + theme_classic() +
-    geom_point(color = pointColor, size=pointSize) +
-    scale_x_continuous(trans='reverse') +
-    scale_y_continuous(trans='reverse') +
-    labs(x='Overlap rank', y='Gene pair rank')
   p <- titlePlot(p, title)
   return(p)
 }

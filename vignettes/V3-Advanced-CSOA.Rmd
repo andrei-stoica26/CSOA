@@ -287,21 +287,20 @@ dfNetwork <- connectedComponents(dfNetwork)
 components <- unique(dfNetwork$component)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
 p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
-  theme(axis.text.y = element_blank())
+  theme(axis.text.y=element_blank())
 p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
-  theme(axis.text.y = element_blank())
+  theme(axis.text.y=element_blank())
 p1 / p2
 ```
 
 
 # Visualizing gene participation in top overlaps
 
-To display gene participation in top overlaps, CSOA provides the `geneCirclePlot` function:
+To display gene participation in top overlaps, CSOA provides the `geneRadialPlot` function:
 
 ```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=6}
-geneCirclePlot(acinarPairs, 
-               title = 'Top 100 overlap genes - Acinar markers', 
-               extraCircles = 2)
+geneRadialPlot(acinarPairs, 
+               title='Top 100 overlap genes - Acinar markers')
 ```
 
 Additionally, we can visualize and compare the genes involved in the top overlaps across multiple gene sets. We will reload the alpha and gamma markers from the **Getting started with CSOA** tutorial, and run again CSOA with four gene sets. To facilitate visualization, we will select the top `15` overlaps for each gene set:
@@ -329,8 +328,8 @@ seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames,
                              pairFileTemplate='pairs', 
                              keepOverlapOrder=TRUE)
 
-geneCirclePlot(lapply(paste0('pairs', geneSetNames, '.qs'), qGrab),
-               groupStr='Gene set',
+geneRadialPlot(lapply(paste0('pairs', geneSetNames, '.qs'), qGrab),
+               groupLegendName='Gene set',
                groupNames=str_remove(geneSetNames, 'CSOA_'),
                cutoff=15,
                title='Top 15 overlap genes',

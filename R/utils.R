@@ -22,6 +22,7 @@ NULL
 #' @export
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
+  message('Correcting for multiple testing...')
   df <- df[order(df[[colStr]]), ]
   df$pvalAdj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
   df <- subset(df, pvalAdj < pvalThr)
