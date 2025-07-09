@@ -44,6 +44,8 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #' @export
 #'
 rankOverlaps <- function(overlapDF){
+  if (!nrow(overlapDF))
+    return(overlapDF)
   overlapDF <- overlapDF[order(overlapDF$pval), ]
   overlapDF$pvalRank <- rankFun(overlapDF$pval)
   overlapDF <- overlapDF[order(overlapDF$ratio, decreasing=TRUE), ]
@@ -87,24 +89,26 @@ findRankCutoff <- function(freqDF){
 #' @export
 #'
 prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
+  if (!nrow(overlapDF))
+    return(NULL)
   freqDF <- dplyr::count(overlapDF, rank)
   rankCutoff <- findRankCutoff(freqDF)
 
   if(saveCutoffPlot){
     if (nrow(freqDF) < 2)
-      stop('overlapCutoffPlot requires at least two points')
+      stop('overlapCutoffPlot requires at least two points.')
 
     freqs <- freqDF$n
     nFreq <- length(unique(freqs))
 
     if (nFreq < 2)
-      stop('overlapCutoffPlot requires at least two distinct rank frequencies')
+      stop('overlapCutoffPlot requires at least two distinct rank frequencies.')
 
     maxFreq <- max(freqs)
     maxApps <- which(freqs %in% maxFreq)
     if (length(maxApps) == 1)
       if (maxApps %in% c(1, nrow(freqDF)))
-        stop('overlapCutoffPlot requires that the maximum rank frequency is reached at a non-extremal point')
+        stop('overlapCutoffPlot requires that the maximum rank frequency is reached at a non-extremal point.')
 
     devPlot(overlapCutoffPlot, freqDF, rankCutoff)
   }
@@ -133,7 +137,7 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #' @export
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
-  if(is.null(firstOutRawRank))
+  if(is.null(firstOutRawRank) | !nrow(overlapDF))
     return(overlapDF)
   return(subset(overlapDF, rawAggRank < firstOutRawRank))
 }
@@ -157,13 +161,13 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' @export
 #'
 scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
-  message(paste0(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) > 1), ' will be used in the calculation of CSOA scores.'))
+  message(paste0(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1), ' will be used in the calculation of CSOA scores.'))
   if (nrow(overlapDF) == 1){
     overlapDF$score <- 1
     return(overlapDF)
   }
   if(!osMethod %in% c('log', 'minmax'))
-    stop('Unrecognized overlap scoring method. See ?CSOA::scoreOverlaps for the accepted methods')
+    stop('Unrecognized overlap scoring method. See ?CSOA::scoreOverlaps for the accepted methods.')
 
   if (osMethod == 'log'){
     rankVals <- unique(overlapDF$rank)

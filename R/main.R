@@ -153,7 +153,7 @@ scoreCells <- function(geneSetExp, overlapDF, colStr = 'CSOA', pvalThr = 0.05,
                                osMethod)
 
   if(!nrow(overlapDF)){
-    warning('No significant overlaps were identified. All cells will get a score of 0')
+    warning('No significant overlaps were identified. All cells will get a score of 0.')
     scoreDF <- data.frame(setNames(list(rep(0, dim(geneSetExp)[2])), colStr))
     return(scoreDF)
   }
@@ -188,7 +188,7 @@ runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90,
                     saveCutoffPlot = FALSE, jaccardCutoff = NULL, osMethod = 'log',
                     pairFileName = NULL, keepOverlapOrder = FALSE){
   if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
-    stop('genes must be a character vector of length >= 2')
+    stop('genes must be a character vector of length >= 2.')
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL,
                                 overlapFileName)

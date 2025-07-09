@@ -264,7 +264,7 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
   yMax <- max(freqDF$n)
 
   if (nrow(freqDF) < 2)
-    stop('overlapCutoffPlot requires at least two points')
+    stop('overlapCutoffPlot requires at least two points.')
 
   colors <- c('purple', 'gold')
 

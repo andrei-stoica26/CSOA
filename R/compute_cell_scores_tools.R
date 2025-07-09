@@ -13,13 +13,13 @@
 #'
 computePCPairScores <- function(overlapDF, normExp){
   if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
-    stop('Columns gene1, gene2 and score must exist in overlapDF')
+    stop('Columns gene1, gene2 and score must exist in overlapDF.')
   if(max(overlapDF$score) != 1 | min(overlapDF$score) <= 0)
-    stop('The maximum of the score column in overlapDF must be 1 and its minimum must be positive')
+    stop('The maximum of the score column in overlapDF must be 1 and its minimum must be positive.')
   if(!is.numeric(normExp) | !is.matrix(normExp))
-    stop('normExp must be a numeric matrix')
+    stop('normExp must be a numeric matrix.')
   if(max(normExp) != 1 | min(normExp) != 0)
-    stop('The maximum value of normExp must be 1 and its minimum must be 0')
+    stop('The maximum value of normExp must be 1 and its minimum must be 0.')
   message('Computing per-cell scores for gene pairs...')
   gene1 <- overlapDF$gene1
   gene2 <- overlapDF$gene2
@@ -52,7 +52,7 @@ computePCPairScores <- function(overlapDF, normExp){
 #'
 computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keepOverlapOrder = FALSE){
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-    stop('Values in pcPairScores must be between 0 and 1')
+    stop('Values in pcPairScores must be between 0 and 1.')
   df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
   colnames(df)[3:4] <- paste0('overlap', c('Score', 'Rank'))
 
@@ -92,7 +92,7 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
 #'
 computePCSetScores <- function(pcPairScores, cellNames, colStr = 'CSOA'){
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-    stop('Values in pcPairScores must be between 0 and 1')
+    stop('Values in pcPairScores must be between 0 and 1.')
   message('Computing per-cell gene signature scores...')
   scores <- colSums(pcPairScores)
   scores <- vMinmax(scores)

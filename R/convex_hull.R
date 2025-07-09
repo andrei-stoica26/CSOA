@@ -41,9 +41,9 @@ upperConvexSemihullIndices <- function(df, yIndex = 2){
 #'
 upperConvexHull <- function(df, xIndex = 1, yIndex = 2){
   if (length(colnames(df)) < xIndex)
-    stop('xIndex too high; df does not have enough columns')
+    stop('xIndex too high.')
   if (length(colnames(df)) < yIndex)
-    stop('yIndex too high; df does not have enough columns')
+    stop('yIndex too high.')
   df <- df[, c(xIndex, yIndex)]
   colnames(df) <- c('x', 'y')
   df <- df[order(df$x), ]

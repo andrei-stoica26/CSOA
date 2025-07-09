@@ -22,7 +22,7 @@ NULL
 #'
 percentileSets <- function(geneSetExp, percentile=90){
   if (!is.numeric(percentile) | length(percentile) > 2 | percentile < 0 | percentile >= 100)
-    stop('percentile must be a non-negative number lower than 100')
+    stop('percentile must be a non-negative number lower than 100.')
   genes <- rownames( geneSetExp)
   fraction <- percentile / 100
   message('Computing percentile sets...')

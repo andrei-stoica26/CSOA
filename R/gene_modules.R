@@ -13,7 +13,7 @@
 connectedComponents <- function(df, colName = 'component'){
   warnUnfiltered(df)
   if(!nrow(df))
-    stop('Error: The dataframe has no rows.')
+    stop('The dataframe has no rows.')
   df[[colName]] <- -1
   rownames(df) <- 1:dim(df)[1]
   vertices <- overlapGenes(df)

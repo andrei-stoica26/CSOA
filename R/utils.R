@@ -107,7 +107,7 @@ safeLayerData <- function(seuratObj, layer){
 matrixRowFilter <- function(matObj, rows = NULL){
   if(!is.null(rows)){
     if(length(setdiff(rows, rownames(matObj))))
-      stop('Some input genes do not exist in the expression matrix')
+      stop('Some input genes do not exist in the expression matrix.')
     matObj <- matObj[sort(rows), ]
     return(as.matrix(matObj))
   }
@@ -230,7 +230,7 @@ warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
 #' @export
 #'
 expMat.default <- function(scObj, genes = NULL, ...)
-  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay, a matrix or a dgCMatrix object')
+  stop('Unrecognized input type: scObj must be a Seurat object with a data assay, a SingleCellExperiment with a logcounts assay, a matrix or a dgCMatrix object.')
 
 #' @rdname expMat
 #' @export
