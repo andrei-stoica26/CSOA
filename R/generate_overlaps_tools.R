@@ -61,7 +61,7 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL, overlapFileName = N
   df <- pairOverlap(cellSets, pairs, nCells)
   if (!is.null(overlapFileName)){
     overlapFile <- paste0(overlapFileName, '.qs')
-    message(paste0('Saving overlap file: ', overlapFile, '...'))
+    message('Saving overlap file: ', overlapFile, '...')
     qsave(df, overlapFile)
   }
   return(df)

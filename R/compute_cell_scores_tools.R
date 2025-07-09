@@ -54,7 +54,7 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
     stop('Values in pcPairScores must be between 0 and 1.')
   df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
-  colnames(df)[3:4] <- paste0('overlap', c('Score', 'Rank'))
+  colnames(df)[c(3, 4)] <- paste0('overlap', c('Score', 'Rank'))
 
   pairTotalScores <- rowSums(pcPairScores)
   totalScore <- sum(pairTotalScores)
@@ -70,7 +70,7 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL, keep
 
   if (!is.null(pairFileName)){
     pairFile <- paste0(pairFileName, '.qs')
-    message(paste0('Saving pair scores file: ', pairFile, '...'))
+    message('Saving pair scores file: ', pairFile, '...')
     qsave(df, pairFile)
   }
 

@@ -66,7 +66,7 @@ neighborJaccard <- function(overlapDF){
 #' @export
 #'
 #'
-breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = F){
+breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
   prevNEdges <- -1
   nEdges <- nrow(overlapDF)
   message(nEdges, ' overlap', rep('s', nEdges != 1), ' have been selected for Jaccard-based filtering.')
@@ -75,7 +75,8 @@ breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = F){
     overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]
     prevNEdges <- nEdges
     nEdges <- nrow(overlapDF)
-    message(paste0(prevNEdges - nEdges), ' edge', rep('s', nEdges != 1), ' with low neighbor Jaccard scores have been removed.')
+    message(prevNEdges - nEdges, ' edge', rep('s', nEdges != 1),
+            ' with low neighbor Jaccard scores have been removed.')
   }
   overlapDF <- rankOverlaps(overlapDF)
   if (doConnComp)

@@ -78,7 +78,7 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
   message('Finding gene coordinates...')
   circlePoints <- do.call(rbind, lapply(seq_len(nrow(distFreqDF)), function(i)
     pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i])))
-  df <- cbind(degreesDF[, 1, drop=FALSE], circlePoints, degreesDF[, 2:3])
+  df <- cbind(degreesDF[, 1, drop=FALSE], circlePoints, degreesDF[, c(2, 3)])
   df[, 5] <- as.factor(df[, 5])
   return(df)
 }

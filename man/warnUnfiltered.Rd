@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{warnUnfiltered}
 \alias{warnUnfiltered}
-\title{Raise a warning that the overlap data frame may have been not filtered}
+\title{Raise a warning that the overlap data frame may have been not filtered.}
 \usage{
 warnUnfiltered(overlapDF, raiseWarning = 1000)
 }
@@ -11,9 +11,12 @@ warnUnfiltered(overlapDF, raiseWarning = 1000)
 
 \item{raiseWarning}{If the data frame contains more overlaps than this number,
 users will be warned that they may have introduced the raw overlap data frame
-as input}
+as input.}
+}
+\value{
+No value. This function is called for its side effect (issuing a warning if needed).
 }
 \description{
 This function raises a warning that the overlap data frame may have been not
-filtered based on the number of overlaps
+filtered based on the number of overlaps.
 }

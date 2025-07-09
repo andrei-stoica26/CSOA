@@ -23,6 +23,10 @@ devPlot(plotObject, ...)
 
 \item{...}{Arguments passed to other methods}
 }
+\value{
+No value. This function is called for its side effect (saving a plot
+or a list of plots)
+}
 \description{
 This function saves a plot or list of plots as a pdf. Can also take as input
 a function with arguments that returns a ggplot object.

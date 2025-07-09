@@ -9,17 +9,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse=TRUE,
+  comment="#>"
 )
 ```
 
 # Refining gene signatures: I
 First, we will repeat the setup from the **Getting started with CSOA** tutorial. We need the `BaronPancreasData` dataset from `scRNAseq`, and we used [PanglaoDB](https://www.panglaodb.se/markers.html) to generate the list of acinar markers.
 
-```{r message=F, warning=F, results=F}
+```{r message=FALSE, warning=FALSE, results=FALSE}
 library(CSOA)
 library(ggplot2)
 library(patchwork)
@@ -79,13 +79,13 @@ We aim to compare the results with those obtained using the original `47` acinar
 
 ```{r}
 printStats <- function(seuratObj, col1, col2){
-  print(paste0('Pearson correlation: ', cor(seuratObj@meta.data[[col1]], 
-                                            seuratObj@meta.data[[col2]])))
-  absDiffs <- abs(seuratObj@meta.data[[col1]] - seuratObj@meta.data[[col2]])
+  print(paste0('Pearson correlation: ', cor(seuratObj[[]][[col1]], 
+                                            seuratObj[[]][[col2]])))
+  absDiffs <- abs(seuratObj[[]][[col1]] - seuratObj[[]][[col2]])
   absDiffsStats <- sapply(list(mean, median, max, min), 
                           function(fun) fun(absDiffs))
   names(absDiffsStats) <- paste0(c('mean', 'median', 'max', 'min'), 'AbsDiff')
-  print(absDiffsStats)
+  absDiffsStats
 }
 ```
 

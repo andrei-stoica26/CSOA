@@ -4,7 +4,7 @@
 \alias{breakWeakTies}
 \title{Remove overlap pairs with low Jaccard scores}
 \usage{
-breakWeakTies(overlapDF, cutoff = 1/3, doConnComp = F)
+breakWeakTies(overlapDF, cutoff = 1/3, doConnComp = FALSE)
 }
 \arguments{
 \item{overlapDF}{An overlap data frame}

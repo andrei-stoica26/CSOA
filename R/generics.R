@@ -6,7 +6,8 @@
 #' @param plotObject A function, ggplot object, or list of ggplot objects
 #' @param ... Arguments passed to other methods
 #'
-#' @return NULL
+#' @return No value. This function is called for its side effect (saving a plot
+#' or a list of plots)
 #'
 #' @export
 #'
@@ -21,7 +22,7 @@ devPlot <- function(plotObject, ...)
 #' @param scObj A Seurat object, SingleCellExperiment object, or expression matrix
 #' @param ... Arguments passed to other methods
 #'
-#' @return An expression matrix
+#' @return An expression matrix.
 #'
 #' @export
 #'

@@ -88,9 +88,9 @@ pointsOnCircle <- function(r, nPoints){
 #' @return The output of LayerData if layer exists
 #'
 safeLayerData <- function(seuratObj, layer){
-  layerData <- suppressWarnings(LayerData(seuratObj, layer=layer))
+  layerData <- LayerData(seuratObj, layer=layer)
   if (!dim(layerData)[1])
-    stop(paste0('The Seurat object has no ', layer, ' layer.'))
+    stop('The Seurat object has no ', layer, ' layer.')
   return(layerData)
 }
 
@@ -203,20 +203,22 @@ rankReplace <- function(df, colName, rankSign = 1){
 vMinmax <- function(v)
   return(as.numeric(kerntools::minmax(as.matrix(v))))
 
-#' Raise a warning that the overlap data frame may have been not filtered
+#' Raise a warning that the overlap data frame may have been not filtered.
 #'
 #' This function raises a warning that the overlap data frame may have been not
-#' filtered based on the number of overlaps
+#' filtered based on the number of overlaps.
 #'
 #' @inheritParams computeCellScores
 #' @param raiseWarning If the data frame contains more overlaps than this number,
 #' users will be warned that they may have introduced the raw overlap data frame
-#' as input
+#' as input.
+#'
+#' @return No value. This function is called for its side effect (issuing a warning if needed).
 #'
 warnUnfiltered <- function(overlapDF, raiseWarning = 1000)
   if (nrow(overlapDF) > raiseWarning)
-    warning(paste0('The number of overlaps in the data frame is very large (', nrow(overlapDF),
-                   '). Are you sure you filtered the overlap data frame?'))
+    warning('The number of overlaps in the data frame is very large (', nrow(overlapDF),
+                   '). Are you sure you filtered the overlap data frame?')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics

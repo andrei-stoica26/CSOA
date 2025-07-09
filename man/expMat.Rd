@@ -30,7 +30,7 @@ expMat(scObj, ...)
 be retained}
 }
 \value{
-An expression matrix
+An expression matrix.
 }
 \description{
 This function extracts the data expression matrix from object as a

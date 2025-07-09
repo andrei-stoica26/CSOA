@@ -9,17 +9,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse=TRUE,
+  comment="#>"
 )
 ```
 
 # Constructing cell sets
 First, we repeat the setup from the **Getting started with CSOA** tutorial. We need the `BaronPancreasData` dataset from `scRNAseq` and the list of acinar markers from [PanglaoDB](https://www.panglaodb.se/markers.html).
 
-```{r message=F, warning=F, results=F}
+```{r message=FALSE, warning=FALSE, results=FALSE}
 library(CSOA)
 library(scRNAseq)
 library(scuttle)
@@ -189,7 +189,7 @@ Only input genes that registered a top overlap participate in the scoring of cel
 genes <- overlapGenes(po2)
 length(genes)
 length(acinarMarkers)
-normExp <- kerntools::minmax(geneSetExp[genes, ], rows=T)
+normExp <- kerntools::minmax(geneSetExp[genes, ], rows=TRUE)
 ```
 
 We now compute the per-cell scores of each gene pair corresponding to a top overlap by multiplying these three quantities:
@@ -215,7 +215,7 @@ head(df)
 
 Finally, we attach the CSOA scores to the `Seurat` object:
 
-```{r, message=F}
+```{r, message=FALSE}
 seuratObj <- storeCellScores(seuratObj, df)
 head(seuratObj$CSOA_acinar)
 ```
@@ -244,7 +244,7 @@ Finally, the `runCSOA` wrapper runs the whole pipeline including `storeCellScore
 
 ```{r}
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
-identical(seuratObj@meta.data$CSOA_acinar, df$CSOA_acinar)
+identical(seuratObj[[]]$CSOA_acinar, df$CSOA_acinar)
 ```
 
 # Session information {-}

@@ -9,10 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse=TRUE,
+  comment="#>"
 )
 ```
 
@@ -23,7 +23,7 @@ CSOA is a tool for scoring gene set signatures in scRNA-seq data. It constructs,
 # Installation
 To install CSOA, run the following commands in an R session:
 ```{r setup, eval=FALSE}
-if (!require("BiocManager", quietly = TRUE))
+if (!require("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 
 BiocManager::install("andrei-stoica26/CSOA")
@@ -42,7 +42,7 @@ After loading the required packages, download the dataset using the `BaronPancre
 
 CSOA requires the input scRNA-seq data to be normalized and log-transformed. We will employ the `logNormCounts` function from `scuttle` for this step.
   
-```{r message=F, warning=F, results=F}
+```{r message=FALSE, warning=FALSE, results=FALSE}
 library(CSOA)
 library(ggplot2)
 library(patchwork)
@@ -78,7 +78,7 @@ Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seu
 ```{r warning=FALSE, out.height='80%', out.width='80%', fig.height=4, fig.width=5}
 seuratObj <- as.Seurat(sceObj)
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
-VlnPlot(seuratObj, 'CSOA_acinar', group.by = 'label') + NoLegend()
+VlnPlot(seuratObj, 'CSOA_acinar', group.by='label') + NoLegend()
 ```
 
 Alternatively, CSOA can be run on a `SingleCellExperiment` object. The results will be stored as a column in the object's `colData` matrix:
@@ -100,11 +100,11 @@ df <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
 head(df)
 ```
 
-We confirm that the results of the three runs are identical:
+We verify that the results of the three runs are identical:
 
 ```{r}
-identical(seuratObj@meta.data$CSOA_acinar, sceObj$CSOA_acinar)
-identical(seuratObj@meta.data$CSOA_acinar, df$CSOA_acinar)
+identical(seuratObj[[]]$CSOA_acinar, sceObj$CSOA_acinar)
+identical(seuratObj[[]]$CSOA_acinar, df$CSOA_acinar)
 ```
 
 # Scoring multiple gene sets
@@ -139,7 +139,7 @@ gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3',
 ```
 
 Now we run CSOA on the four provided marker lists:
-```{r warning=F}
+```{r warning=FALSE}
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
 geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
@@ -160,19 +160,19 @@ plots <- lapply(geneSetNames, function(x) {
 
 Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
 
-```{r, message=F}
+```{r, message=FALSE}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
 sapply(geneSetNames, 
-       function(x) identical(seuratObj@meta.data[[x]], colData(sceObj)[[x]]))
+       function(x) identical(seuratObj[[]][[x]], colData(sceObj)[[x]]))
 ```
 
 It can also score multiple gene sets directly on an expression matrix. The results will again be available as a data frame:
 
-```{r, message=F}
+```{r, message=FALSE}
 df <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
 head(df)
 sapply(geneSetNames, 
-       function(x) identical(seuratObj@meta.data[[x]], df[[x]]))
+       function(x) identical(seuratObj[[]][[x]], df[[x]]))
 ```
 
 # Session information {-}

@@ -187,7 +187,7 @@ runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90,
                     overlapFileName = NULL, pvalThr = 0.05,
                     saveCutoffPlot = FALSE, jaccardCutoff = NULL, osMethod = 'log',
                     pairFileName = NULL, keepOverlapOrder = FALSE){
-  if (!min(is(genes)[1:2] == c('character', 'vector')) | length(genes) < 2)
+  if (!min(is(genes)[c(1, 2)] == c('character', 'vector')) | length(genes) < 2)
     stop('genes must be a character vector of length >= 2.')
   geneSetExp <- expMat(scObj, genes)
   overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL,

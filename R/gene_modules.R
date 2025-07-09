@@ -15,7 +15,7 @@ connectedComponents <- function(df, colName = 'component'){
   if(!nrow(df))
     stop('The dataframe has no rows.')
   df[[colName]] <- -1
-  rownames(df) <- 1:dim(df)[1]
+  rownames(df) <- seq(dim(df)[1])
   vertices <- overlapGenes(df)
   seen <- c()
   nextComp = 1

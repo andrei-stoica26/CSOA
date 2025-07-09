@@ -161,7 +161,8 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' @export
 #'
 scoreOverlaps <- function(overlapDF, osMethod = 'log', firstOutRawRank = NULL){
-  message(paste0(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1), ' will be used in the calculation of CSOA scores.'))
+  message(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1),
+          ' will be used in the calculation of CSOA scores.')
   if (nrow(overlapDF) == 1){
     overlapDF$score <- 1
     return(overlapDF)
