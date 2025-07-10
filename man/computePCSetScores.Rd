@@ -21,3 +21,13 @@ A data frame with the per-cell gene signature score as a column
 This function aggregates per-cell gene pair scores into per-cell gene
 signature scores
 }
+\examples{
+df <- data.frame(
+A = c(0, 0.025, 1, 0.03),
+Y = c(0, 0.01, 0, 0.08),
+G = c(0.1, 0.8, 0.03, 0.3)
+)
+rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
+computePCSetScores(df, c('A', 'Y', 'G'))
+
+}

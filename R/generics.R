@@ -9,6 +9,13 @@
 #' @return No value. This function is called for its side effect (saving a plot
 #' or a list of plots)
 #'
+#' @examples
+#' library(ggplot2)
+#' df <- data.frame(x = c(1, 2), y = c(3, 5))
+#' p <- ggplot(df) + geom_point(aes(x, y))
+#' devPlot(p)
+#'
+#'
 #' @export
 #'
 devPlot <- function(plotObject, ...)
@@ -24,6 +31,14 @@ devPlot <- function(plotObject, ...)
 #' @param ... Arguments passed to other methods
 #'
 #' @return An expression matrix.
+#'
+#' @examples
+#' library(Seurat)
+#' mat <- matrix(0, 6, 4)
+#' mat[sample(length(mat), 7)] <- sample(3, 7, TRUE)
+#' seuratObj <- CreateSeuratObject(counts = mat)
+#' seuratObj <- NormalizeData(seuratObj)
+#' expMat(seuratObj)
 #'
 #' @export
 #'

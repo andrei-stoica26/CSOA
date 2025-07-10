@@ -63,6 +63,13 @@ networkPlotDF <- function(overlapDF,
 #'
 #' @return A logical matrix with genes as rows and cells as columns.
 #'
+#' @examples
+#' cellSets <- list(c('A', 'H', 'J'),
+#' c('B', 'D', 'E', 'F', 'J'),
+#' c('C', 'I', 'L'))
+#' allCells <- LETTERS[seq(15)]
+#' cellDistribution(cellSets, allCells)
+#'
 #' @export
 #'
 cellDistribution <- function(cellSets, allCells){

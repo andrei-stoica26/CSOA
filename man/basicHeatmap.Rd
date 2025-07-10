@@ -6,7 +6,7 @@
 \usage{
 basicHeatmap(
   mat,
-  aesNames = c("x", "y", "fill"),
+  aesNames = c("x", "y", "Score"),
   title = "Heatmap",
   axisTextSize = 7,
   palType = "fillCont",
@@ -32,4 +32,10 @@ A ggplot object
 }
 \description{
 This function plots a simple heatmap, with clustering but no dendograms.
+}
+\examples{
+mat <- matrix(0, 10, 20)
+mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
+basicHeatmap(mat)
+
 }

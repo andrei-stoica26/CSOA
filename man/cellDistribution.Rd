@@ -18,3 +18,11 @@ A logical matrix with genes as rows and cells as columns.
 This function returns a matrix that shows the presence of cell sets among
 cells.
 }
+\examples{
+cellSets <- list(c('A', 'H', 'J'),
+c('B', 'D', 'E', 'F', 'J'),
+c('C', 'I', 'L'))
+allCells <- LETTERS[seq(15)]
+cellDistribution(cellSets, allCells)
+
+}

@@ -38,3 +38,15 @@ This function uses the scored data frame of overlaps to
 compute a CSOA score
 for each cell in a Seurat object
 }
+\examples{
+overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 7, 8)),
+gene2 = paste0('G', c(3, 7, 1, 2)),
+score = c(0.22, 0.98, 1, 0.76))
+normExp <- matrix(0, 5, 26)
+normExp[sample(length(normExp), 50)] <- runif(50)
+normExp[1, 2] <- 1
+rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
+computeCellScores(overlapDF, normExp, LETTERS)
+
+
+}

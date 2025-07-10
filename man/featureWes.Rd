@@ -37,3 +37,16 @@ A ggplot object.
 This function customizes the appearance of Seurat's FeaturePlot for improved
 distinctiveness and aesthetics.
 }
+\examples{
+library(Seurat)
+mat <- matrix(0, 3000, 800)
+mat[sample(length(mat), 90000)] <- sample(8, 90000, TRUE)
+seuratObj <- CreateSeuratObject(counts = mat)
+seuratObj <- FindVariableFeatures(seuratObj, nfeatures=200)
+seuratObj <- NormalizeData(seuratObj)
+seuratObj <- ScaleData(seuratObj)
+seuratObj <- RunPCA(seuratObj, verbose=FALSE)
+seuratObj <- RunUMAP(seuratObj, dims=1:20, verbose=FALSE)
+featureWes(seuratObj, 'Feature3')
+
+}

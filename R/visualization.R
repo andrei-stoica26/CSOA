@@ -118,6 +118,18 @@ wesBinaryGradient <- function(p,
 #'
 #' @return A ggplot object.
 #'
+#' @examples
+#' library(Seurat)
+#' mat <- matrix(0, 3000, 800)
+#' mat[sample(length(mat), 90000)] <- sample(8, 90000, TRUE)
+#' seuratObj <- CreateSeuratObject(counts = mat)
+#' seuratObj <- FindVariableFeatures(seuratObj, nfeatures=200)
+#' seuratObj <- NormalizeData(seuratObj)
+#' seuratObj <- ScaleData(seuratObj)
+#' seuratObj <- RunPCA(seuratObj, verbose=FALSE)
+#' seuratObj <- RunUMAP(seuratObj, dims=1:20, verbose=FALSE)
+#' featureWes(seuratObj, 'Feature3')
+#'
 #' @export
 #'
 featureWes <- function(seuratObj, feature, title = feature, idClass = NULL,
@@ -230,9 +242,14 @@ geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL
 #'
 #' @return A ggplot object
 #'
+#' @examples
+#' mat <- matrix(0, 10, 20)
+#' mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
+#' basicHeatmap(mat)
+#'
 #' @export
 #'
-basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap', axisTextSize = 7, palType = 'fillCont', ...){
+basicHeatmap <- function(mat, aesNames = c('x', 'y', 'Score'), title = 'Heatmap', axisTextSize = 7, palType = 'fillCont', ...){
   df <- heatmapDF(mat, aesNames)
   p <- ggplot(df, aes(x=.data[[aesNames[2]]], y=.data[[aesNames[1]]], fill=.data[[aesNames[3]]])) +
     geom_tile() +
@@ -240,7 +257,7 @@ basicHeatmap <- function(mat, aesNames = c('x', 'y', 'fill'), title = 'Heatmap',
     theme(axis.text.x=element_blank(),
           axis.ticks.y=element_blank(),
           axis.text.y=element_text(size = axisTextSize),
-          axis.title.y=element_blank())
+          axis.title=element_blank())
   p <- wesBinaryGradient(p, palType=palType, ...)
   p <- titlePlot(p, title)
   return(p)

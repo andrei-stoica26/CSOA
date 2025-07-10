@@ -31,3 +31,11 @@ or a list of plots)
 This function saves a plot or list of plots as a pdf. Can also take as input
 a function with arguments that returns a ggplot object.
 }
+\examples{
+library(ggplot2)
+df <- data.frame(x = c(1, 2), y = c(3, 5))
+p <- ggplot(df) + geom_point(aes(x, y))
+devPlot(p)
+
+
+}

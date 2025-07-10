@@ -54,9 +54,20 @@ neighborJaccard <- function(overlapDF){
 #' @return An overlap data frame in which edges with low Jaccard scores have
 #' been removed
 #'
+#' @examples
+#' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+#' gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+#' ratio=runif(10, 2, 10),
+#' pval=runif(10, 0, 1e-10))
+#' breakWeakTies(overlapDF, cutoff=0.1)
+#'
 #' @export
 #'
 breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
+  if(length(setdiff(c('gene1', 'gene2', 'ratio', 'pval'),
+                    colnames(overlapDF))))
+    stop('Columns gene1, gene2, ratio and pval must',
+         'exist in the dataframe.')
   prevNEdges <- -1
   nEdges <- nrow(overlapDF)
   message(nEdges, ' overlap', rep('s', nEdges != 1),
@@ -66,8 +77,14 @@ breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
     overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]
     prevNEdges <- nEdges
     nEdges <- nrow(overlapDF)
-    message(prevNEdges - nEdges, ' edge', rep('s', nEdges != 1),
-            ' with low neighbor Jaccard scores have been removed.')
+    nRemovedEdges <- prevNEdges - nEdges
+    if(nRemovedEdges > 0){
+      message(nRemovedEdges, ' edge',
+              rep('s', nRemovedEdges != 1),
+              paste(' with low neighbor Jaccard',
+              'scores have been removed.'))
+    }
+
   }
   overlapDF <- rankOverlaps(overlapDF)
   if (doConnComp)

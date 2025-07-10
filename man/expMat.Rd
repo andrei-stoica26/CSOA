@@ -37,3 +37,12 @@ An expression matrix.
 This function extracts the data expression matrix from object as a
 non-sparse matrix
 }
+\examples{
+library(Seurat)
+mat <- matrix(0, 6, 4)
+mat[sample(length(mat), 7)] <- sample(3, 7, TRUE)
+seuratObj <- CreateSeuratObject(counts = mat)
+seuratObj <- NormalizeData(seuratObj)
+expMat(seuratObj)
+
+}

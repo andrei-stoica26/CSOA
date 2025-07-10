@@ -24,3 +24,10 @@ A data frame listing statistics for all cell set overlaps.
 This function computes the statistical significance of overlaps of pairs of
 cell sets.
 }
+\examples{
+cellSets <- list(G1 = c('A', 'H', 'J'),
+G2 = c('B', 'D', 'E', 'F', 'J'),
+G3 = c('C', 'I', 'L'))
+cellSetsOverlaps(cellSets, 40)
+
+}

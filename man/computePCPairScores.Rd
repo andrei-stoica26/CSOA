@@ -19,3 +19,17 @@ A data frame with the same dimensions as normExp.
 This function scores each gene pair corresponding to a top overlap in each
 cell.
 }
+\examples{
+overlapDF <- data.frame(
+gene1 = paste0('G', c(1, 2, 3)),
+gene2 = paste0('G', c(2, 3, 4)),
+score = c(0.4, 1, 0.68)
+)
+normExp <- matrix(0, 4, 18)
+normExp[sample(length(normExp), 50)] <- runif(50)
+normExp[1, 2] <- 1
+rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
+colnames(normExp) <- LETTERS[1:18]
+computePCPairScores(overlapDF, normExp)
+
+}

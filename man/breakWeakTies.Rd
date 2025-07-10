@@ -21,3 +21,11 @@ been removed
 This function iteratively removes all overlap pairs with Jaccard score below
 a fixed cutoff until no overlap pairs can be removed
 }
+\examples{
+overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+ratio=runif(10, 2, 10),
+pval=runif(10, 0, 1e-10))
+breakWeakTies(overlapDF, cutoff=0.1)
+
+}

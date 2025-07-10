@@ -9,6 +9,19 @@
 #'
 #' @return A data frame with the same dimensions as normExp.
 #'
+#' @examples
+#' overlapDF <- data.frame(
+#' gene1 = paste0('G', c(1, 2, 3)),
+#' gene2 = paste0('G', c(2, 3, 4)),
+#' score = c(0.4, 1, 0.68)
+#' )
+#' normExp <- matrix(0, 4, 18)
+#' normExp[sample(length(normExp), 50)] <- runif(50)
+#' normExp[1, 2] <- 1
+#' rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
+#' colnames(normExp) <- LETTERS[1:18]
+#' computePCPairScores(overlapDF, normExp)
+#'
 #' @export
 #'
 computePCPairScores <- function(overlapDF, normExp){
@@ -16,7 +29,7 @@ computePCPairScores <- function(overlapDF, normExp){
     stop('Columns gene1, gene2 and score must exist in overlapDF.')
   if(max(overlapDF$score) != 1 | min(overlapDF$score) <= 0)
     stop('The maximum of the score column in overlapDF must be 1',
-         'and its minimum must be positive.')
+         ' and its minimum must be positive.')
   if(!is.numeric(normExp) | !is.matrix(normExp))
     stop('normExp must be a numeric matrix.')
   if(max(normExp) != 1 | min(normExp) != 0)
@@ -90,6 +103,14 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
 #' @param colStr The name of the column where CSOA results will be stored
 #'
 #' @return A data frame with the per-cell gene signature score as a column
+#' @examples
+#' df <- data.frame(
+#' A = c(0, 0.025, 1, 0.03),
+#' Y = c(0, 0.01, 0, 0.08),
+#' G = c(0.1, 0.8, 0.03, 0.3)
+#' )
+#' rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
+#' computePCSetScores(df, c('A', 'Y', 'G'))
 #'
 #' @export
 #'
