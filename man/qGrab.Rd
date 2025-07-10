@@ -17,3 +17,9 @@ The content of the .qs file
 This functions reads a .qs file, deletes it,
 and returns it content
 }
+\examples{
+library(qs)
+qsave(c(1, 2, 3), 'temp.qs')
+qGrab('temp.qs')
+
+}

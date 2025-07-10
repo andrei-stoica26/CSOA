@@ -19,3 +19,11 @@ A filtered overlap data frame
 This function filters cell set overlaps after the overlap data frame
 has been ranked
 }
+\examples{
+overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),
+gene2 = paste0('G', c(2, 5, 1, 8, 4)),
+rawAggRank = c(1, 2, 2, 4, 4))
+filterOverlaps(overlapDF, 2)
+
+
+}

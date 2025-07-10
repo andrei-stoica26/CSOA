@@ -157,6 +157,12 @@ featureWes <- function(seuratObj, feature, title = feature, idClass = NULL,
 #'
 #' @return A network plot.
 #'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
+#' gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
+#' rank = c(1, 1, 3, 3, 3, 3))
+#' networkPlot(overlapDF)
+#'
 #' @export
 #'
 networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank',
@@ -185,6 +191,14 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' @inheritParams circleCoords
 #'
 #' @return A ggplot object.
+#'
+#' @examples
+#' edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
+#' 11, 11, 10, 10, 10)),
+#' gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
+#' 13, 14, 13, 16, 14)))
+#' edgesDF <- connectedComponents(edgesDF, 'group')
+#' geneRadialPlot(edgesDF, 'component', extraCircles=1)
 #'
 #' @export
 #'
@@ -274,6 +288,13 @@ basicHeatmap <- function(mat, aesNames = c('x', 'y', 'Score'), title = 'Heatmap'
 #' @param title Plot title
 #'
 #' @return A ggplot object
+#' @examples
+#' freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
+#' 12, 13, 15, 16),
+#' n = c(1, 1, 2, 3, 3, 2,
+#' 1, 2, 1))
+#' overlapCutoffPlot(freqDF, 8.5)
+#'
 #'
 #' @export
 #'

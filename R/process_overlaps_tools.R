@@ -46,6 +46,14 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #'
 #' @return A data frame with ranked overlaps
 #'
+#' @examples
+#' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+#' gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+#' ratio=runif(10, 2, 10),
+#' pval=runif(10, 0, 1e-10))
+#' rankOverlaps(overlapDF)
+#'
+#'
 #' @export
 #'
 rankOverlaps <- function(overlapDF){
@@ -99,6 +107,14 @@ findRankCutoff <- function(freqDF){
 #'
 #' @export
 #'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 7)),
+#' gene2 = paste0('G', c(2, 5, 1, 8, 4, 9)),
+#' rawAggRank = c(7, 9, 9, 11.5, 11.5, 13),
+#' rank = c(1, 2, 2, 4, 4, 6))
+#' prepareFiltering(overlapDF)
+#'
+#'
 prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
   if (!nrow(overlapDF))
     return(NULL)
@@ -147,6 +163,13 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #' first overlap that will be excluded
 #'
 #' @return A filtered overlap data frame
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),
+#' gene2 = paste0('G', c(2, 5, 1, 8, 4)),
+#' rawAggRank = c(1, 2, 2, 4, 4))
+#' filterOverlaps(overlapDF, 2)
+#'
 #'
 #' @export
 #'

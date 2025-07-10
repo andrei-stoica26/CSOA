@@ -36,3 +36,12 @@ A ggplot object.
 \description{
 This functions draws a gene-circle plot for an overlap data frame.
 }
+\examples{
+edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
+11, 11, 10, 10, 10)),
+gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
+13, 14, 13, 16, 14)))
+edgesDF <- connectedComponents(edgesDF, 'group')
+geneRadialPlot(edgesDF, 'component', extraCircles=1)
+
+}

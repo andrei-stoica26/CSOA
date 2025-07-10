@@ -16,3 +16,10 @@ A list of gene pairs
 This function extracts the gene pairs
 from an overlap matrix
 }
+\examples{
+overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
+gene1 = paste0('G', c(2, 7, 8)))
+overlapPairs(overlapDF)
+
+
+}

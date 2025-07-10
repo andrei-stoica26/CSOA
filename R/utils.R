@@ -50,19 +50,6 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
 
-#' Get all genes from an overlap data frame
-#'
-#' This function gets all genes from an overlap data frame
-#'
-#' @inheritParams rankOverlaps
-#'
-#' @return A character vector of genes
-#'
-#' @export
-#'
-overlapGenes <- function(overlapDF)
-  return(union(overlapDF$gene1, overlapDF$gene2))
-
 #' Generate the coordinates of points on a circle centered at origin
 #'
 #' This function generates nPoints on a circle of radius r
@@ -143,11 +130,34 @@ matrixRowFilter <- function(matObj, rows = NULL){
 #'
 #' @export
 #'
+#' @examples
+#' library(qs)
+#' qsave(c(1, 2, 3), 'temp.qs')
+#' qGrab('temp.qs')
+#'
 qGrab <- function(qsFile){
   res <- qread(qsFile)
   file.remove(qsFile)
   return(res)
 }
+
+#' Get all genes from an overlap data frame
+#'
+#' This function gets all genes from an overlap data frame
+#'
+#' @inheritParams rankOverlaps
+#'
+#' @return A character vector of genes
+#'
+#' @export
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
+#' gene1 = paste0('G', c(2, 7, 8)))
+#' overlapGenes(overlapDF)
+#'
+overlapGenes <- function(overlapDF)
+  return(union(overlapDF$gene1, overlapDF$gene2))
 
 #' Extract gene pairs from overlap matrix
 #'
@@ -159,6 +169,12 @@ qGrab <- function(qsFile){
 #' @return A list of gene pairs
 #'
 #' @export
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
+#' gene1 = paste0('G', c(2, 7, 8)))
+#' overlapPairs(overlapDF)
+#'
 #'
 overlapPairs <- function(overlapDF)
   return(apply(overlapDF, 1, function(x)

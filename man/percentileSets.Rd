@@ -25,3 +25,13 @@ expression of the gene. Subsequently, each cell set is filtered as to contain
 only the cells showcasing the input percentile of the expression of the gene
 defining the set.
 }
+\examples{
+mat <- matrix(0, 1000, 500)
+rownames(mat) <- paste0('G', seq(1000))
+colnames(mat) <- paste0('C', seq(500))
+mat[sample(length(mat), 70000)] <- sample(50, 70000, TRUE)
+mat <- mat[paste0('G', sample(1000, 3)), ]
+percentileSets(mat)
+
+
+}

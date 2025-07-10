@@ -20,6 +20,14 @@ NULL
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
+#' @examples
+#' mat <- matrix(0, 2000, 500)
+#' rownames(mat) <- paste0('G', seq(2000))
+#' colnames(mat) <- paste0('C', seq(500))
+#' mat[sample(length(mat), 270000)] <- sample(50, 270000, TRUE)
+#' mat <- mat[paste0('G', sample(2000, 5)), ]
+#' generateOverlaps(mat)
+#'
 #' @export
 #'
 generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
@@ -46,6 +54,15 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
 #'
 #' @return A data frame consisting of filtered, ranked and scored cell sets
 #' overlaps
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1=paste0('G',
+#' c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+#' gene2=paste0('G',
+#' c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+#' ratio=runif(10, 2, 10),
+#' pval=runif(10, 0, 1e-10))
+#' processOverlaps(overlapDF)
 #'
 #' @export
 #'

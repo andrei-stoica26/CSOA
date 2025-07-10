@@ -15,3 +15,9 @@ A character vector of genes
 \description{
 This function gets all genes from an overlap data frame
 }
+\examples{
+overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
+gene1 = paste0('G', c(2, 7, 8)))
+overlapGenes(overlapDF)
+
+}

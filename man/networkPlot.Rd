@@ -37,3 +37,10 @@ A network plot.
 This function plots the graph of the overlap data frame, with genes as vertices
 and overlaps as edges.
 }
+\examples{
+overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
+gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
+rank = c(1, 1, 3, 3, 3, 3))
+networkPlot(overlapDF)
+
+}

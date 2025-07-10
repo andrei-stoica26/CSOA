@@ -20,13 +20,24 @@ NULL
 #' the cells showing the input percentile in terms of their
 #' expression of the gene
 #'
+#' @examples
+#' mat <- matrix(0, 1000, 500)
+#' rownames(mat) <- paste0('G', seq(1000))
+#' colnames(mat) <- paste0('C', seq(500))
+#' mat[sample(length(mat), 70000)] <- sample(50, 70000, TRUE)
+#' mat <- mat[paste0('G', sample(1000, 3)), ]
+#' percentileSets(mat)
+#'
+#'
 #' @export
 #'
 percentileSets <- function(geneSetExp, percentile=90){
   if (!is.numeric(percentile) | length(percentile) > 2 |
       percentile < 0 | percentile >= 100)
     stop('percentile must be a non-negative number lower than 100.')
-  genes <- rownames( geneSetExp)
+  if (is.null(colnames(geneSetExp)))
+    stop('geneSetExp has no column names.')
+  genes <- rownames(geneSetExp)
   fraction <- percentile / 100
   message('Computing percentile sets...')
   expList <- lapply(genes, function(x){
@@ -36,5 +47,14 @@ percentileSets <- function(geneSetExp, percentile=90){
     return(names(geneExp[geneExp > thresh]))
   })
   names(expList) <- genes
+  expList <- expList[vapply(expList, length, numeric(1)) > 0]
+  if (!length(expList))
+    warning('No cell sets can be constructed at',
+         ' the indicated percentile for the',
+         ' input genes. All cells will get a score of 0.')
+  if (length(expList) < length(genes))
+    warning(length(genes) - length(expList), ' gene(s) had no ',
+            ' top cells at the indicated percentile.',
+            ' These are now excluded from the gene signature.')
   return(expList)
 }

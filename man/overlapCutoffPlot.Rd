@@ -20,3 +20,12 @@ A ggplot object
 This plots shows the process of selecting the overlap rank cutoff, showcasing
 the convex hull of the points representing the frequencies of each rank.
 }
+\examples{
+freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
+12, 13, 15, 16),
+n = c(1, 1, 2, 3, 3, 2,
+1, 2, 1))
+overlapCutoffPlot(freqDF, 8.5)
+
+
+}

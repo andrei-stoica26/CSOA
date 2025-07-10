@@ -34,3 +34,12 @@ expressing the gene at the input percentile. Subsequently, overlaps of
 pairs of the constructed cell sets are assessed for statistical
 significance.
 }
+\examples{
+mat <- matrix(0, 2000, 500)
+rownames(mat) <- paste0('G', seq(2000))
+colnames(mat) <- paste0('C', seq(500))
+mat[sample(length(mat), 270000)] <- sample(50, 270000, TRUE)
+mat <- mat[paste0('G', sample(2000, 5)), ]
+generateOverlaps(mat)
+
+}
