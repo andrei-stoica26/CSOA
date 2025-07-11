@@ -168,14 +168,13 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #'
 #' @return A filtered overlap data frame
 #'
+#' @export
+#'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),
 #' gene2 = paste0('G', c(2, 5, 1, 8, 4)),
 #' rawAggRank = c(1, 2, 2, 4, 4))
 #' filterOverlaps(overlapDF, 2)
-#'
-#'
-#' @export
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
   if(is.null(firstOutRawRank) | !nrow(overlapDF))
@@ -202,6 +201,27 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' @return A data frame with ranked overlaps.
 #'
 #' @export
+#'
+#' @examples
+#' mat <- matrix(0, 500, 300)
+#' rownames(mat) <- paste0('G', seq(500))
+#' colnames(mat) <- paste0('C', seq(300))
+#' mat[sample(8000)] <- runif(8000, max=13)
+#' genes1 <- paste0('G', seq(100))
+#' mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15),
+#' nrow = 100, ncol = 31)
+#' genes2 <- paste0('G', seq(101, 200))
+#' mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15),
+#' nrow = 100, ncol = 31)
+#' genes <- union(genes1, genes2)
+#' mat <- mat[genes, ]
+#' overlapDF <- generateOverlaps(mat)
+#' overlapDF <- byCorrectDF(overlapDF)
+#' overlapDF <- rankOverlaps(overlapDF)
+#' firstOutRawRank <- prepareFiltering(overlapDF)
+#' overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+#' overlapDF <- scoreOverlaps(overlapDF)
+#' head(overlapDF)
 #'
 scoreOverlaps <- function(overlapDF,
                           osMethod = 'log',

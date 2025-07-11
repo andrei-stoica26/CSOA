@@ -50,3 +50,18 @@ A data frame with a column corresponding to the CSOA scores
 This function computes per-cell CSOA scores after the overlap data frame has
 been generated.
 }
+\examples{
+mat <- matrix(0, 500, 300)
+rownames(mat) <- paste0('G', seq(500))
+colnames(mat) <- paste0('C', seq(300))
+mat[sample(8000)] <- runif(8000, max=13)
+genes <- paste0('G', seq(200))
+mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+genes <- paste0('G', seq(1, 200))
+mat <- mat[genes, ]
+overlapDF <- generateOverlaps(mat)
+scoreDF <- scoreCells(mat, overlapDF)
+head(scoreDF)
+
+
+}

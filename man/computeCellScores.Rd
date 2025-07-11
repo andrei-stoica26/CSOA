@@ -45,5 +45,4 @@ normExp[1, 2] <- 1
 rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
 computeCellScores(overlapDF, normExp)
 
-
 }

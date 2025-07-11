@@ -27,8 +27,8 @@ expression matrix}
 
 \item{...}{Arguments passed to other methods}
 
-\item{genes}{Genes retained in the expression matrix. If NULL, all genes will
-be retained}
+\item{genes}{Genes retained in the expression matrix. If NULL, all genes
+will be retained}
 }
 \value{
 An expression matrix.

@@ -20,6 +20,8 @@ NULL
 #'
 #' @return A data frame listing statistics for all cell set overlaps
 #'
+#' @export
+#'
 #' @examples
 #' mat <- matrix(0, 2000, 500)
 #' rownames(mat) <- paste0('G', seq(2000))
@@ -27,8 +29,6 @@ NULL
 #' mat[sample(length(mat), 270000)] <- sample(50, 270000, TRUE)
 #' mat <- mat[paste0('G', sample(2000, 5)), ]
 #' generateOverlaps(mat)
-#'
-#' @export
 #'
 generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
                              overlapFileName = NULL){
@@ -55,6 +55,8 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
 #' @return A data frame consisting of filtered, ranked and scored cell sets
 #' overlaps
 #'
+#' @export
+#'
 #' @examples
 #' overlapDF <- data.frame(gene1=paste0('G',
 #' c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
@@ -63,8 +65,6 @@ generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
 #' ratio=runif(10, 2, 10),
 #' pval=runif(10, 0, 1e-10))
 #' processOverlaps(overlapDF)
-#'
-#' @export
 #'
 processOverlaps <- function(overlapDF,
                             pvalThr = 0.05,
@@ -103,6 +103,8 @@ processOverlaps <- function(overlapDF,
 #'
 #' @return A Seurat object with a CSOA score assigned for each cell
 #'
+#' @export
+#'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 7, 8)),
 #' gene2 = paste0('G', c(3, 7, 1, 2)),
@@ -112,9 +114,6 @@ processOverlaps <- function(overlapDF,
 #' normExp[1, 2] <- 1
 #' rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
 #' computeCellScores(overlapDF, normExp)
-#'
-#'
-#' @export
 #'
 computeCellScores <- function(overlapDF,
                               normExp,
@@ -189,6 +188,20 @@ storeCellScores.matrix <- function(scObj, scoreDF, ...)
 #'
 #' @export
 #'
+#' @examples
+#' mat <- matrix(0, 500, 300)
+#' rownames(mat) <- paste0('G', seq(500))
+#' colnames(mat) <- paste0('C', seq(300))
+#' mat[sample(8000)] <- runif(8000, max=13)
+#' genes <- paste0('G', seq(200))
+#' mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+#' genes <- paste0('G', seq(1, 200))
+#' mat <- mat[genes, ]
+#' overlapDF <- generateOverlaps(mat)
+#' scoreDF <- scoreCells(mat, overlapDF)
+#' head(scoreDF)
+#'
+#'
 scoreCells <- function(geneSetExp,
                        overlapDF,
                        colStr = 'CSOA',
@@ -203,9 +216,10 @@ scoreCells <- function(geneSetExp,
 
   if(!nrow(overlapDF)){
     warning('No significant overlaps were identified.',
-            'All cells will get a score of 0.')
-    scoreDF <- data.frame(setNames(list(rep(0, dim(geneSetExp)[2])),
+            ' All cells will get a score of 0.')
+    scoreDF <- data.frame(setNames(rep(0, dim(geneSetExp)[2]),
                                    colStr))
+    rownames(scoreDF) <- colnames(geneSetExp)
     return(scoreDF)
   }
 
@@ -235,6 +249,16 @@ scoreCells <- function(geneSetExp,
 #' for each cell
 #'
 #' @export
+#'
+#' @examples
+#' mat <- matrix(0, 500, 300)
+#' rownames(mat) <- paste0('G', seq(500))
+#' colnames(mat) <- paste0('C', seq(300))
+#' mat[sample(8000)] <- runif(8000, max=15)
+#' genes <- paste0('G', seq(200))
+#' mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+#' df <- runCSOA(mat, genes)
+#' head(df)
 #'
 runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90,
                     overlapFileName = NULL, pvalThr = 0.05,

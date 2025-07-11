@@ -20,6 +20,8 @@ NULL
 #' the cells showing the input percentile in terms of their
 #' expression of the gene
 #'
+#' @export
+#'
 #' @examples
 #' mat <- matrix(0, 1000, 500)
 #' rownames(mat) <- paste0('G', seq(1000))
@@ -27,9 +29,6 @@ NULL
 #' mat[sample(length(mat), 70000)] <- sample(50, 70000, TRUE)
 #' mat <- mat[paste0('G', sample(1000, 3)), ]
 #' percentileSets(mat)
-#'
-#'
-#' @export
 #'
 percentileSets <- function(geneSetExp, percentile=90){
   if (!is.numeric(percentile) | length(percentile) > 2 |

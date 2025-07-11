@@ -13,8 +13,6 @@
 #'@importFrom tidygraph as_tbl_graph
 #'@importFrom viridis scale_color_viridis scale_fill_viridis
 #'@importFrom wesanderson wes_palette
-#'@include utils.R
-#'@include visualization_aux.R
 #'
 NULL
 
@@ -77,6 +75,8 @@ titlePlot <- function(p, title, ...)
 #'
 #' @return A ggplot object.
 #'
+#' @export
+#'
 #' @examples
 #' library(Seurat)
 #' mat <- matrix(0, 3000, 800)
@@ -88,8 +88,6 @@ titlePlot <- function(p, title, ...)
 #' seuratObj <- RunPCA(seuratObj, verbose=FALSE)
 #' seuratObj <- RunUMAP(seuratObj, dims=1:20, verbose=FALSE)
 #' featureWes(seuratObj, 'Feature3')
-#'
-#' @export
 #'
 featureWes <- function(seuratObj, feature,
                        title = feature,
@@ -123,13 +121,13 @@ featureWes <- function(seuratObj, feature,
 #'
 #' @return A network plot.
 #'
+#' @export
+#'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
 #' gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
 #' rank = c(1, 1, 3, 3, 3, 3))
 #' networkPlot(overlapDF)
-#'
-#' @export
 #'
 networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank',
                         edgeScale = 2, nodePointSize = 10, nodeTextSize = 2.3, ...){
@@ -159,6 +157,8 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #'
 #' @return A ggplot object.
 #'
+#' @export
+#'
 #' @examples
 #' edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
 #' 11, 11, 10, 10, 10)),
@@ -166,8 +166,6 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' 13, 14, 13, 16, 14)))
 #' edgesDF <- connectedComponents(edgesDF, 'group')
 #' geneRadialPlot(edgesDF, 'component', extraCircles=1)
-#'
-#' @export
 #'
 geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL, cutoff = NULL,
                            title = 'Top overlap genes plot',
@@ -222,12 +220,12 @@ geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL
 #'
 #' @return A ggplot object
 #'
+#' @export
+#'
 #' @examples
 #' mat <- matrix(0, 10, 20)
 #' mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
 #' basicHeatmap(mat)
-#'
-#' @export
 #'
 basicHeatmap <- function(mat,
                          aesNames = c('x', 'y', 'Score'),
@@ -263,15 +261,15 @@ basicHeatmap <- function(mat,
 #' @param title Plot title
 #'
 #' @return A ggplot object
+#'
+#' @export
+#'
 #' @examples
 #' freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
 #' 12, 13, 15, 16),
 #' n = c(1, 1, 2, 3, 3, 2,
 #' 1, 2, 1))
 #' overlapCutoffPlot(freqDF, 8.5)
-#'
-#'
-#' @export
 #'
 overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
   if(length(setdiff(c('rank', 'n'), colnames(freqDF))))

@@ -25,5 +25,4 @@ gene2 = paste0('G', c(2, 5, 1, 8, 4)),
 rawAggRank = c(1, 2, 2, 4, 4))
 filterOverlaps(overlapDF, 2)
 
-
 }

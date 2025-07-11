@@ -8,6 +8,8 @@
 #' @return An overlap data frame with a column indicated the number of the
 #' connected component.
 #'
+#' @export
+#'
 #' @examples
 #' df <- data.frame(
 #' gene1 = paste('G', c(1, 2, 6, 7, 8, 9,
@@ -16,8 +18,6 @@
 #' 32, 24, 24, 26, 26))
 #' )
 #' connectedComponents(df)
-#'
-#' @export
 #'
 connectedComponents <- function(df, colName = 'component'){
   warnUnfiltered(df)
@@ -66,6 +66,23 @@ connectedComponents <- function(df, colName = 'component'){
 #' assigned for each cell
 #'
 #' @export
+#'
+#' @examples
+#' mat <- matrix(0, 500, 300)
+#' rownames(mat) <- paste0('G', seq(500))
+#' colnames(mat) <- paste0('C', seq(300))
+#' mat[sample(8000)] <- runif(8000, max=13)
+#' genes1 <- paste0('G', seq(100))
+#' mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15), nrow = 100, ncol = 31)
+#' genes2 <- paste0('G', seq(101, 200))
+#' mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15), nrow = 100, ncol = 31)
+#' genes <- union(genes1, genes2)
+#' mat <- mat[genes, ]
+#' overlapDF <- generateOverlaps(mat)
+#' overlapDF <- processOverlaps(overlapDF)
+#' overlapDF <- connectedComponents(overlapDF)
+#' df <- scoreModules(mat, overlapDF, unique(overlapDF$component))
+#' head(df)
 #'
 scoreModules <- function(scObj, df, components,
                          colStrTemplate = 'CSOA_component', ...){

@@ -21,12 +21,14 @@ NULL
 #'
 #' @return The data frame with Benjamini-Yekutieli-corrected p-values.
 #'
+#' @export
+#'
 #' @examples
 #' df <- data.frame(elem = c('A', 'B', 'C', 'D', 'E'),
 #' pval = c(0.032, 0.001, 0.0045, 0.051, 0.048))
 #' byCorrectDF(df)
 #'
-#' @export
+#'
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
   df <- df[order(df[[colStr]]), ]
@@ -44,7 +46,12 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 #'
 #' @return A list of vectors of length 2
 #'
-#' @noRd
+#' @export
+#'
+#' @examples
+#' v <- c('ASD', 'VBN', 'HJKL')
+#' getPairs(v)
+#'
 #'
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
@@ -87,7 +94,7 @@ matrixRowFilter <- function(matObj, rows = NULL){
   if(!is.null(rows)){
     if(length(setdiff(rows, rownames(matObj))))
       stop('Some input genes do not exist in the',
-      'expression matrix.')
+      ' expression matrix.')
     matObj <- matObj[sort(rows), ]
     return(as.matrix(matObj))
   }
@@ -249,13 +256,13 @@ warnUnfiltered <- function(overlapDF, raiseWarning = 1500)
             '). Are you sure you filtered',
             'the overlap data frame?')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' @param genes Genes retained in the expression matrix. If NULL, all genes will
-#' be retained
+#' @param genes Genes retained in the expression matrix. If NULL, all genes
+#' will be retained
 #'
 #' @rdname expMat
 #' @export

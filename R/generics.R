@@ -9,14 +9,14 @@
 #' @return No value. This function is called for its side effect (saving a plot
 #' or a list of plots)
 #'
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
 #' df <- data.frame(x = c(1, 2), y = c(3, 5))
 #' p <- ggplot(df) + geom_point(aes(x, y))
 #' devPlot(p)
 #'
-#'
-#' @export
 #'
 devPlot <- function(plotObject, ...)
   UseMethod(generic='devPlot', object=plotObject)
@@ -32,6 +32,8 @@ devPlot <- function(plotObject, ...)
 #'
 #' @return An expression matrix.
 #'
+#' @export
+#'
 #' @examples
 #' library(Seurat)
 #' mat <- matrix(0, 6, 4)
@@ -39,8 +41,6 @@ devPlot <- function(plotObject, ...)
 #' seuratObj <- CreateSeuratObject(counts = mat)
 #' seuratObj <- NormalizeData(seuratObj)
 #' expMat(seuratObj)
-#'
-#' @export
 #'
 expMat <- function(scObj, ...)
   UseMethod(generic='expMat', object=scObj)
@@ -74,6 +74,18 @@ edgeLists <- function(overlapObj, ...)
 #' @return A CSOA score assigned for each cell
 #'
 #' @export
+#'
+#' @examples
+#' library(Seurat)
+#' mat <- matrix(0, 500, 300)
+#' rownames(mat) <- paste0('G', seq(500))
+#' colnames(mat) <- paste0('C', seq(300))
+#' mat[sample(8000)] <- sample(20, 8000, TRUE)
+#' seuratObj <- CreateSeuratObject(mat)
+#' seuratObj <- NormalizeData(seuratObj)
+#' scores <- data.frame(CSOA = runif(300))
+#' seuratObj <- storeCellScores(seuratObj, scores)
+#' head(seuratObj$CSOA)
 #'
 storeCellScores <- function(scObj, ...)
   UseMethod(generic='storeCellScores', object=scObj)

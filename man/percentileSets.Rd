@@ -33,5 +33,4 @@ mat[sample(length(mat), 70000)] <- sample(50, 70000, TRUE)
 mat <- mat[paste0('G', sample(1000, 3)), ]
 percentileSets(mat)
 
-
 }

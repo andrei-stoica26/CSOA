@@ -62,3 +62,17 @@ significance, and builds per-cell score by summing the products of
 the scores of these overlaps and the custom-normalized per-cell
 expressions of the corresponding pairs of genes.
 }
+\examples{
+mat <- matrix(0, 500, 300)
+rownames(mat) <- paste0('G', seq(500))
+colnames(mat) <- paste0('C', seq(300))
+mat[sample(8000)] <- runif(8000, max=13)
+genes <- paste0('G', seq(200))
+mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+geneSet1 <- paste0('G', seq(1, 150))
+geneSet2 <- paste0('G', seq(50, 200))
+df <- runCSOAMultiple(mat, list(geneSet1, geneSet2), c('set1', 'set2'))
+head(df)
+
+
+}

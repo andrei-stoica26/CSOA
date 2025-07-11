@@ -55,13 +55,13 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 #' @return A data frame listing statistics for all cell set overlaps.
 #'
+#' @export
+#'
 #' @examples
 #' cellSets <- list(G1 = c('A', 'H', 'J'),
 #' G2 = c('B', 'D', 'E', 'F', 'J'),
 #' G3 = c('C', 'I', 'L'))
 #' cellSetsOverlaps(cellSets, 40)
-#'
-#' @export
 #'
 cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
                              overlapFileName = NULL){

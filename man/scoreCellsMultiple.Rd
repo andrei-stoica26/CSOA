@@ -57,3 +57,23 @@ gene sets.
 The overlap data frame is split based on the overlaps corresponding to
 each gene set and scored, and the output is rejoined as a data frame.
 }
+\examples{
+mat <- matrix(0, 500, 300)
+rownames(mat) <- paste0('G', seq(500))
+colnames(mat) <- paste0('C', seq(300))
+mat[sample(8000)] <- runif(8000, max=13)
+genes <- paste0('G', seq(200))
+mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+geneSet1 <- paste0('G', seq(1, 150))
+geneSet2 <- paste0('G', seq(50, 200))
+geneSets <- list(geneSet1, geneSet2)
+geneSets <- lapply(geneSets, sort)
+setPairs <- lapply(geneSets, getPairs)
+pairs <- Reduce(union, setPairs)
+genes <- union(geneSet1, geneSet2)
+mat <- mat[genes, ]
+overlapDF <- generateOverlaps(mat, pairs = pairs)
+scoreDF <- scoreCellsMultiple(mat, overlapDF, setPairs, c('set1', 'set2'))
+head(scoreDF)
+
+}

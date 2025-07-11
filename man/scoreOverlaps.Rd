@@ -27,3 +27,25 @@ first overlap not included in the filtered data frame (i.e., if
 the filtered data frame contains 100 overlaps, the 101st overlap
 corresponds to a score of 0).
 }
+\examples{
+mat <- matrix(0, 500, 300)
+rownames(mat) <- paste0('G', seq(500))
+colnames(mat) <- paste0('C', seq(300))
+mat[sample(8000)] <- runif(8000, max=13)
+genes1 <- paste0('G', seq(100))
+mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15),
+nrow = 100, ncol = 31)
+genes2 <- paste0('G', seq(101, 200))
+mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15),
+nrow = 100, ncol = 31)
+genes <- union(genes1, genes2)
+mat <- mat[genes, ]
+overlapDF <- generateOverlaps(mat)
+overlapDF <- byCorrectDF(overlapDF)
+overlapDF <- rankOverlaps(overlapDF)
+firstOutRawRank <- prepareFiltering(overlapDF)
+overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+overlapDF <- scoreOverlaps(overlapDF)
+head(overlapDF)
+
+}
