@@ -50,29 +50,6 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
 
-#' Generate the coordinates of points on a circle centered at origin
-#'
-#' This function generates nPoints on a circle of radius r
-#' centered at origin.
-#'
-#' @param r Radius.
-#' @param nPoints Number of points.
-#'
-#' @return A data frame with the coordinates of the points.
-#'
-#' @noRd
-#'
-pointsOnCircle <- function(r, nPoints){
-  angleOffset <- runif(n=1, min=0, max=2 * pi)
-  theta <- 2 * pi / nPoints
-  points <- lapply(seq(nPoints),
-                   function(k) c(r * cos(k * theta + angleOffset),
-                                 r * sin(k * theta + angleOffset)))
-  res <- do.call(rbind, points)
-  colnames(res) <- c('x', 'y')
-  return(res)
-}
-
 #' Run LayerData from Seurat and return an error
 #' when the requested layer does not exist
 #'

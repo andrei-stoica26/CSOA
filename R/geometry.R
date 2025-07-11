@@ -1,60 +1,24 @@
-
-#' Find the indices of points on the left sector of the upper convex hull
+#' Generate the coordinates of points on a circle centered at origin
 #'
-#' This function finds the indices of points on left sector of the upper convex
-#' hull.
+#' This function generates nPoints on a circle of radius r
+#' centered at origin.
 #'
-#' @param df A data frame.
-#' @param yIndex Index of column storing the y coordinates of the points.
+#' @param r Radius.
+#' @param nPoints Number of points.
 #'
-#' @return A numeric vector of indices representing the points in the upper
-#' convex semihull.
+#' @return A data frame with the coordinates of the points.
 #'
 #' @noRd
 #'
-upperConvexSemihullIndices <- function(df, yIndex = 2){
-  lineIndices <- which.min(df[, yIndex])
-  maxIndex <- which.max(df[, yIndex])
-  if(lineIndices >= maxIndex)
-    return(maxIndex)
-  maxVal <- df[lineIndices, yIndex]
-  if (nrow(df) > 1){
-    for (i in seq_len(nrow(df)))
-      if (df[i, yIndex] > maxVal){
-        lineIndices <- c(lineIndices, i)
-        maxVal <- df[i, yIndex]
-      }
-  }
-  return(lineIndices)
-}
-
-#' Find the upper convex hull of a set of points
-#'
-#' This function extracts the upper convex hull of a set of points from a data
-#' frame.
-#'
-#' @inheritParams upperConvexSemihullIndices
-#' @param xIndex Index of the column storing the x coordinates of the points.
-#'
-#' @return A data frame comprising the points on the upper complex hull.
-#'
-#' @noRd
-#'
-upperConvexHull <- function(df, xIndex = 1, yIndex = 2){
-  if (length(colnames(df)) < xIndex)
-    stop('xIndex too high.')
-  if (length(colnames(df)) < yIndex)
-    stop('yIndex too high.')
-  df <- df[, c(xIndex, yIndex)]
-  colnames(df) <- c('x', 'y')
-  df <- df[order(df$x), ]
-  leftIndices <- upperConvexSemihullIndices(df, 2)
-  df <- df[order(df$x, decreasing=TRUE), ]
-  rightIndices <- nrow(df) + 1 - rev(upperConvexSemihullIndices(df, 2))
-  if (rightIndices[1] == leftIndices[length(leftIndices)])
-    leftIndices <- leftIndices[seq_len(length(leftIndices) - 1)]
-  df <- df[order(df$x), ]
-  return(df[c(leftIndices, rightIndices), ])
+pointsOnCircle <- function(r, nPoints){
+  angleOffset <- runif(n=1, min=0, max=2 * pi)
+  theta <- 2 * pi / nPoints
+  points <- lapply(seq(nPoints),
+                   function(k) c(r * cos(k * theta + angleOffset),
+                                 r * sin(k * theta + angleOffset)))
+  res <- do.call(rbind, points)
+  colnames(res) <- c('x', 'y')
+  return(res)
 }
 
 #' Construct a data frame of segments from a data frame of points

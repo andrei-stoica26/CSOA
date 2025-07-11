@@ -6,7 +6,7 @@
 #'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
 #'@importFrom ggrepel geom_text_repel
 #'@importFrom graphics par
-#'@importFrom grDevices dev.new dev.off
+#'@importFrom grDevices chull dev.new dev.off
 #'@importFrom reshape2 melt
 #'@importFrom SeuratObject Idents
 #'@importFrom textshape cluster_matrix
@@ -299,6 +299,8 @@ basicHeatmap <- function(mat, aesNames = c('x', 'y', 'Score'), title = 'Heatmap'
 #' @export
 #'
 overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
+  if(length(setdiff(c('rank', 'n'), colnames(freqDF))))
+    stop('freqDF must have columns rank and n.')
   xMin <- min(freqDF$rank)
   xMax <- max(freqDF$rank)
   yMin <- min(freqDF$n)
@@ -309,7 +311,8 @@ overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot')
 
   colors <- c('purple', 'gold')
 
-  hull <- upperConvexHull(freqDF)
+  hull <- freqDF[sort(chull(freqDF$rank, freqDF$n)), c('rank', 'n')]
+  colnames(hull) <- c('x', 'y')
   hullSegments <- pointsToSegments(hull)
   plg <- hullToPolygon(hull, rankCutoff)
   plgOut <- hullToPolygon(hull, rankCutoff, 'out')

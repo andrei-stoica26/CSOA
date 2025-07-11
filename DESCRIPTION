@@ -39,12 +39,12 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Collate: 
     'compute_cell_scores_tools.R'
-    'convex_hull.R'
     'extra_filter.R'
     'gene_degrees.R'
     'gene_modules.R'
     'generate_overlaps_tools.R'
     'generics.R'
+    'geometry.R'
     'main.R'
     'multiple_gene_sets.R'
     'percentile_sets.R'
