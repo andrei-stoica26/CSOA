@@ -60,61 +60,20 @@ devPlot.list <- function(plotObject, ...)
 titlePlot <- function(p, title, ...)
   return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
 
-#' Adds a gradient color scale using two wesanderson colors
-#'
-#' This function a gradient color scale to a ggplot object using a wesanderson
-#' palette, an index marking low values, and an index marking high values. The
-#' indices are used to select colors from the wesanderson palette of choice.
-#'
-#' @param p A ggplot object.
-#' @param wesPal A wesanderson palette.
-#' @param wesLow Index of color marking low values.
-#' @param wesHigh Index of color marking high values.
-#' @param palType Palette type: color or fill, continuous or discrete. Accepted
-#' values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
-#' a warning and does not change the color scheme if a different value is passed
-#' here.
-#' @param ... Arguments passed to other functions.
-#'
-#' @return A ggplot object with a new color scheme.
-#'
-#' @export
-#'
-wesBinaryGradient <- function(p,
-                              wesPal = 'Royal1',
-                              wesLow = 3,
-                              wesHigh = 2,
-                              palType = 'colorCont', ...){
-  if(!palType %in% c('colorCont', 'fillCont', 'colDis', 'fillDis')){
-    warning('Unrecognized palette type (see ?CSOA::wesBinaryGradient for the available palette types). The color scheme will
-            not be changed')
-    return(p)
-  }
-  colorPair <- wes_palette(wesPal)[c(wesLow, wesHigh)]
-  if(palType == 'colorCont')
-    p <- p + scale_color_gradientn(colours = colorPair, ...)
-  if(palType == 'fillCont')
-    p <- p + scale_fill_gradientn(colours = colorPair, ...)
-  if(palType == 'colDis')
-    p <- p + scale_color_manual(values = colorPair, ...)
-  if(palType == 'fillDis')
-    p <- p + scale_fill_manual(values = colorPair, ...)
-  return(p)
-}
-
 #' Improved feature plot with a highly distinctive color scheme
 #'
 #' This function customizes the appearance of Seurat's FeaturePlot for improved
 #' distinctiveness and aesthetics.
 #'
-#' @param seuratObj A SeuratObj.
+#' @param seuratObj A Seurat object.
 #' @param feature Seurat feature.
 #' @param title Plot title.
 #' @param idClass Column to be used for labelling. If NULL, no column-based labels
 #' will be generated.
 #' @param labelSize Size of labels. Ignored if idClass is NULL.
 #' @param titleSize Title size.
-#' @param ... Other arguments passed to wesBinaryGradient.
+#' @inheritParams wesBinaryGradient
+#' @param ... Additional arguments passed to FeaturePlot.
 #'
 #' @return A ggplot object.
 #'
@@ -132,15 +91,22 @@ wesBinaryGradient <- function(p,
 #'
 #' @export
 #'
-featureWes <- function(seuratObj, feature, title = feature, idClass = NULL,
-                       labelSize = 3, titleSize = 12, ...){
+featureWes <- function(seuratObj, feature,
+                       title = feature,
+                       idClass = NULL,
+                       labelSize = 3,
+                       titleSize = 12,
+                       wesPal = 'Royal1',
+                       wesLow = 3,
+                       wesHigh = 2,
+                       ...){
   if(is.null(idClass))
     p <- FeaturePlot(seuratObj, feature) else{
       Idents(seuratObj) <- idClass
-      p <- FeaturePlot(seuratObj, feature, label=TRUE, label.size=labelSize, repel=TRUE)
+      p <- FeaturePlot(seuratObj, feature, label=TRUE, label.size=labelSize, ...)
     }
   p <- titlePlot(p, title, size = titleSize)
-  p <- wesBinaryGradient(p, ...)
+  p <- wesBinaryGradient(p, 'colorCont', wesPal, wesLow, wesHigh)
   return(p)
 }
 
@@ -180,9 +146,10 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
   return(p)
 }
 
-#' Gene circle plot for an overlap data frames
+#' Radial plot for an overlap data frame
 #'
-#' This functions draws a gene-circle plot for an overlap data frame.
+#' This functions draws a radial plot for an overlap data frame to illustrate
+#' gene participation in top overlaps.
 #'
 #' @inheritParams edgeLists.list
 #' @param title Plot title.
@@ -251,8 +218,7 @@ geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL
 #' aes elements.
 #' @param title Plot title.
 #' @param axisTextSize Axis text size.
-#' @param palType Palette type.
-#' @param ... Additional arguments passed to wesBinaryGradient.
+#' @inheritParams wesBinaryGradient
 #'
 #' @return A ggplot object
 #'
@@ -263,16 +229,25 @@ geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL
 #'
 #' @export
 #'
-basicHeatmap <- function(mat, aesNames = c('x', 'y', 'Score'), title = 'Heatmap', axisTextSize = 7, palType = 'fillCont', ...){
+basicHeatmap <- function(mat,
+                         aesNames = c('x', 'y', 'Score'),
+                         title = 'Heatmap',
+                         axisTextSize = 7,
+                         palType = 'fillCont',
+                         wesPal = 'Royal1',
+                         wesLow = 3,
+                         wesHigh = 2){
   df <- heatmapDF(mat, aesNames)
-  p <- ggplot(df, aes(x=.data[[aesNames[2]]], y=.data[[aesNames[1]]], fill=.data[[aesNames[3]]])) +
+  p <- ggplot(df, aes(x=.data[[aesNames[2]]],
+                      y=.data[[aesNames[1]]],
+                      fill=.data[[aesNames[3]]])) +
     geom_tile() +
     theme_minimal() +
     theme(axis.text.x=element_blank(),
           axis.ticks.y=element_blank(),
           axis.text.y=element_text(size = axisTextSize),
           axis.title=element_blank())
-  p <- wesBinaryGradient(p, palType=palType, ...)
+  p <- wesBinaryGradient(p, palType, wesPal, wesLow, wesHigh)
   p <- titlePlot(p, title)
   return(p)
 }

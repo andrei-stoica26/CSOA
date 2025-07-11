@@ -99,28 +99,27 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
 #' signature scores
 #'
 #' @inheritParams computePairScores
-#' @param cellNames Cell names
 #' @param colStr The name of the column where CSOA results will be stored
 #'
 #' @return A data frame with the per-cell gene signature score as a column
 #' @examples
 #' df <- data.frame(
-#' A = c(0, 0.025, 1, 0.03),
-#' Y = c(0, 0.01, 0, 0.08),
-#' G = c(0.1, 0.8, 0.03, 0.3)
+#' C1 = c(0, 0.025, 1, 0.03),
+#' C2 = c(0, 0.01, 0, 0.08),
+#' C3 = c(0.1, 0.8, 0.03, 0.3)
 #' )
 #' rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
-#' computePCSetScores(df, c('A', 'Y', 'G'))
+#' computePCSetScores(df)
 #'
 #' @export
 #'
-computePCSetScores <- function(pcPairScores, cellNames, colStr = 'CSOA'){
+computePCSetScores <- function(pcPairScores, colStr = 'CSOA'){
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
     stop('Values in pcPairScores must be between 0 and 1.')
   message('Computing per-cell gene signature scores...')
   scores <- colSums(pcPairScores)
   scores <- vMinmax(scores)
   scoreDF <- data.frame(setNames(list(scores), colStr))
-  rownames(scoreDF) <- cellNames
+  rownames(scoreDF) <- colnames(pcPairScores)
   return(scoreDF)
 }

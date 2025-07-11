@@ -111,14 +111,13 @@ processOverlaps <- function(overlapDF,
 #' normExp[sample(length(normExp), 50)] <- runif(50)
 #' normExp[1, 2] <- 1
 #' rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
-#' computeCellScores(overlapDF, normExp, LETTERS)
+#' computeCellScores(overlapDF, normExp)
 #'
 #'
 #' @export
 #'
 computeCellScores <- function(overlapDF,
                               normExp,
-                              cellNames,
                               colStr='CSOA',
                               pairFileName = NULL,
                               keepOverlapOrder = FALSE){
@@ -126,7 +125,7 @@ computeCellScores <- function(overlapDF,
   if(!is.null(pairFileName))
     pairScores <- computePairScores(overlapDF, pcPairScores,
                                     pairFileName, keepOverlapOrder)
-  scoreDF <- computePCSetScores(pcPairScores, cellNames, colStr)
+  scoreDF <- computePCSetScores(pcPairScores, colStr)
   return(scoreDF)
 }
 
@@ -205,15 +204,15 @@ scoreCells <- function(geneSetExp,
   if(!nrow(overlapDF)){
     warning('No significant overlaps were identified.',
             'All cells will get a score of 0.')
-    scoreDF <- data.frame(setNames(list(rep(0, dim(geneSetExp)[2])), colStr))
+    scoreDF <- data.frame(setNames(list(rep(0, dim(geneSetExp)[2])),
+                                   colStr))
     return(scoreDF)
   }
 
   message('Normalizing expression matrix by rows...')
   genes <- overlapGenes(overlapDF)
   normExp <- kerntools::minmax(geneSetExp[genes, ], rows=TRUE)
-  scoreDF <- computeCellScores(overlapDF, normExp,
-                               colnames(geneSetExp), colStr,
+  scoreDF <- computeCellScores(overlapDF, normExp, colStr,
                                pairFileName, keepOverlapOrder)
   return(scoreDF)
 }

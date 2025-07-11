@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{geneRadialPlot}
 \alias{geneRadialPlot}
-\title{Gene circle plot for an overlap data frames}
+\title{Radial plot for an overlap data frame}
 \usage{
 geneRadialPlot(
   overlapObj,
@@ -34,7 +34,8 @@ the points representing the genes. Default is 0}
 A ggplot object.
 }
 \description{
-This functions draws a gene-circle plot for an overlap data frame.
+This functions draws a radial plot for an overlap data frame to illustrate
+gene participation in top overlaps.
 }
 \examples{
 edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,

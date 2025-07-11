@@ -10,7 +10,9 @@ basicHeatmap(
   title = "Heatmap",
   axisTextSize = 7,
   palType = "fillCont",
-  ...
+  wesPal = "Royal1",
+  wesLow = 3,
+  wesHigh = 2
 )
 }
 \arguments{
@@ -23,9 +25,16 @@ aes elements.}
 
 \item{axisTextSize}{Axis text size.}
 
-\item{palType}{Palette type.}
+\item{palType}{Palette type: color or fill, continuous or discrete. Accepted
+values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
+a warning and does not change the color scheme if a different value is passed
+here.}
 
-\item{...}{Additional arguments passed to wesBinaryGradient.}
+\item{wesPal}{A wesanderson palette.}
+
+\item{wesLow}{Index of color marking low values.}
+
+\item{wesHigh}{Index of color marking high values.}
 }
 \value{
 A ggplot object

@@ -24,5 +24,4 @@ ratio=runif(10, 2, 10),
 pval=runif(10, 0, 1e-10))
 rankOverlaps(overlapDF)
 
-
 }

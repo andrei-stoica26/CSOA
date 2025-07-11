@@ -7,7 +7,6 @@
 computeCellScores(
   overlapDF,
   normExp,
-  cellNames,
   colStr = "CSOA",
   pairFileName = NULL,
   keepOverlapOrder = FALSE
@@ -18,8 +17,6 @@ computeCellScores(
 
 \item{normExp}{A min-max normalized expression matrix of the genes involved in
 top overlaps.}
-
-\item{cellNames}{Cell names}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 
@@ -46,7 +43,7 @@ normExp <- matrix(0, 5, 26)
 normExp[sample(length(normExp), 50)] <- runif(50)
 normExp[1, 2] <- 1
 rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
-computeCellScores(overlapDF, normExp, LETTERS)
+computeCellScores(overlapDF, normExp)
 
 
 }

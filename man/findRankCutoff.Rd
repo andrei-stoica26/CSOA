@@ -16,4 +16,9 @@ Rank cutoff.
 This function finds the cutoff for rank-based
 filtering of overlaps.
 }
-\keyword{internal}
+\examples{
+freqDF <- data.frame(rank = c(1, 2, 4, 7),
+n = c(1, 3, 3, 2))
+findRankCutoff(freqDF)
+
+}

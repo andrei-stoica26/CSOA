@@ -4,13 +4,11 @@
 \alias{computePCSetScores}
 \title{Aggregate per-cell gene pair scores}
 \usage{
-computePCSetScores(pcPairScores, cellNames, colStr = "CSOA")
+computePCSetScores(pcPairScores, colStr = "CSOA")
 }
 \arguments{
 \item{pcPairScores}{A date frame of pair scores in each cell for each pair
 in the overlap data frame}
-
-\item{cellNames}{Cell names}
 
 \item{colStr}{The name of the column where CSOA results will be stored}
 }
@@ -23,11 +21,11 @@ signature scores
 }
 \examples{
 df <- data.frame(
-A = c(0, 0.025, 1, 0.03),
-Y = c(0, 0.01, 0, 0.08),
-G = c(0.1, 0.8, 0.03, 0.3)
+C1 = c(0, 0.025, 1, 0.03),
+C2 = c(0, 0.01, 0, 0.08),
+C3 = c(0.1, 0.8, 0.03, 0.3)
 )
 rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
-computePCSetScores(df, c('A', 'Y', 'G'))
+computePCSetScores(df)
 
 }

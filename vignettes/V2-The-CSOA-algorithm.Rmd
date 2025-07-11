@@ -208,8 +208,7 @@ dim(pcPairScores)
 The per-cell CSOA score is the minmax-normalized sum of the columns of `pcPairScores`:
 
 ```{r}
-df <- computePCSetScores(pcPairScores, cellNames = colnames(geneSetExp), 
-                         colStr = 'CSOA_acinar')
+df <- computePCSetScores(pcPairScores, colStr = 'CSOA_acinar')
 head(df)
 ```
 
@@ -231,12 +230,10 @@ dfScoreCells <- scoreCells(geneSetExp, cso, 'CSOA_acinar')
 identical(dfScoreCells$CSOA_acinar, df$CSOA_acinar)
 ```
 
-The `computeCellScores` function starts further downstream. It requires a processed overlap data frame (the output of `processOverlaps`), the minmax-normalized expression matrix of top overlap genes, and the cell names. It likewise returns the output of `computePCSetScores`:
+The `computeCellScores` function starts further downstream. It requires a processed overlap data frame (the output of `processOverlaps`) and the minmax-normalized expression matrix of top overlap genes. It likewise returns the output of `computePCSetScores`:
 
 ```{r}
-dfComputeCellScores <- computeCellScores(po2, normExp, 
-                                         colnames(geneSetExp), 
-                                         'CSOA_acinar')
+dfComputeCellScores <- computeCellScores(po2, normExp, 'CSOA_acinar')
 identical(dfComputeCellScores$CSOA_acinar, df$CSOA_acinar)
 ```
 

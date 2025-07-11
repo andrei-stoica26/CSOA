@@ -11,11 +11,14 @@ featureWes(
   idClass = NULL,
   labelSize = 3,
   titleSize = 12,
+  wesPal = "Royal1",
+  wesLow = 3,
+  wesHigh = 2,
   ...
 )
 }
 \arguments{
-\item{seuratObj}{A SeuratObj.}
+\item{seuratObj}{A Seurat object.}
 
 \item{feature}{Seurat feature.}
 
@@ -28,7 +31,13 @@ will be generated.}
 
 \item{titleSize}{Title size.}
 
-\item{...}{Other arguments passed to wesBinaryGradient.}
+\item{wesPal}{A wesanderson palette.}
+
+\item{wesLow}{Index of color marking low values.}
+
+\item{wesHigh}{Index of color marking high values.}
+
+\item{...}{Additional arguments passed to FeaturePlot.}
 }
 \value{
 A ggplot object.

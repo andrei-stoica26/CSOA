@@ -46,15 +46,14 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #'
 #' @return A data frame with ranked overlaps
 #'
+#' @export
+#'
 #' @examples
 #' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
 #' gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
 #' ratio=runif(10, 2, 10),
 #' pval=runif(10, 0, 1e-10))
 #' rankOverlaps(overlapDF)
-#'
-#'
-#' @export
 #'
 rankOverlaps <- function(overlapDF){
   if (!nrow(overlapDF))
@@ -87,7 +86,12 @@ rankOverlaps <- function(overlapDF){
 #'
 #' @return Rank cutoff.
 #'
-#' @keywords internal
+#' @export
+#'
+#' @examples
+#' freqDF <- data.frame(rank = c(1, 2, 4, 7),
+#' n = c(1, 3, 3, 2))
+#' findRankCutoff(freqDF)
 #'
 findRankCutoff <- function(freqDF){
   freqSub <- subset(freqDF, n == max(n))

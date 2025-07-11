@@ -79,3 +79,45 @@ cellDistribution <- function(cellSets, allCells){
   return(res)
 }
 
+#' Adds a gradient color scale using two wesanderson colors
+#'
+#' This function a gradient color scale to a ggplot object using a wesanderson
+#' palette, an index marking low values, and an index marking high values. The
+#' indices are used to select colors from the wesanderson palette of choice.
+#'
+#' @param p A ggplot object.
+#' @param palType Palette type: color or fill, continuous or discrete. Accepted
+#' values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
+#' a warning and does not change the color scheme if a different value is passed
+#' here.
+#' @param wesPal A wesanderson palette.
+#' @param wesLow Index of color marking low values.
+#' @param wesHigh Index of color marking high values.
+#' @param ... Arguments passed to other functions.
+#'
+#' @return A ggplot object with a new color scheme.
+#'
+#' @keywords internal
+#'
+wesBinaryGradient <- function(p,
+                              palType,
+                              wesPal = 'Royal1',
+                              wesLow = 3,
+                              wesHigh = 2,
+                              ...){
+  if(!palType %in% c('colorCont', 'fillCont', 'colDis', 'fillDis')){
+    warning('Unrecognized palette type (see ?CSOA::wesBinaryGradient for the available palette types). The color scheme will
+            not be changed')
+    return(p)
+  }
+  colorPair <- wes_palette(wesPal)[c(wesLow, wesHigh)]
+  if(palType == 'colorCont')
+    p <- p + scale_color_gradientn(colours = colorPair, ...)
+  if(palType == 'fillCont')
+    p <- p + scale_fill_gradientn(colours = colorPair, ...)
+  if(palType == 'colDis')
+    p <- p + scale_color_manual(values = colorPair, ...)
+  if(palType == 'fillDis')
+    p <- p + scale_fill_manual(values = colorPair, ...)
+  return(p)
+}
