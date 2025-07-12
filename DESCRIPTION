@@ -1,17 +1,17 @@
 Package: CSOA
 Type: Package
 Title: Calculate per-cell gene signature scores using cell set overlaps
-Version: 0.9.0
+Version: 0.99.0
 Authors@R: person('Andrei-Florian', 'Stoica', 
       email='andreistoica@foxmail.com',
      role=c('aut','cre'),
      comment=c(ORCID='0000-0002-5253-0826'))
 Description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene signature scores 
-    in a scRNA-seq dataset. For each gene in the signature, CSOA constructs a set consisting of cells 
-    highly expressing the gene. Next, all overlaps of pairs of cell sets are computed, ranked, 
-    filtered and scored. The CSOA per-cell score is calculated by summing up, over all top cell set 
-    overlaps, the product of the overlap score and the min-max-normalized expression of each of the 
-    two genes. CSOA can run on a Seurat object, a SingleCellExperiment object, a matrix and a dgCMatrix.
+    in a scRNA-seq dataset. CSOA constructs a set for each gene in the signature, consisting of the 
+    cells that highly express the gene. Next, all overlaps of pairs of cell sets are computed, ranked, 
+    filtered and scored.The CSOA per-cell score is calculated by summing up all products of the overlap 
+    scores and the min-max-normalized expression of the two involved genes. CSOA can run on a Seurat 
+    object, a SingleCellExperiment object, a matrix and a dgCMatrix.
 License: MIT + file LICENSE
 Imports: 
     bayesbio,
@@ -63,7 +63,8 @@ Suggests:
     patchwork,
     rmarkdown,
     scRNAseq,
-    scuttle
+    scuttle,
+    testthat (>= 3.0.0)
 biocViews: 
     Software,
     SingleCell,
@@ -72,3 +73,4 @@ biocViews:
 VignetteBuilder: knitr
 URL: https://github.com/andrei-stoica26/CSOA
 BugReports: https://github.com/andrei-stoica26/CSOA/issues
+Config/testthat/edition: 3

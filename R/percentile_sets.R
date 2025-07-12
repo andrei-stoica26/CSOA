@@ -29,6 +29,8 @@ percentileSets <- function(geneSetExp, percentile=90){
     if (!is.numeric(percentile) | length(percentile) > 2 |
         percentile < 0 | percentile >= 100)
         stop('percentile must be a non-negative number lower than 100.')
+    if (is.null(rownames(geneSetExp)))
+        stop('geneSetExp has no row names.')
     if (is.null(colnames(geneSetExp)))
         stop('geneSetExp has no column names.')
     genes <- rownames(geneSetExp)
@@ -43,9 +45,8 @@ percentileSets <- function(geneSetExp, percentile=90){
     names(expList) <- genes
     expList <- expList[vapply(expList, length, numeric(1)) > 0]
     if (!length(expList))
-        warning('No cell sets can be constructed at',
-            ' the indicated percentile for the',
-            ' input genes. All cells will get a score of 0.')
+        warning('No cell sets can be constructed at the indicated percentile ',
+                ' for the input genes.')
     if (length(expList) < length(genes))
         warning(length(genes) - length(expList), ' gene(s) had no ',
                 ' top cells at the indicated percentile.',
