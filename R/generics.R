@@ -47,7 +47,7 @@ devPlot <- function(plotObject, ...)
 #' @export
 #'
 expMat <- function(scObj, ...)
-  UseMethod(generic='expMat', object=scObj)
+    UseMethod(generic='expMat', object=scObj)
 
 #' Extract the edge list from overlap data frame or list of overlap
 #' data frames
@@ -66,7 +66,7 @@ expMat <- function(scObj, ...)
 #' @keywords internal
 #'
 edgeLists <- function(overlapObj, ...)
-  UseMethod(generic='edgeLists', object=overlapObj)
+    UseMethod(generic='edgeLists', object=overlapObj)
 
 #' Attach CSOA scores to object
 #'
@@ -94,5 +94,5 @@ edgeLists <- function(overlapObj, ...)
 #' @export
 #'
 attachCellScores <- function(scObj, ...)
-  UseMethod(generic='attachCellScores', object=scObj)
+    UseMethod(generic='attachCellScores', object=scObj)
 

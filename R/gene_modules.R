@@ -20,33 +20,33 @@
 #' @export
 #'
 connectedComponents <- function(df, colName = 'component'){
-  warnUnfiltered(df)
-  if(!nrow(df))
-    stop('The dataframe has no rows.')
-  df[[colName]] <- -1
-  rownames(df) <- seq(dim(df)[1])
-  vertices <- overlapGenes(df)
-  seen <- c()
-  nextComp <- 1
-  for (v in vertices){
-    if (v %in% seen)
-      next
-    currVertices <- c(v)
-    while (length(currVertices)){
-      v <- currVertices[1]
-      leftdf <- subset(df, gene1 == v)
-      rightdf <- subset(df, gene2 == v)
-      seen <- c(seen, v)
-      newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
-      df[newEdges, colName] <- nextComp
-      neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1),
-                           c(currVertices, seen))
-      currVertices <- c(currVertices, neighbors)
-      currVertices <- currVertices[-1]
+    warnUnfiltered(df)
+    if(!nrow(df))
+        stop('The dataframe has no rows.')
+    df[[colName]] <- -1
+    rownames(df) <- seq(dim(df)[1])
+    vertices <- overlapGenes(df)
+    seen <- c()
+    nextComp <- 1
+    for (v in vertices){
+        if (v %in% seen)
+            next
+        currVertices <- c(v)
+        while (length(currVertices)){
+            v <- currVertices[1]
+            leftdf <- subset(df, gene1 == v)
+            rightdf <- subset(df, gene2 == v)
+            seen <- c(seen, v)
+            newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
+            df[newEdges, colName] <- nextComp
+            neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1),
+                                 c(currVertices, seen))
+            currVertices <- c(currVertices, neighbors)
+            currVertices <- currVertices[-1]
+        }
+        nextComp <- nextComp + 1
     }
-    nextComp <- nextComp + 1
-  }
-  return(df)
+    return(df)
 }
 
 #' Run CSOA separately on the connected components of the overlap graph
@@ -89,10 +89,10 @@ connectedComponents <- function(df, colName = 'component'){
 #'
 scoreModules <- function(scObj, df, components,
                          colStrTemplate = 'CSOA_component', ...){
-  geneSets <- lapply(components,
-                     function(i) overlapGenes(subset(df, component == i)))
-  geneSetNames <- paste0(colStrTemplate, components)
-  return(runCSOAMultiple(scObj, geneSets, geneSetNames, ...))
+    geneSets <- lapply(components,
+                       function(i) overlapGenes(subset(df, component == i)))
+    geneSetNames <- paste0(colStrTemplate, components)
+    return(runCSOAMultiple(scObj, geneSets, geneSetNames, ...))
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,20 +104,20 @@ scoreModules <- function(scObj, df, components,
 #' @keywords internal
 #'
 edgeLists.default <- function(overlapObj, ...)
-  stop('Unrecognized input type: overlapObj must be',
-  ' data frame or a list of data frames.')
+    stop('Unrecognized input type: overlapObj must be',
+         ' data frame or a list of data frames.')
 
 #' @rdname edgeLists
 #'
 #' @keywords internal
 #'
 edgeLists.data.frame <- function(overlapObj, ...){
-  if (!'component' %in% colnames(overlapObj))
-    overlapObj <- connectedComponents(overlapObj, 'group')
-  overlapObj <- overlapObj[, c('gene1', 'gene2', 'group')]
-  components <- split(overlapObj, overlapObj$group)
-  names(components) <- unique(overlapObj$group)
-  return(components)
+    if (!'component' %in% colnames(overlapObj))
+        overlapObj <- connectedComponents(overlapObj, 'group')
+    overlapObj <- overlapObj[, c('gene1', 'gene2', 'group')]
+    components <- split(overlapObj, overlapObj$group)
+    names(components) <- unique(overlapObj$group)
+    return(components)
 }
 
 #' @param groupNames Names of groups. If provided, must be a vector
@@ -130,14 +130,14 @@ edgeLists.data.frame <- function(overlapObj, ...){
 #' @keywords internal
 #'
 edgeLists.list <- function(overlapObj, groupNames, cutoff = NULL, ...){
-  overlapObj <- lapply(seq_along(groupNames), function(i) {
-    df <- overlapObj[[i]]
-    if (!is.null(cutoff))
-      df <- df[seq_len(cutoff), ]
-    df$group <- groupNames[[i]]
-    df <- df[, c('gene1', 'gene2', 'group')]
-    return(df)
-  })
-  names(overlapObj) <- groupNames
-  return(overlapObj)
+    overlapObj <- lapply(seq_along(groupNames), function(i) {
+        df <- overlapObj[[i]]
+        if (!is.null(cutoff))
+            df <- df[seq_len(cutoff), ]
+        df$group <- groupNames[[i]]
+        df <- df[, c('gene1', 'gene2', 'group')]
+        return(df)
+        })
+    names(overlapObj) <- groupNames
+    return(overlapObj)
 }

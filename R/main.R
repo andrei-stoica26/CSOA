@@ -31,12 +31,12 @@ NULL
 #'
 generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL,
                              overlapFileName = NULL){
-  cellSets <- percentileSets(geneSetExp, percentile)
-  if(!length(cellSets))
-      return(data.frame())
-  overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs,
-                                overlapFileName)
-  return(overlapDF)
+    cellSets <- percentileSets(geneSetExp, percentile)
+    if(!length(cellSets))
+        return(data.frame())
+    overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs,
+                                  overlapFileName)
+    return(overlapDF)
 }
 
 #' Process data frame of overlaps of cell sets
@@ -79,23 +79,23 @@ processOverlaps <- function(overlapDF,
                             jaccardCutoff = NULL,
                             osMethod = 'log'){
 
-  if (nrow(overlapDF) > 1)
-    overlapDF <- byCorrectDF(overlapDF, pvalThr) else
-      overlapDF$pval_adj <- overlapDF$pval
+    if (nrow(overlapDF) > 1)
+        overlapDF <- byCorrectDF(overlapDF, pvalThr) else
+            overlapDF$pval_adj <- overlapDF$pval
 
-  if (!nrow(overlapDF))
+    if (!nrow(overlapDF))
+        return(overlapDF)
+
+    overlapDF <- rankOverlaps(overlapDF)
+    firstOutRawRank <- prepareFiltering(overlapDF, saveCutoffPlot)
+    overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+    if (!is.null(jaccardCutoff)){
+        overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
+        firstOutRawRank <- NULL
+    }
+
+    overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
     return(overlapDF)
-
-  overlapDF <- rankOverlaps(overlapDF)
-  firstOutRawRank <- prepareFiltering(overlapDF, saveCutoffPlot)
-  overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
-  if (!is.null(jaccardCutoff)){
-    overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
-    firstOutRawRank <- NULL
-  }
-
-  overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
-  return(overlapDF)
 }
 
 #' Assign a per-cell gene set score to Seurat object
@@ -131,12 +131,12 @@ computeCellScores <- function(overlapDF,
                               colStr = 'CSOA',
                               pairFileName = NULL,
                               keepOverlapOrder = FALSE){
-  pcPairScores <- computePCPairScores(overlapDF, normExp)
-  if(!is.null(pairFileName))
-    pairScores <- computePairScores(overlapDF, pcPairScores,
-                                    pairFileName, keepOverlapOrder)
-  scoreDF <- computePCSetScores(pcPairScores, colStr)
-  return(scoreDF)
+    pcPairScores <- computePCPairScores(overlapDF, normExp)
+    if(!is.null(pairFileName))
+        pairScores <- computePairScores(overlapDF, pcPairScores,
+                                        pairFileName, keepOverlapOrder)
+    scoreDF <- computePCSetScores(pcPairScores, colStr)
+    return(scoreDF)
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,7 +149,7 @@ computeCellScores <- function(overlapDF,
 #' @export
 #'
 attachCellScores.default <- function(scObj, scoreDF, ...)
-  stop('Unrecognized input type: scObj must be a Seurat object with a',
+    stop('Unrecognized input type: scObj must be a Seurat object with a',
        ' data assay, a SingleCellExperiment with a logcounts assay',
        ' a matrix or a dgCMatrix.')
 
@@ -160,11 +160,11 @@ attachCellScores.default <- function(scObj, scoreDF, ...)
 #' @export
 #'
 attachCellScores.Seurat <- function(scObj, scoreDF, ...){
-  for (colName in colnames(scoreDF))
-    if (colName %in% colnames(scObj@meta.data))
-      scObj@meta.data[[colName]] <- c()
-  scObj@meta.data <- cbind(scObj@meta.data, scoreDF)
-  return(scObj)
+    for (colName in colnames(scoreDF))
+        if (colName %in% colnames(scObj[[]]))
+            scObj[[]][[colName]] <- c()
+        scObj[[]] <- cbind(scObj[[]], scoreDF)
+    return(scObj)
 }
 
 #' @rdname attachCellScores
@@ -175,11 +175,11 @@ attachCellScores.Seurat <- function(scObj, scoreDF, ...){
 #' @export
 #'
 attachCellScores.SingleCellExperiment <- function(scObj, scoreDF, ...){
-  for (colName in colnames(scoreDF))
-    if (colName %in% colnames(colData(scObj)))
-      colData(scObj)[[colName]] <- c()
-  colData(scObj) <- cbind(colData(scObj), scoreDF)
-  return(scObj)
+    for (colName in colnames(scoreDF))
+        if (colName %in% colnames(colData(scObj)))
+            colData(scObj)[[colName]] <- c()
+    colData(scObj) <- cbind(colData(scObj), scoreDF)
+    return(scObj)
 }
 
 #' @rdname attachCellScores
@@ -190,7 +190,7 @@ attachCellScores.SingleCellExperiment <- function(scObj, scoreDF, ...){
 #' @export
 #'
 attachCellScores.matrix <- function(scObj, scoreDF, ...)
-  return(list(object = scObj, scores = scoreDF))
+    return(list(object = scObj, scores = scoreDF))
 
 #' @rdname attachCellScores
 #'
@@ -200,7 +200,7 @@ attachCellScores.matrix <- function(scObj, scoreDF, ...)
 #' @export
 #'
 attachCellScores.dgCMatrix <- function(scObj, scoreDF, ...)
-    return(list(object = scObj, scores = scoreDF))
+        return(list(object = scObj, scores = scoreDF))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,23 +242,23 @@ scoreCells <- function(geneSetExp,
                        osMethod = 'log',
                        pairFileName = NULL,
                        keepOverlapOrder = FALSE){
-  overlapDF <- processOverlaps(overlapDF, pvalThr, saveCutoffPlot,
-                               jaccardCutoff, osMethod)
-  if(!nrow(overlapDF)){
-    warning('No significant overlaps were identified.',
-            ' All cells will get a score of 0.')
-    scoreDF <- data.frame(setNames(rep(0, dim(geneSetExp)[2]),
-                                   colStr))
-    rownames(scoreDF) <- colnames(geneSetExp)
-    return(scoreDF)
-  }
+    overlapDF <- processOverlaps(overlapDF, pvalThr, saveCutoffPlot,
+                                 jaccardCutoff, osMethod)
+    if(!nrow(overlapDF)){
+        warning('No significant overlaps were identified.',
+                ' All cells will get a score of 0.')
+        scoreDF <- data.frame(setNames(rep(0, dim(geneSetExp)[2]),
+                                       colStr))
+        rownames(scoreDF) <- colnames(geneSetExp)
+        return(scoreDF)
+    }
 
-  message('Normalizing expression matrix by rows...')
-  genes <- overlapGenes(overlapDF)
-  normExp <- kerntools::minmax(geneSetExp[genes, ], rows=TRUE)
-  scoreDF <- computeCellScores(overlapDF, normExp, colStr,
-                               pairFileName, keepOverlapOrder)
-  return(scoreDF)
+    message('Normalizing expression matrix by rows...')
+    genes <- overlapGenes(overlapDF)
+    normExp <- kerntools::minmax(geneSetExp[genes, ], rows=TRUE)
+    scoreDF <- computeCellScores(overlapDF, normExp, colStr,
+                                 pairFileName, keepOverlapOrder)
+    return(scoreDF)
 }
 
 #' Run the CSOA pipeline
@@ -297,13 +297,13 @@ runCSOA <- function(scObj, genes, colStr='CSOA', percentile = 90,
                     saveCutoffPlot = FALSE, jaccardCutoff = NULL,
                     osMethod = 'log', pairFileName = NULL,
                     keepOverlapOrder = FALSE){
-  if (!min(is(genes)[c(1, 2)] == c('character', 'vector')) | length(genes) < 2)
-    stop('genes must be a character vector of length >= 2.')
-  geneSetExp <- expMat(scObj, genes)
-  overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL,
-                                overlapFileName)
-  scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr, saveCutoffPlot,
-                        jaccardCutoff, osMethod,
-                        pairFileName, keepOverlapOrder)
-  return(attachCellScores(scObj, scoreDF))
+    if (!min(is(genes)[c(1, 2)] == c('character', 'vector')) | length(genes) < 2)
+        stop('genes must be a character vector of length >= 2.')
+    geneSetExp <- expMat(scObj, genes)
+    overlapDF <- generateOverlaps(geneSetExp, percentile, pairs=NULL,
+                                  overlapFileName)
+    scoreDF <- scoreCells(geneSetExp, overlapDF, colStr, pvalThr,
+                          saveCutoffPlot, jaccardCutoff, osMethod,
+                          pairFileName, keepOverlapOrder)
+    return(attachCellScores(scObj, scoreDF))
 }

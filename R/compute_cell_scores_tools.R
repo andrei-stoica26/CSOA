@@ -28,26 +28,27 @@
 #' @export
 #'
 computePCPairScores <- function(overlapDF, normExp){
-  if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
-    stop('Columns gene1, gene2 and score must exist in overlapDF.')
-  if(max(overlapDF$score) != 1 | min(overlapDF$score) <= 0)
-    stop('The maximum of the score column in overlapDF must be 1',
-         ' and its minimum must be positive.')
-  if(!is.numeric(normExp) | !is.matrix(normExp))
-    stop('normExp must be a numeric matrix.')
-  if(max(normExp) != 1 | min(normExp) != 0)
-    stop('The maximum value of normExp must be 1',
-    'and its minimum must be 0.')
-  message('Computing per-cell scores for gene pairs...')
-  gene1 <- overlapDF$gene1
-  gene2 <- overlapDF$gene2
-  scores <- overlapDF$score
+    if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
+        stop('Columns gene1, gene2 and score must exist in overlapDF.')
+    if(max(overlapDF$score) != 1 | min(overlapDF$score) <= 0)
+        stop('The maximum of the score column in overlapDF must be 1',
+             ' and its minimum must be positive.')
+    if(!is.numeric(normExp) | !is.matrix(normExp))
+        stop('normExp must be a numeric matrix.')
+    if(max(normExp) != 1 | min(normExp) != 0)
+        stop('The maximum value of normExp must be 1',
+             'and its minimum must be 0.')
 
-  pcPairScores <- normExp[gene1, , drop=FALSE] * normExp[gene2, , drop=FALSE]
-  pcPairScores <- pcPairScores * scores
-  pcPairScores <- as.data.frame(pcPairScores)
-  rownames(pcPairScores) <- paste0(gene1, "_", gene2)
-  return(pcPairScores)
+    message('Computing per-cell scores for gene pairs...')
+    gene1 <- overlapDF$gene1
+    gene2 <- overlapDF$gene2
+    scores <- overlapDF$score
+
+    pcPairScores <- normExp[gene1, , drop=FALSE] * normExp[gene2, , drop=FALSE]
+    pcPairScores <- pcPairScores * scores
+    pcPairScores <- as.data.frame(pcPairScores)
+    rownames(pcPairScores) <- paste0(gene1, "_", gene2)
+    return(pcPairScores)
 }
 
 #' Compute aggregate gene pair scores
@@ -70,30 +71,30 @@ computePCPairScores <- function(overlapDF, normExp){
 #'
 computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
                               keepOverlapOrder = FALSE){
-  if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-    stop('Values in pcPairScores must be between 0 and 1.')
-  df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
-  colnames(df)[c(3, 4)] <- paste0('overlap', c('Score', 'Rank'))
+    if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
+        stop('Values in pcPairScores must be between 0 and 1.')
+    df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
+    colnames(df)[c(3, 4)] <- paste0('overlap', c('Score', 'Rank'))
 
-  pairTotalScores <- rowSums(pcPairScores)
-  totalScore <- sum(pairTotalScores)
+    pairTotalScores <- rowSums(pcPairScores)
+    totalScore <- sum(pairTotalScores)
 
-  df$pairScore <- pairTotalScores / totalScore * 100
-  df <- df[order(df$pairScore, decreasing=TRUE), ]
+    df$pairScore <- pairTotalScores / totalScore * 100
+    df <- df[order(df$pairScore, decreasing=TRUE), ]
 
-  df$pairRank <- rankFun(-df$pairScore)
-  df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
+    df$pairRank <- rankFun(-df$pairScore)
+    df$revCumsum <- spatstat.utils::revcumsum(df$pairScore)
 
-  if (keepOverlapOrder)
-    df <- df[order(df$overlapScore, decreasing=TRUE), ]
+    if (keepOverlapOrder)
+        df <- df[order(df$overlapScore, decreasing=TRUE), ]
 
-  if (!is.null(pairFileName)){
-    pairFile <- paste0(pairFileName, '.qs')
-    message('Saving pair scores file: ', pairFile, '...')
-    qsave(df, pairFile)
-  }
+    if (!is.null(pairFileName)){
+        pairFile <- paste0(pairFileName, '.qs')
+        message('Saving pair scores file: ', pairFile, '...')
+        qsave(df, pairFile)
+    }
 
-  return(df)
+    return(df)
 }
 
 #' Aggregate per-cell gene pair scores
@@ -118,12 +119,12 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
 #' @export
 #'
 computePCSetScores <- function(pcPairScores, colStr = 'CSOA'){
-  if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-    stop('Values in pcPairScores must be between 0 and 1.')
-  message('Computing per-cell gene signature scores...')
-  scores <- colSums(pcPairScores)
-  scores <- vMinmax(scores)
-  scoreDF <- data.frame(setNames(list(scores), colStr))
-  rownames(scoreDF) <- colnames(pcPairScores)
-  return(scoreDF)
+    if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
+        stop('Values in pcPairScores must be between 0 and 1.')
+    message('Computing per-cell gene signature scores...')
+    scores <- colSums(pcPairScores)
+    scores <- vMinmax(scores)
+    scoreDF <- data.frame(setNames(list(scores), colStr))
+    rownames(scoreDF) <- colnames(pcPairScores)
+    return(scoreDF)
 }

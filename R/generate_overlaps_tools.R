@@ -19,26 +19,26 @@ NULL
 #' @noRd
 #'
 pairOverlap <- function(cellSets, pairs, nCells){
-  gene1 <- vapply(pairs, `[[`, character(1), 1)
-  gene2 <- vapply(pairs, `[[`, character(1), 2)
+    gene1 <- vapply(pairs, `[[`, character(1), 1)
+    gene2 <- vapply(pairs, `[[`, character(1), 2)
 
-  set1 <- cellSets[gene1]
-  set2 <- cellSets[gene2]
+    set1 <- cellSets[gene1]
+    set2 <- cellSets[gene2]
 
-  xCount <- lengths(set1)
-  yCount <- lengths(set2)
+    xCount <- lengths(set1)
+    yCount <- lengths(set2)
 
-  recorded <- mapply(function(a, b) length(intersect(a, b)), set1, set2)
-  expected <- xCount * yCount / nCells
-  ratio <- recorded / expected
-  pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount,
-                 lower.tail = FALSE)
+    recorded <- mapply(function(a, b) length(intersect(a, b)), set1, set2)
+    expected <- xCount * yCount / nCells
+    ratio <- recorded / expected
+    pval <- phyper(recorded - 1, xCount, nCells - xCount, yCount,
+                   lower.tail = FALSE)
 
-  df <- data.frame(gene1 = gene1, gene2 = gene2, ncells1 = xCount,
-                   ncells2 = yCount, shared_cells = recorded,
-                   exp_shared_cells = expected, ratio = ratio,
-                   pval = pval)
-  return(df)
+    df <- data.frame(gene1 = gene1, gene2 = gene2, ncells1 = xCount,
+                     ncells2 = yCount, shared_cells = recorded,
+                     exp_shared_cells = expected, ratio = ratio,
+                     pval = pval)
+    return(df)
 }
 
 #' Calculates the significance of overlaps of pairs of cells sets
@@ -68,17 +68,17 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
                              overlapFileName = NULL){
-  message('Assessing gene overlaps...')
-  genes <- names(cellSets)
-  if(!length(genes))
-    stop('The cell sets must be named')
-  if(is.null(pairs))
-    pairs <- getPairs(genes)
-  df <- pairOverlap(cellSets, pairs, nCells)
-  if (!is.null(overlapFileName)){
-    overlapFile <- paste0(overlapFileName, '.qs')
-    message('Saving overlap file: ', overlapFile, '...')
-    qsave(df, overlapFile)
-  }
+    message('Assessing gene overlaps...')
+    genes <- names(cellSets)
+    if(!length(genes))
+        stop('The cell sets must be named')
+    if(is.null(pairs))
+        pairs <- getPairs(genes)
+    df <- pairOverlap(cellSets, pairs, nCells)
+    if (!is.null(overlapFileName)){
+        overlapFile <- paste0(overlapFileName, '.qs')
+        message('Saving overlap file: ', overlapFile, '...')
+        qsave(df, overlapFile)
+    }
   return(df)
 }

@@ -13,14 +13,14 @@ NULL
 #' @noRd
 #'
 geneNeighbors <- function(overlapDF){
-  genes <- overlapGenes(overlapDF)
-  neighbors <- lapply(genes, function(gene) {
-    leftNeighbors <- overlapDF$gene2[overlapDF$gene1 == gene]
-    rightNeighbors <- overlapDF$gene1[overlapDF$gene2 == gene]
-    return(union(leftNeighbors, rightNeighbors))
-  })
-  names(neighbors) <- genes
-  return(neighbors)
+    genes <- overlapGenes(overlapDF)
+    neighbors <- lapply(genes, function(gene) {
+        leftNeighbors <- overlapDF$gene2[overlapDF$gene1 == gene]
+        rightNeighbors <- overlapDF$gene1[overlapDF$gene2 == gene]
+        return(union(leftNeighbors, rightNeighbors))
+    })
+    names(neighbors) <- genes
+    return(neighbors)
 }
 
 #' Compute the Jaccard score of the neighbor sets of each gene in an overlap
@@ -35,11 +35,11 @@ geneNeighbors <- function(overlapDF){
 #' @noRd
 #'
 neighborJaccard <- function(overlapDF){
-  neighbors <- geneNeighbors(overlapDF)
-  overlapDF$neighborJac <- mapply(function(x, y)
-    jaccardSets(neighbors[[x]], neighbors[[y]]),
-    overlapDF$gene1, overlapDF$gene2)
-  return(overlapDF)
+    neighbors <- geneNeighbors(overlapDF)
+    overlapDF$neighborJac <- mapply(function(x, y)
+        jaccardSets(neighbors[[x]], neighbors[[y]]),
+        overlapDF$gene1, overlapDF$gene2)
+    return(overlapDF)
 }
 
 #' Remove overlap pairs with low Jaccard scores
@@ -70,29 +70,28 @@ neighborJaccard <- function(overlapDF){
 #' @export
 #'
 breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
-  if(length(setdiff(c('gene1', 'gene2', 'ratio', 'pval'),
-                    colnames(overlapDF))))
-    stop('Columns gene1, gene2, ratio and pval must',
-         ' exist in the dataframe.')
-  prevNEdges <- -1
-  nEdges <- nrow(overlapDF)
-  message(nEdges, ' overlap', rep('s', nEdges != 1),
-          ' have been selected for Jaccard-based filtering.')
-  while(prevNEdges != nEdges){
-    overlapDF <- neighborJaccard(overlapDF)
-    overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]
-    prevNEdges <- nEdges
+    if(length(setdiff(c('gene1', 'gene2', 'ratio', 'pval'),
+                      colnames(overlapDF))))
+        stop('Columns gene1, gene2, ratio and pval must',
+            ' exist in the dataframe.')
+    prevNEdges <- -1
     nEdges <- nrow(overlapDF)
-    nRemovedEdges <- prevNEdges - nEdges
-    if(nRemovedEdges > 0){
-      message(nRemovedEdges, ' edge',
-              rep('s', nRemovedEdges != 1),
-              paste(' with low neighbor Jaccard',
-              'scores have been removed.'))
+    message(nEdges, ' overlap', rep('s', nEdges != 1),
+            ' have been selected for Jaccard-based filtering.')
+    while(prevNEdges != nEdges){
+        overlapDF <- neighborJaccard(overlapDF)
+        overlapDF <- overlapDF[overlapDF$neighborJac > cutoff, ]
+        prevNEdges <- nEdges
+        nEdges <- nrow(overlapDF)
+        nRemovedEdges <- prevNEdges - nEdges
+        if(nRemovedEdges > 0){
+            message(nRemovedEdges, ' edge', rep('s', nRemovedEdges != 1),
+                    paste(' with low neighbor Jaccard',
+                          ' scores have been removed.'))
     }
   }
-  overlapDF <- rankOverlaps(overlapDF)
-  if (doConnComp)
-    overlapDF <- connectedComponents(overlapDF)
-  return(overlapDF)
+    overlapDF <- rankOverlaps(overlapDF)
+    if (doConnComp)
+        overlapDF <- connectedComponents(overlapDF)
+    return(overlapDF)
 }

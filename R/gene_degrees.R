@@ -9,12 +9,12 @@
 #' @noRd
 #'
 geneDegreesCore <- function(edgesDF){
-  genes <- union(edgesDF$gene1, edgesDF$gene2)
-  df <- as.data.frame(table(c(edgesDF$gene1, edgesDF$gene2)))
-  colnames(df) <- c('gene', 'nEdges')
-  df$group <- as.factor(edgesDF$group[1])
-  df <- df[order(df$nEdges, decreasing=TRUE), ]
-  return(df)
+    genes <- union(edgesDF$gene1, edgesDF$gene2)
+    df <- as.data.frame(table(c(edgesDF$gene1, edgesDF$gene2)))
+    colnames(df) <- c('gene', 'nEdges')
+    df$group <- as.factor(edgesDF$group[1])
+    df <- df[order(df$nEdges, decreasing=TRUE), ]
+    return(df)
 }
 
 #' Calculate gene degrees from multiple data frames of edges
@@ -28,10 +28,10 @@ geneDegreesCore <- function(edgesDF){
 #' @noRd
 #'
 geneDegrees <- function(edgesDFs){
-  dfList <- lapply(edgesDFs, geneDegreesCore)
-  df <- do.call(rbind, dfList)
-  df <- df[order(df$nEdges, decreasing=TRUE), ]
-  return(df)
+    dfList <- lapply(edgesDFs, geneDegreesCore)
+    df <- do.call(rbind, dfList)
+    df <- df[order(df$nEdges, decreasing=TRUE), ]
+    return(df)
 }
 
 #' Map gene degrees to distances from the center and find the frequency of these
@@ -49,15 +49,15 @@ geneDegrees <- function(edgesDFs){
 #' @noRd
 #'
 distFreq <- function(degreesDF){
-  message('Finding frequencies of gene degrees...')
-  center <- degreesDF$nEdges[1] + 1
-  if (degreesDF$nEdges[1] != degreesDF$nEdges[2])
-    center <- degreesDF$nEdges[1]
-  df <- dplyr::count(degreesDF, nEdges)
-  df <- df[order(df$nEdges, decreasing=TRUE), ]
-  df$nEdges <- center - df$nEdges
-  colnames(df) <- c('Dist', 'Freq')
-  return(df)
+    message('Finding frequencies of gene degrees...')
+    center <- degreesDF$nEdges[1] + 1
+    if (degreesDF$nEdges[1] != degreesDF$nEdges[2])
+        center <- degreesDF$nEdges[1]
+    df <- dplyr::count(degreesDF, nEdges)
+    df <- df[order(df$nEdges, decreasing=TRUE), ]
+    df$nEdges <- center - df$nEdges
+    colnames(df) <- c('Dist', 'Freq')
+    return(df)
 }
 
 #' Compute the coordinates of genes on the figure made from concentric circles
@@ -72,15 +72,15 @@ distFreq <- function(degreesDF){
 #' @noRd
 #'
 geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
-  edgesDFs <- edgeLists(overlapObj, groupNames, cutoff)
-  degreesDF <- geneDegrees(edgesDFs)
-  distFreqDF <- distFreq(degreesDF)
-  message('Finding gene coordinates...')
-  circlePoints <- do.call(rbind, lapply(seq_len(nrow(distFreqDF)), function(i)
-    pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i])))
-  df <- cbind(degreesDF[, 1, drop=FALSE], circlePoints, degreesDF[, c(2, 3)])
-  df[, 5] <- as.factor(df[, 5])
-  return(df)
+    edgesDFs <- edgeLists(overlapObj, groupNames, cutoff)
+    degreesDF <- geneDegrees(edgesDFs)
+    distFreqDF <- distFreq(degreesDF)
+    message('Finding gene coordinates...')
+    circlePoints <- do.call(rbind, lapply(seq_len(nrow(distFreqDF)), function(i)
+        pointsOnCircle(distFreqDF$Dist[i], distFreqDF$Freq[i])))
+    df <- cbind(degreesDF[, 1, drop=FALSE], circlePoints, degreesDF[, c(2, 3)])
+    df[, 5] <- as.factor(df[, 5])
+    return(df)
 }
 
 #' Store the radii of the circles and the corresponding number of edges
@@ -90,7 +90,7 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
 #'
 #' @param geneCoordsDF Dataframe wih gene coordinates
 #' @param extraCircles Number of circles drawn beyond those needed to include
-#' the points representing the genes. Default is 0
+#' the points representing the genes.
 #'
 #' @return A data frame containing the radius and the number of edges for each
 #' circle
@@ -98,15 +98,14 @@ geneCoords <- function(overlapObj, groupNames = NULL, cutoff = NULL){
 #' @keywords internal
 #'
 circleCoords <- function(geneCoordsDF, extraCircles = 0){
-  minDegree <- geneCoordsDF$nEdges[nrow(geneCoordsDF)] - extraCircles
-  maxDegree <- geneCoordsDF$nEdges[1]
-  nCircles <- maxDegree - minDegree + 1
-  hasSharedMax <- geneCoordsDF$nEdges[1] == geneCoordsDF$nEdges[2]
-  df <- data.frame(
+    minDegree <- geneCoordsDF$nEdges[nrow(geneCoordsDF)] - extraCircles
+    maxDegree <- geneCoordsDF$nEdges[1]
+    nCircles <- maxDegree - minDegree + 1
+    hasSharedMax <- geneCoordsDF$nEdges[1] == geneCoordsDF$nEdges[2]
+    df <- data.frame(
     x = rep(0, nCircles),
     y = rep(0, nCircles),
     r = seq(nCircles + hasSharedMax - 0.5, hasSharedMax + 0.5, -1),
-    nEdges = seq(minDegree, maxDegree)
-  )
-  return(df)
+    nEdges = seq(minDegree, maxDegree))
+    return(df)
 }

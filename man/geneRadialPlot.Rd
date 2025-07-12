@@ -28,7 +28,7 @@ refiltering. If NULL (as default), no refiltering will be performed}
 \item{title}{Plot title.}
 
 \item{extraCircles}{Number of circles drawn beyond those needed to include
-the points representing the genes. Default is 0}
+the points representing the genes.}
 }
 \value{
 A ggplot object.

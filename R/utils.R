@@ -28,10 +28,10 @@ NULL
 #'
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
-  df <- df[order(df[[colStr]]), ]
-  df$pvalAdj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
-  df <- subset(df, pvalAdj < pvalThr)
-  return(df)
+    df <- df[order(df[[colStr]]), ]
+    df$pvalAdj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
+    df <- subset(df, pvalAdj < pvalThr)
+    return(df)
 }
 
 #' Get all unordered pairs of two elements from a vector
@@ -50,7 +50,7 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 #' @export
 #'
 getPairs <- function(v)
-  return(utils::combn(v, 2, simplify=FALSE))
+    return(utils::combn(v, 2, simplify=FALSE))
 
 #' Run LayerData from Seurat and return an error
 #' when the requested layer does not exist
@@ -67,10 +67,10 @@ getPairs <- function(v)
 #' @noRd
 #'
 safeLayerData <- function(seuratObj, layer){
-  layerData <- LayerData(seuratObj, layer=layer)
-  if (!dim(layerData)[1])
-    stop('The Seurat object has no ', layer, ' layer.')
-  return(layerData)
+    layerData <- LayerData(seuratObj, layer=layer)
+    if (!dim(layerData)[1])
+        stop('The Seurat object has no ', layer, ' layer.')
+    return(layerData)
 }
 
 #' Filter matrix using rows and convert the matrix to non-sparse
@@ -87,14 +87,14 @@ safeLayerData <- function(seuratObj, layer){
 #' @noRd
 #'
 matrixRowFilter <- function(matObj, rows = NULL){
-  if(!is.null(rows)){
-    if(length(setdiff(rows, rownames(matObj))))
-      stop('Some input genes do not exist in the',
-      ' expression matrix.')
-    matObj <- matObj[sort(rows), ]
-    return(as.matrix(matObj))
-  }
-  return(as.matrix(matObj)[sort(rownames(matObj)), ])
+    if(!is.null(rows)){
+        if(length(setdiff(rows, rownames(matObj))))
+        stop('Some input genes do not exist in the',
+             ' expression matrix.')
+        matObj <- matObj[sort(rows), ]
+        return(as.matrix(matObj))
+    }
+    return(as.matrix(matObj)[sort(rownames(matObj)), ])
 }
 
 #' Read and delete a .qs file
@@ -113,9 +113,9 @@ matrixRowFilter <- function(matObj, rows = NULL){
 #' @export
 #'
 qGrab <- function(qsFile){
-  res <- qread(qsFile)
-  file.remove(qsFile)
-  return(res)
+    res <- qread(qsFile)
+    file.remove(qsFile)
+    return(res)
 }
 
 #' Get all genes from an overlap data frame
@@ -134,7 +134,7 @@ qGrab <- function(qsFile){
 #' @export
 #'
 overlapGenes <- function(overlapDF)
-  return(union(overlapDF$gene1, overlapDF$gene2))
+    return(union(overlapDF$gene1, overlapDF$gene2))
 
 #' Extract gene pairs from overlap data frame
 #'
@@ -153,8 +153,8 @@ overlapGenes <- function(overlapDF)
 #'
 #'
 overlapPairs <- function(overlapDF)
-  return(apply(overlapDF, 1, function(x)
-    as.character(x[c(1, 2)]), simplify=FALSE))
+    return(apply(overlapDF, 1, function(x)
+        as.character(x[c(1, 2)]), simplify=FALSE))
 
 #' Extract subset defined using gene pairs from overlap matrix
 #'
@@ -171,7 +171,7 @@ overlapPairs <- function(overlapDF)
 #' @noRd
 #'
 overlapSlice <- function(overlapDF, pairs)
-  return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
+    return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
 
 #' Helper function to ensure easy testing of different
 #' rank methods
@@ -186,7 +186,7 @@ overlapSlice <- function(overlapDF, pairs)
 #' @noRd
 #'
 rankFun <- function(v)
-  return(rank(v, ties.method='min'))
+    return(rank(v, ties.method='min'))
 
 #' Replace a column by its rank
 #'
@@ -205,9 +205,9 @@ rankFun <- function(v)
 #' @noRd
 #'
 rankReplace <- function(df, colName, rankSign = 1){
-  df <- df[order(df[, colName], decreasing=rankSign - 1), ]
-  df[, colName] <- rankFun(rankSign * df[, colName])
-  return(df)
+    df <- df[order(df[, colName], decreasing=rankSign - 1), ]
+    df[, colName] <- rankFun(rankSign * df[, colName])
+    return(df)
 }
 
 #' Applies kerntools minmax-normalization on a vector using
@@ -221,7 +221,7 @@ rankReplace <- function(df, colName, rankSign = 1){
 #' @noRd
 #'
 vMinmax <- function(v)
-  return(as.numeric(kerntools::minmax(as.matrix(v))))
+    return(as.numeric(kerntools::minmax(as.matrix(v))))
 
 #' Raise a warning that the overlap data frame may have
 #' been not filtered.
@@ -242,12 +242,12 @@ vMinmax <- function(v)
 #' @noRd
 #'
 warnUnfiltered <- function(overlapDF, raiseWarning = 1500)
-  if (nrow(overlapDF) > raiseWarning)
-    warning('The number of overlaps in the',
-            'data frame is very large (',
-            nrow(overlapDF),
-            '). Are you sure you filtered',
-            'the overlap data frame?')
+    if (nrow(overlapDF) > raiseWarning)
+        warning('The number of overlaps in the',
+                ' data frame is very large (',
+                nrow(overlapDF),
+                '). Are you sure you filtered',
+                ' the overlap data frame?')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics
@@ -261,32 +261,32 @@ warnUnfiltered <- function(overlapDF, raiseWarning = 1500)
 #' @export
 #'
 expMat.default <- function(scObj, genes = NULL, ...)
-  stop('Unrecognized input type: scObj must be a',
-       'Seurat object with a data assay,',
-       'a SingleCellExperiment with a logcounts assay,',
-       'a matrix or a dgCMatrix object.')
+    stop('Unrecognized input type: scObj must be a',
+         'Seurat object with a data assay,',
+         'a SingleCellExperiment with a logcounts assay,',
+         'a matrix or a dgCMatrix object.')
 
 #' @rdname expMat
 #' @export
 #'
 expMat.Seurat <- function(scObj, ...)
-  return(matrixRowFilter(safeLayerData(scObj, layer='data'), ...))
+    return(matrixRowFilter(safeLayerData(scObj, layer='data'), ...))
 
 #' @rdname expMat
 #' @export
 #'
 expMat.SingleCellExperiment <- function(scObj, ...)
-  return(matrixRowFilter(assay(scObj, 'logcounts'), ...))
+    return(matrixRowFilter(assay(scObj, 'logcounts'), ...))
 
 #' @rdname expMat
 #' @export
 #'
 expMat.dgCMatrix <- function(scObj, ...)
-  return(matrixRowFilter(scObj, ...))
+    return(matrixRowFilter(scObj, ...))
 
 #' @rdname expMat
 #' @export
 #'
 expMat.matrix <- function(scObj, ...)
-  return(matrixRowFilter(scObj, ...))
+    return(matrixRowFilter(scObj, ...))
 

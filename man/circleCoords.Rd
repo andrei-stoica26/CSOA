@@ -10,7 +10,7 @@ circleCoords(geneCoordsDF, extraCircles = 0)
 \item{geneCoordsDF}{Dataframe wih gene coordinates}
 
 \item{extraCircles}{Number of circles drawn beyond those needed to include
-the points representing the genes. Default is 0}
+the points representing the genes.}
 }
 \value{
 A data frame containing the radius and the number of edges for each

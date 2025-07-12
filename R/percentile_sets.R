@@ -2,7 +2,6 @@
 #'
 NULL
 
-
 #' Generates cell expressing input genes at an input percentile
 #'
 #' This function constructs, for each gene in the expression matrix, a set of
@@ -27,29 +26,29 @@ NULL
 #' @export
 #'
 percentileSets <- function(geneSetExp, percentile=90){
-  if (!is.numeric(percentile) | length(percentile) > 2 |
-      percentile < 0 | percentile >= 100)
-    stop('percentile must be a non-negative number lower than 100.')
-  if (is.null(colnames(geneSetExp)))
-    stop('geneSetExp has no column names.')
-  genes <- rownames(geneSetExp)
-  fraction <- percentile / 100
-  message('Computing percentile sets...')
-  expList <- lapply(genes, function(x){
-    geneExp <- geneSetExp[x, ]
-    geneExp <- geneExp[geneExp > 0]
-    thresh <- as.numeric(quantile(geneExp, fraction))
-    return(names(geneExp[geneExp > thresh]))
-  })
-  names(expList) <- genes
-  expList <- expList[vapply(expList, length, numeric(1)) > 0]
-  if (!length(expList))
-    warning('No cell sets can be constructed at',
-         ' the indicated percentile for the',
-         ' input genes. All cells will get a score of 0.')
-  if (length(expList) < length(genes))
-    warning(length(genes) - length(expList), ' gene(s) had no ',
-            ' top cells at the indicated percentile.',
-            ' These are now excluded from the gene signature.')
-  return(expList)
+    if (!is.numeric(percentile) | length(percentile) > 2 |
+        percentile < 0 | percentile >= 100)
+        stop('percentile must be a non-negative number lower than 100.')
+    if (is.null(colnames(geneSetExp)))
+        stop('geneSetExp has no column names.')
+    genes <- rownames(geneSetExp)
+    fraction <- percentile / 100
+    message('Computing percentile sets...')
+    expList <- lapply(genes, function(x){
+        geneExp <- geneSetExp[x, ]
+        geneExp <- geneExp[geneExp > 0]
+        thresh <- as.numeric(quantile(geneExp, fraction))
+        return(names(geneExp[geneExp > thresh]))
+    })
+    names(expList) <- genes
+    expList <- expList[vapply(expList, length, numeric(1)) > 0]
+    if (!length(expList))
+        warning('No cell sets can be constructed at',
+            ' the indicated percentile for the',
+            ' input genes. All cells will get a score of 0.')
+    if (length(expList) < length(genes))
+        warning(length(genes) - length(expList), ' gene(s) had no ',
+                ' top cells at the indicated percentile.',
+                ' These are now excluded from the gene signature.')
+    return(expList)
 }

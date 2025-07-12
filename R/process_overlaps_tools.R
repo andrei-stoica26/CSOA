@@ -21,19 +21,19 @@ NULL
 #' @noRd
 #'
 geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
-  genes <- overlapGenes(overlapDF)
-  mat <- do.call(rbind, lapply(genes, function(gene){
-    geneDF <- overlapDF[overlapDF$gene1 == gene |
-                          overlapDF$gene2 == gene, ]
-    return(c(min(geneDF$pvalRank), min(geneDF$ratioRank)))
-  }))
-  rownames(mat) <- genes
-  colnames(mat) <- c('connPvalRank', 'connRatioRank')
-  if (asRanks){
-    mat <- rankReplace(mat, 'connPvalRank')
-    mat <- rankReplace(mat, 'connRatioRank')
-  }
-  return(mat)
+    genes <- overlapGenes(overlapDF)
+    mat <- do.call(rbind, lapply(genes, function(gene){
+        geneDF <- overlapDF[overlapDF$gene1 == gene |
+                                overlapDF$gene2 == gene, ]
+        return(c(min(geneDF$pvalRank), min(geneDF$ratioRank)))
+    }))
+    rownames(mat) <- genes
+    colnames(mat) <- c('connPvalRank', 'connRatioRank')
+    if (asRanks){
+        mat <- rankReplace(mat, 'connPvalRank')
+        mat <- rankReplace(mat, 'connRatioRank')
+    }
+    return(mat)
 }
 
 #' Rank cell set overlaps
@@ -73,25 +73,25 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #' @export
 #'
 rankOverlaps <- function(overlapDF){
-  if (!nrow(overlapDF))
+    if (!nrow(overlapDF))
+        return(overlapDF)
+    overlapDF <- overlapDF[order(overlapDF$pval), ]
+    overlapDF$pvalRank <- rankFun(overlapDF$pval)
+    overlapDF <- overlapDF[order(overlapDF$ratio,
+                                 decreasing=TRUE), ]
+    overlapDF$ratioRank <- rankFun(-overlapDF$ratio)
+
+    geneConn <- geneBestEdgeRank(overlapDF)
+    overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] +
+                               geneConn[overlapDF$gene2, 1]) / 2
+    overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] +
+                                geneConn[overlapDF$gene2, 2]) / 2
+    overlapDF$rawAggRank <- (overlapDF$pvalRank +
+                                 overlapDF$ratioRank) / 2
+
+    overlapDF$rank <- rankFun(overlapDF$rawAggRank)
+    overlapDF <- overlapDF[order(overlapDF$rank), ]
     return(overlapDF)
-  overlapDF <- overlapDF[order(overlapDF$pval), ]
-  overlapDF$pvalRank <- rankFun(overlapDF$pval)
-  overlapDF <- overlapDF[order(overlapDF$ratio,
-                               decreasing=TRUE), ]
-  overlapDF$ratioRank <- rankFun(-overlapDF$ratio)
-
-  geneConn <- geneBestEdgeRank(overlapDF)
-  overlapDF$pvalRank <- (geneConn[overlapDF$gene1, 1] +
-                           geneConn[overlapDF$gene2, 1]) / 2
-  overlapDF$ratioRank <- (geneConn[overlapDF$gene1, 2] +
-                            geneConn[overlapDF$gene2, 2]) / 2
-  overlapDF$rawAggRank <- (overlapDF$pvalRank +
-                             overlapDF$ratioRank) / 2
-
-  overlapDF$rank <- rankFun(overlapDF$rawAggRank)
-  overlapDF <- overlapDF[order(overlapDF$rank), ]
-  return(overlapDF)
 }
 
 #' Find overlap rank cutoff
@@ -113,9 +113,9 @@ rankOverlaps <- function(overlapDF){
 #' @export
 #'
 findRankCutoff <- function(freqDF){
-  freqSub <- subset(freqDF, n == max(n))
-  rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
-  return(rankCutoff)
+    freqSub <- subset(freqDF, n == max(n))
+    rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
+    return(rankCutoff)
 }
 
 #' Find the raw aggregate rank of the highest non-top overlap
@@ -141,39 +141,40 @@ findRankCutoff <- function(freqDF){
 #' @export
 #'
 prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
-  if (!nrow(overlapDF))
-    return(NULL)
-  freqDF <- dplyr::count(overlapDF, rank)
-  rankCutoff <- findRankCutoff(freqDF)
+    if (!nrow(overlapDF))
+        return(NULL)
 
-  if(saveCutoffPlot){
-    if (nrow(freqDF) < 2)
-      stop('overlapCutoffPlot requires at least two points.')
+    freqDF <- dplyr::count(overlapDF, rank)
+    rankCutoff <- findRankCutoff(freqDF)
 
-    freqs <- freqDF$n
-    nFreq <- length(unique(freqs))
+    if(saveCutoffPlot){
+        if (nrow(freqDF) < 2)
+            stop('overlapCutoffPlot requires at least two points.')
 
-    if (nFreq < 2)
-      stop('overlapCutoffPlot requires at least two',
-           'distinct rank frequencies.')
+        freqs <- freqDF$n
+        nFreq <- length(unique(freqs))
 
-    maxFreq <- max(freqs)
-    maxApps <- which(freqs %in% maxFreq)
-    if (length(maxApps) == 1)
-      if (maxApps %in% c(1, nrow(freqDF)))
-        stop('overlapCutoffPlot requires that the',
-        'maximum rank frequency is reached at a non-extremal point.')
+        if (nFreq < 2)
+            stop('overlapCutoffPlot requires at least two',
+                ' distinct rank frequencies.')
 
-    devPlot(overlapCutoffPlot, freqDF, rankCutoff)
-  }
+        maxFreq <- max(freqs)
+        maxApps <- which(freqs %in% maxFreq)
+        if (length(maxApps) == 1)
+        if (maxApps %in% c(1, nrow(freqDF)))
+            stop('overlapCutoffPlot requires that the',
+                 ' maximum rank frequency is reached at a non-extremal point.')
 
-  outDF <- subset(overlapDF, rank > rankCutoff)
-  if (nrow(outDF))
-    firstOutRawRank <- outDF$rawAggRank[1] else
-      if (nrow(overlapDF) > 1)
-        firstOutRawRank <- 2 * overlapDF$rawAggRank[nrow(overlapDF)] -
-    overlapDF$rawAggRank[nrow(overlapDF) - 1] else
-          firstOutRawRank <- NULL
+        devPlot(overlapCutoffPlot, freqDF, rankCutoff)
+    }
+
+    outDF <- subset(overlapDF, rank > rankCutoff)
+    if (nrow(outDF))
+        firstOutRawRank <- outDF$rawAggRank[1] else
+            if (nrow(overlapDF) > 1)
+                firstOutRawRank <- 2 * overlapDF$rawAggRank[nrow(overlapDF)] -
+        overlapDF$rawAggRank[nrow(overlapDF) - 1] else
+            firstOutRawRank <- NULL
 
   return(firstOutRawRank)
 }
@@ -201,9 +202,9 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #' @export
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
-  if(is.null(firstOutRawRank) | !nrow(overlapDF))
-    return(overlapDF)
-  return(subset(overlapDF, rawAggRank < firstOutRawRank))
+    if(is.null(firstOutRawRank) | !nrow(overlapDF))
+        return(overlapDF)
+    return(subset(overlapDF, rawAggRank < firstOutRawRank))
 }
 
 #' Score cell set overlaps
@@ -256,28 +257,28 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 scoreOverlaps <- function(overlapDF,
                           osMethod = 'log',
                           firstOutRawRank = NULL){
-  message(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1),
-          ' will be used in the calculation of CSOA scores.')
-  if (nrow(overlapDF) == 1){
-    overlapDF$score <- 1
-    return(overlapDF)
-  }
-  if(!osMethod %in% c('log', 'minmax'))
-    stop('Unrecognized overlap scoring method.',
-         'See ?CSOA::scoreOverlaps for the accepted methods.')
+    message(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1),
+            ' will be used in the calculation of CSOA scores.')
+    if (nrow(overlapDF) == 1){
+        overlapDF$score <- 1
+        return(overlapDF)
+    }
+    if(!osMethod %in% c('log', 'minmax'))
+        stop('Unrecognized overlap scoring method.',
+            ' See ?CSOA::scoreOverlaps for the accepted methods.')
 
-  if (osMethod == 'log'){
-    rankVals <- unique(overlapDF$rank)
-    logVals <- log(seq(exp(1), 1, length.out =
+    if (osMethod == 'log'){
+        rankVals <- unique(overlapDF$rank)
+        logVals <- log(seq(exp(1), 1, length.out =
                          length(rankVals) + 1))[seq_along(rankVals)]
-    names(logVals) <- rankVals
-    overlapDF$score <- logVals[as.character(overlapDF$rank)]
-  }
+        names(logVals) <- rankVals
+        overlapDF$score <- logVals[as.character(overlapDF$rank)]
+    }
 
-  if (osMethod == 'minmax'){
-    rawRank <- c(overlapDF$rawAggRank, firstOutRawRank)
-    overlapDF$score <- 1 - vMinmax(rawRank)[seq_len(nrow(overlapDF))]
-  }
+    if (osMethod == 'minmax'){
+        rawRank <- c(overlapDF$rawAggRank, firstOutRawRank)
+        overlapDF$score <- 1 - vMinmax(rawRank)[seq_len(nrow(overlapDF))]
+    }
 
-  return(overlapDF)
+    return(overlapDF)
 }

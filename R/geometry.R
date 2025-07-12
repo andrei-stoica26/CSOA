@@ -11,14 +11,14 @@
 #' @noRd
 #'
 pointsOnCircle <- function(r, nPoints){
-  angleOffset <- runif(n=1, min=0, max=2 * pi)
-  theta <- 2 * pi / nPoints
-  points <- lapply(seq(nPoints),
-                   function(k) c(r * cos(k * theta + angleOffset),
-                                 r * sin(k * theta + angleOffset)))
-  res <- do.call(rbind, points)
-  colnames(res) <- c('x', 'y')
-  return(res)
+    angleOffset <- runif(n=1, min=0, max=2 * pi)
+    theta <- 2 * pi / nPoints
+    points <- lapply(seq(nPoints),
+                     function(k) c(r * cos(k * theta + angleOffset),
+                                   r * sin(k * theta + angleOffset)))
+    res <- do.call(rbind, points)
+    colnames(res) <- c('x', 'y')
+    return(res)
 }
 
 #' Construct a data frame of segments from a data frame of points
@@ -34,11 +34,11 @@ pointsOnCircle <- function(r, nPoints){
 #' @noRd
 #'
 pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
-  df <- data.frame(x = pointsDF[seq_len(nrow(pointsDF) - 1), xIndex],
-                   y = pointsDF[seq_len(nrow(pointsDF) - 1), yIndex],
-                   xEnd = pointsDF[seq(2, nrow(pointsDF)), xIndex],
-                   yEnd = pointsDF[seq(2, nrow(pointsDF)), yIndex])
-  return(df)
+    df <- data.frame(x = pointsDF[seq_len(nrow(pointsDF) - 1), xIndex],
+                     y = pointsDF[seq_len(nrow(pointsDF) - 1), yIndex],
+                     xEnd = pointsDF[seq(2, nrow(pointsDF)), xIndex],
+                     yEnd = pointsDF[seq(2, nrow(pointsDF)), yIndex])
+    return(df)
 }
 
 #' Construct a data frame of segments from a data frame of points
@@ -58,21 +58,21 @@ pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
 #' @noRd
 #'
 hullToPolygon <- function(hull, xInt, type = 'in'){
-  yMax <- max(hull$y)
-  if (type == 'in'){
-    df <- subset(hull, x <= xInt)
-    if(df$x[nrow(df)] != xInt)
-      df <- rbind(df, c(xInt, yMax))
-    yMin <- min(df$y)
-    if (yMax != yMin)
-      df <- rbind(df, c(xInt, yMin))
-  } else{
-    df <- subset(hull, x >= xInt)
-    if(df$x[nrow(df)] != xInt)
-      df <- rbind(c(xInt, yMax), df)
-    yMin <- min(df$y)
-    if (yMax != yMin)
-      df <- rbind(c(xInt, yMin), df)
-  }
-  return(df)
+    yMax <- max(hull$y)
+    if (type == 'in'){
+        df <- subset(hull, x <= xInt)
+        if(df$x[nrow(df)] != xInt)
+            df <- rbind(df, c(xInt, yMax))
+        yMin <- min(df$y)
+        if (yMax != yMin)
+        df <- rbind(df, c(xInt, yMin))
+    } else{
+        df <- subset(hull, x >= xInt)
+        if(df$x[nrow(df)] != xInt)
+            df <- rbind(c(xInt, yMax), df)
+        yMin <- min(df$y)
+        if (yMax != yMin)
+            df <- rbind(c(xInt, yMin), df)
+    }
+    return(df)
 }

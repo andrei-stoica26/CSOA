@@ -17,12 +17,12 @@ NULL
 #' @noRd
 #'
 heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
-  if (!is.matrix(mat))
-    stop('mat must be a matrix')
-  mat <- cluster_matrix(mat)
-  df <- reshape2::melt(mat, varnames=colNames[c(1, 2)],
-                       value.name=colNames[3])
-  return(df)
+    if (!is.matrix(mat))
+        stop('mat must be a matrix')
+    mat <- cluster_matrix(mat)
+    df <- reshape2::melt(mat, varnames=colNames[c(1, 2)],
+                         value.name=colNames[3])
+    return(df)
 }
 
 #' Prepare overlap data frame for network plot
@@ -43,13 +43,12 @@ heatmapDF <- function(mat, colNames = c('x', 'y', 'Fill')){
 networkPlotDF <- function(overlapDF,
                           rankCol = 'rank',
                           edgeScale = 2){
-  preWeight <- log(max(overlapDF[[rankCol]]) /
-                     overlapDF[[rankCol]] + 0.01)
-  overlapDF$weight <- edgeScale * preWeight /
-    max(preWeight)
-  overlapDF <- overlapDF[,
-                         c('gene1', 'gene2', 'weight')]
-  return(overlapDF)
+    preWeight <- log(max(overlapDF[[rankCol]]) /
+                         overlapDF[[rankCol]] + 0.01)
+    overlapDF$weight <- edgeScale * preWeight /
+        max(preWeight)
+    overlapDF <- overlapDF[, c('gene1', 'gene2', 'weight')]
+    return(overlapDF)
 }
 
 #' Show the distribution of cell sets among cells
@@ -72,10 +71,10 @@ networkPlotDF <- function(overlapDF,
 #' @export
 #'
 cellDistribution <- function(cellSets, allCells){
-  res <- do.call(rbind, lapply(cellSets, function(x) allCells %in% x))
-  rownames(res) <- names(cellSets)
-  colnames(res) <- allCells
-  return(res)
+    res <- do.call(rbind, lapply(cellSets, function(x) allCells %in% x))
+    rownames(res) <- names(cellSets)
+    colnames(res) <- allCells
+    return(res)
 }
 
 #' Adds a gradient color scale using two wesanderson colors
@@ -104,19 +103,20 @@ wesBinaryGradient <- function(p,
                               wesLow = 3,
                               wesHigh = 2,
                               ...){
-  if(!palType %in% c('colorCont', 'fillCont', 'colDis', 'fillDis')){
-    warning('Unrecognized palette type (see ?CSOA::wesBinaryGradient for the available palette types). The color scheme will
-            not be changed')
+    if(!palType %in% c('colorCont', 'fillCont', 'colDis', 'fillDis')){
+        warning('Unrecognized palette type (see ?CSOA::wesBinaryGradient for',
+                ' the available palette types). The color scheme',
+                ' will not be changed.')
+        return(p)
+    }
+    colorPair <- wes_palette(wesPal)[c(wesLow, wesHigh)]
+    if(palType == 'colorCont')
+        p <- p + scale_color_gradientn(colours = colorPair, ...)
+    if(palType == 'fillCont')
+        p <- p + scale_fill_gradientn(colours = colorPair, ...)
+    if(palType == 'colDis')
+        p <- p + scale_color_manual(values = colorPair, ...)
+    if(palType == 'fillDis')
+        p <- p + scale_fill_manual(values = colorPair, ...)
     return(p)
-  }
-  colorPair <- wes_palette(wesPal)[c(wesLow, wesHigh)]
-  if(palType == 'colorCont')
-    p <- p + scale_color_gradientn(colours = colorPair, ...)
-  if(palType == 'fillCont')
-    p <- p + scale_fill_gradientn(colours = colorPair, ...)
-  if(palType == 'colDis')
-    p <- p + scale_color_manual(values = colorPair, ...)
-  if(palType == 'fillDis')
-    p <- p + scale_fill_manual(values = colorPair, ...)
-  return(p)
 }

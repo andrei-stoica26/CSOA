@@ -52,18 +52,18 @@ scoreCellsMultiple <- function(geneSetExp,
                                osMethod = 'log',
                                pairFileTemplate = NULL,
                                keepOverlapOrder = FALSE){
-  if(!is.null(pairFileTemplate))
-    pairFileName <- paste0(pairFileTemplate, geneSetNames) else
-      pairFileName <- NULL
-  scoreDFList <- lapply(seq_along(setPairs), function(i) {
-    setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
-    scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i],
-                          pvalThr, saveCutoffPlot, jaccardCutoff,
-                          osMethod, pairFileName[i], keepOverlapOrder)
-    return(scoreDF)
-  })
-  allScoresDF <- Reduce(cbind, scoreDFList)
-  return(allScoresDF)
+    if(!is.null(pairFileTemplate))
+        pairFileName <- paste0(pairFileTemplate, geneSetNames) else
+            pairFileName <- NULL
+    scoreDFList <- lapply(seq_along(setPairs), function(i) {
+        setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
+        scoreDF <- scoreCells(geneSetExp, setOverlapDF, geneSetNames[i],
+                              pvalThr, saveCutoffPlot, jaccardCutoff,
+                              osMethod, pairFileName[i], keepOverlapOrder)
+        return(scoreDF)
+    })
+    allScoresDF <- Reduce(cbind, scoreDFList)
+    return(allScoresDF)
 }
 
 #' Run the CSOA pipeline for multiple gene sets
@@ -110,17 +110,17 @@ runCSOAMultiple <- function(scObj,
                             osMethod = 'log',
                             pairFileTemplate = NULL,
                             keepOverlapOrder = FALSE){
-  geneSets <- lapply(geneSets, sort)
-  setPairs <- lapply(geneSets, getPairs)
-  pairs <- Reduce(union, setPairs)
-  genes <- Reduce(union, geneSets)
-  geneSetExp <- expMat(scObj, genes)
-  overlapDF <- generateOverlaps(geneSetExp, percentile,
-                                pairs, overlapFileName)
-  scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF,
-                                setPairs, geneSetNames,
-                                pvalThr, saveCutoffPlot,
-                                jaccardCutoff, osMethod,
-                                pairFileTemplate, keepOverlapOrder)
-  return(attachCellScores(scObj, scoreDF))
+    geneSets <- lapply(geneSets, sort)
+    setPairs <- lapply(geneSets, getPairs)
+    pairs <- Reduce(union, setPairs)
+    genes <- Reduce(union, geneSets)
+    geneSetExp <- expMat(scObj, genes)
+    overlapDF <- generateOverlaps(geneSetExp, percentile,
+                                  pairs, overlapFileName)
+    scoreDF <- scoreCellsMultiple(geneSetExp, overlapDF,
+                                  setPairs, geneSetNames,
+                                  pvalThr, saveCutoffPlot,
+                                  jaccardCutoff, osMethod,
+                                  pairFileTemplate, keepOverlapOrder)
+    return(attachCellScores(scObj, scoreDF))
 }
