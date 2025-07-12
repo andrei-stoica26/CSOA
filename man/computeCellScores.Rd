@@ -18,7 +18,7 @@ computeCellScores(
 \item{normExp}{A min-max normalized expression matrix of the genes involved in
 top overlaps.}
 
-\item{colStr}{The name of the column where CSOA results will be stored}
+\item{colStr}{The name of the column where CSOA results will be stored.}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
@@ -28,12 +28,17 @@ score file, as opposed to changing it to a pair score-based order. Ignored if
 pairFileName is NULL}
 }
 \value{
-A Seurat object with a CSOA score assigned for each cell
+A Seurat object with a CSOA score assigned for each cell.
 }
 \description{
 This function uses the scored data frame of overlaps to
-compute a CSOA score
-for each cell in a Seurat object
+compute a CSOA score for each cell in a Seurat object.
+}
+\details{
+The per-cell score is the sum of all products of overlap scores and
+the min-max-normalized gene expression of each of the two overlap genes.
+
+Wrapper around \code{computePCPairScores} and \code{computePCSetScores}.
 }
 \examples{
 overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 7, 8)),

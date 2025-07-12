@@ -19,17 +19,16 @@ devPlot(plotObject, ...)
 \method{devPlot}{list}(plotObject, ...)
 }
 \arguments{
-\item{plotObject}{A function, ggplot object, or list of ggplot objects}
+\item{plotObject}{A function, ggplot object, or list of ggplot objects.}
 
-\item{...}{Arguments passed to other methods}
+\item{...}{Additional arguments.}
 }
 \value{
-No value. This function is called for its side effect (saving a plot
-or a list of plots)
+No value. This function is called for its side effect.
 }
 \description{
 This function saves a plot or list of plots as a pdf. Can also take as input
-a function with arguments that returns a ggplot object.
+a function that returns a ggplot object together with its arguments.
 }
 \examples{
 library(ggplot2)
@@ -37,5 +36,9 @@ df <- data.frame(x = c(1, 2), y = c(3, 5))
 p <- ggplot(df) + geom_point(aes(x, y))
 devPlot(p)
 
+simplePlot <- function(df, title)
+    return(ggplot(df) + geom_point(aes(x, y)) + ggtitle(title))
+
+devPlot(simplePlot, df, 'Plot title')
 
 }

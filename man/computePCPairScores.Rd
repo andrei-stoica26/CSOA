@@ -13,11 +13,15 @@ computePCPairScores(overlapDF, normExp)
 top overlaps.}
 }
 \value{
-A data frame with the same dimensions as normExp.
+A data frame with gene pairs as rows and cells as columns.
 }
 \description{
 This function scores each gene pair corresponding to a top overlap in each
 cell.
+}
+\details{
+The score is calculated by multiplying the overlap score with the
+min-max-normalized expression of the two corresponding genes.
 }
 \examples{
 overlapDF <- data.frame(

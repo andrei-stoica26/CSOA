@@ -54,15 +54,13 @@ networkPlotDF <- function(overlapDF,
 
 #' Show the distribution of cell sets among cells
 #'
-#' This function returns a matrix that shows the presence of cell sets among
-#' cells.
+#' This function returns a logical matrix that shows the representation of
+#' cell sets among all cells.
 #'
 #' @param cellSets A list of character vectors.
 #' @param allCells Names of all cells in the dataset.
 #'
 #' @return A logical matrix with genes as rows and cells as columns.
-#'
-#' @export
 #'
 #' @examples
 #' cellSets <- list(c('A', 'H', 'J'),
@@ -70,6 +68,8 @@ networkPlotDF <- function(overlapDF,
 #' c('C', 'I', 'L'))
 #' allCells <- LETTERS[seq(15)]
 #' cellDistribution(cellSets, allCells)
+#'
+#' @export
 #'
 cellDistribution <- function(cellSets, allCells){
   res <- do.call(rbind, lapply(cellSets, function(x) allCells %in% x))

@@ -13,18 +13,18 @@ processOverlaps(
 )
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A data frame created with generate_overlaps.}
 
 \item{pvalThr}{p-value threshold.}
 
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
-Jaccard scores. NULL by default (no filtering of such edges
-will be performed).}
+Jaccard scores. If \code{NULL} (as default), no filtering of such edges
+will be performed.}
 
-\item{osMethod}{The method used to compute overlap scores.
-Options are 'log' and 'minmax'.}
+\item{osMethod}{Method used to compute overlap scores.
+Options are "log" and "minmax".}
 }
 \value{
 A data frame consisting of filtered, ranked and scored cell sets
@@ -32,7 +32,14 @@ overlaps
 }
 \description{
 This function filters, ranks and scores previously generated
-overlaps of cell sets
+overlaps of cell sets.
+}
+\details{
+Wrapper around \code{byCorrectDF}, \code{rankOverlaps},
+\code{prepareFiltering}, \code{filterOverlaps} and \code{scoreOverlaps}.
+
+If \code{jaccardCutoff} is not \code{NULL}, it also calls
+\code{breakWeakTies} between \code{filterOverlaps} and \code{scoreOverlaps}.
 }
 \examples{
 overlapDF <- data.frame(gene1=paste0('G',

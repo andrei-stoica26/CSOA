@@ -58,24 +58,22 @@ devPlot.list <- function(plotObject, ...)
 titlePlot <- function(p, title, ...)
   return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
 
-#' Improved feature plot with a highly distinctive color scheme
+#' A feature plot with a more distinctive color scheme.
 #'
-#' This function customizes the appearance of Seurat's FeaturePlot for improved
-#' distinctiveness and aesthetics.
+#' This function customizes the appearance of \code{Seurat::FeaturePlot} for
+#' improved distinctiveness and aesthetics.
 #'
 #' @param seuratObj A Seurat object.
 #' @param feature Seurat feature.
 #' @param title Plot title.
-#' @param idClass Column to be used for labelling. If NULL, no column-based labels
-#' will be generated.
+#' @param idClass Column to be used for labelling. If NULL, no column-based
+#' labels will be generated.
 #' @param labelSize Size of labels. Ignored if idClass is NULL.
 #' @param titleSize Title size.
 #' @inheritParams wesBinaryGradient
-#' @param ... Additional arguments passed to FeaturePlot.
+#' @param ... Additional arguments passed to \code{Seurat::FeaturePlot}.
 #'
 #' @return A ggplot object.
-#'
-#' @export
 #'
 #' @examples
 #' library(Seurat)
@@ -88,6 +86,8 @@ titlePlot <- function(p, title, ...)
 #' seuratObj <- RunPCA(seuratObj, verbose=FALSE)
 #' seuratObj <- RunUMAP(seuratObj, dims=1:20, verbose=FALSE)
 #' featureWes(seuratObj, 'Feature3')
+#'
+#' @export
 #'
 featureWes <- function(seuratObj, feature,
                        title = feature,
@@ -121,13 +121,13 @@ featureWes <- function(seuratObj, feature,
 #'
 #' @return A network plot.
 #'
-#' @export
-#'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
 #' gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
 #' rank = c(1, 1, 3, 3, 3, 3))
 #' networkPlot(overlapDF)
+#'
+#' @export
 #'
 networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank',
                         edgeScale = 2, nodePointSize = 10, nodeTextSize = 2.3, ...){
@@ -146,8 +146,12 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 
 #' Radial plot for an overlap data frame
 #'
-#' This functions draws a radial plot for an overlap data frame to illustrate
+#' This function draws a radial plot for an overlap data frame to illustrate
 #' gene participation in top overlaps.
+#'
+#' @details The function can separate genes by groups. The groups can be, for
+#' instance, different gene sets, or different connected components of the same
+#' overlap data frame.
 #'
 #' @inheritParams edgeLists.list
 #' @param title Plot title.
@@ -157,8 +161,6 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #'
 #' @return A ggplot object.
 #'
-#' @export
-#'
 #' @examples
 #' edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
 #' 11, 11, 10, 10, 10)),
@@ -166,6 +168,8 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' 13, 14, 13, 16, 14)))
 #' edgesDF <- connectedComponents(edgesDF, 'group')
 #' geneRadialPlot(edgesDF, 'component', extraCircles=1)
+#'
+#' @export
 #'
 geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL, cutoff = NULL,
                            title = 'Top overlap genes plot',
@@ -212,20 +216,20 @@ geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL
 #' This function plots a simple heatmap, with clustering but no dendograms.
 #'
 #' @param mat A matrix.
-#' @param aesNames A character vector of size 3 representing the y, x and fill
+#' @param aesNames A character vector of length 3 representing the y, x and fill
 #' aes elements.
 #' @param title Plot title.
 #' @param axisTextSize Axis text size.
 #' @inheritParams wesBinaryGradient
 #'
-#' @return A ggplot object
-#'
-#' @export
+#' @return A ggplot object.
 #'
 #' @examples
 #' mat <- matrix(0, 10, 20)
 #' mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
 #' basicHeatmap(mat)
+#'
+#' @export
 #'
 basicHeatmap <- function(mat,
                          aesNames = c('x', 'y', 'Score'),
@@ -253,16 +257,15 @@ basicHeatmap <- function(mat,
 
 #' Plot the selection of overlaps
 #'
-#' This plots shows the process of selecting the overlap rank cutoff, showcasing
-#' the convex hull of the points representing the frequencies of each rank.
+#' This function illustrates the process of selecting the overlap rank cutoff
+#' by plotting rank frequencies against ranks and showcasing the convex hull of
+#' the rank-frequency points.
 #'
 #' @inheritParams findRankCutoff
-#' @param rankCutoff Rank cutoff
-#' @param title Plot title
+#' @param rankCutoff Rank cutoff.
+#' @param title Plot title.
 #'
-#' @return A ggplot object
-#'
-#' @export
+#' @return A ggplot object.
 #'
 #' @examples
 #' freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
@@ -270,6 +273,8 @@ basicHeatmap <- function(mat,
 #' n = c(1, 1, 2, 3, 3, 2,
 #' 1, 2, 1))
 #' overlapCutoffPlot(freqDF, 8.5)
+#'
+#' @export
 #'
 overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
   if(length(setdiff(c('rank', 'n'), colnames(freqDF))))

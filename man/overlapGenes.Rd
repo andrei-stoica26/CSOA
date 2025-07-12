@@ -7,13 +7,13 @@
 overlapGenes(overlapDF)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A data frame created with generate_overlaps.}
 }
 \value{
-A character vector of genes
+A character vector of genes.
 }
 \description{
-This function gets all genes from an overlap data frame
+This function gets all genes from an overlap data frame.
 }
 \examples{
 overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),

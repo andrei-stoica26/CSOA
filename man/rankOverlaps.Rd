@@ -7,15 +7,32 @@
 rankOverlaps(overlapDF)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A data frame created with generate_overlaps.}
 }
 \value{
-A data frame with ranked overlaps
+A data frame with ranked overlaps.
 }
 \description{
-This function ranks cell set overlaps by taking the average of
-the adjusted p-value rank and the ratio of shared cells over
-expected shared cells rank.
+This function ranks cell set overlaps.
+}
+\details{
+Overlap ranks are calculated as follows:
+
+1. Two preliminary overlap ranks are computed based on:
+1) adjusted p-value;
+2) recorded-over-expected size ratio.
+
+2. The preliminary ranks are replaced by \strong{connectivity-based ranks}
+(\code{pvalRank}, \code{ratioRank}). For each edge corresponding to an
+overlap, the p-value rank is replaced by the minimum p-value rank of the
+vertices neighboring the edge—genes with a significant cell set overlap
+with any of the two overlap genes. The ratio rank is replaced similarly.
+
+3. A raw aggregate rank (\code{rawAggRank}) is computed as the average of
+\code{pvalRank} and \code{ratioRank}.
+
+4. A final aggregate rank (\code{rank}) defined as the order imposed by the
+raw aggregate rank is constructed.
 }
 \examples{
 overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),

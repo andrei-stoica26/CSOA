@@ -9,16 +9,17 @@ overlapCutoffPlot(freqDF, rankCutoff, title = "Overlap cutoff plot")
 \arguments{
 \item{freqDF}{A frequency data frame of overlap ranks.}
 
-\item{rankCutoff}{Rank cutoff}
+\item{rankCutoff}{Rank cutoff.}
 
-\item{title}{Plot title}
+\item{title}{Plot title.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
-This plots shows the process of selecting the overlap rank cutoff, showcasing
-the convex hull of the points representing the frequencies of each rank.
+This function illustrates the process of selecting the overlap rank cutoff
+by plotting rank frequencies against ranks and showcasing the convex hull of
+the rank-frequency points.
 }
 \examples{
 freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,

@@ -38,15 +38,30 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 
 #' Rank cell set overlaps
 #'
-#' This function ranks cell set overlaps by taking the average of
-#' the adjusted p-value rank and the ratio of shared cells over
-#' expected shared cells rank.
+#' This function ranks cell set overlaps.
 #'
-#' @param overlapDF A data frame created with generate_overlaps
+#' @details Overlap ranks are calculated as follows:
 #'
-#' @return A data frame with ranked overlaps
+#' 1. Two preliminary overlap ranks are computed based on:
+#' 1) adjusted p-value;
+#' 2) recorded-over-expected size ratio.
 #'
-#' @export
+#' 2. The preliminary ranks are replaced by \strong{connectivity-based ranks}
+#' (\code{pvalRank}, \code{ratioRank}). For each edge corresponding to an
+#' overlap, the p-value rank is replaced by the minimum p-value rank of the
+#' vertices neighboring the edge—genes with a significant cell set overlap
+#' with any of the two overlap genes. The ratio rank is replaced similarly.
+#'
+#' 3. A raw aggregate rank (\code{rawAggRank}) is computed as the average of
+#' \code{pvalRank} and \code{ratioRank}.
+#'
+#' 4. A final aggregate rank (\code{rank}) defined as the order imposed by the
+#' raw aggregate rank is constructed.
+#'
+#'
+#' @param overlapDF A data frame created with generate_overlaps.
+#'
+#' @return A data frame with ranked overlaps.
 #'
 #' @examples
 #' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
@@ -54,6 +69,8 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #' ratio=runif(10, 2, 10),
 #' pval=runif(10, 0, 1e-10))
 #' rankOverlaps(overlapDF)
+#'
+#' @export
 #'
 rankOverlaps <- function(overlapDF){
   if (!nrow(overlapDF))
@@ -79,19 +96,21 @@ rankOverlaps <- function(overlapDF){
 
 #' Find overlap rank cutoff
 #'
-#' This function finds the cutoff for rank-based
-#' filtering of overlaps.
+#' This function finds the rank cutoff for overlap filtering.
+#'
+#' @details The rank cutoff is the average of the minimum and maximum
+#' highest-frequency rank.
 #'
 #' @param freqDF A frequency data frame of overlap ranks.
 #'
 #' @return Rank cutoff.
 #'
-#' @export
-#'
 #' @examples
 #' freqDF <- data.frame(rank = c(1, 2, 4, 7),
 #' n = c(1, 3, 3, 2))
 #' findRankCutoff(freqDF)
+#'
+#' @export
 #'
 findRankCutoff <- function(freqDF){
   freqSub <- subset(freqDF, n == max(n))
@@ -104,12 +123,13 @@ findRankCutoff <- function(freqDF){
 #' This function finds the raw aggregate rank of the
 #' highest non-top overlap.
 #'
-#' @param overlapDF A ranked overlap data frame
-#' @param saveCutoffPlot Whether to save overlap cutoff plot
+#' @details This function calls \code{findRankCutoff} to determine the rank
+#' cutoff and uses this cutoff to find the best-ranking overlap excluded by it.
+#'
+#' @param overlapDF A ranked overlap data frame.
+#' @param saveCutoffPlot Whether to save overlap cutoff plot.
 #'
 #' @return A numeric value
-#'
-#' @export
 #'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 7)),
@@ -118,6 +138,7 @@ findRankCutoff <- function(freqDF){
 #' rank = c(1, 2, 2, 4, 4, 6))
 #' prepareFiltering(overlapDF)
 #'
+#' @export
 #'
 prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
   if (!nrow(overlapDF))
@@ -160,21 +181,24 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #' Filter cell set overlaps
 #'
 #' This function filters cell set overlaps after the overlap data frame
-#' has been ranked
+#' has been ranked.
+#'
+#' @details If \code{firstOutRawRank} is \code{NULL}, the data frame will be
+#' returned unchanged.
 #'
 #' @inheritParams prepareFiltering
 #' @param firstOutRawRank The raw aggregate rank of the
-#' first overlap that will be excluded
+#' first overlap that will be excluded.
 #'
-#' @return A filtered overlap data frame
-#'
-#' @export
+#' @return A filtered overlap data frame.
 #'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),
 #' gene2 = paste0('G', c(2, 5, 1, 8, 4)),
 #' rawAggRank = c(1, 2, 2, 4, 4))
 #' filterOverlaps(overlapDF, 2)
+#'
+#' @export
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
   if(is.null(firstOutRawRank) | !nrow(overlapDF))
@@ -185,22 +209,26 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' Score cell set overlaps
 #'
 #' This function scores cell set overlaps based on their ranks.
-#' The score of the top overlap is set to 1, and the score decreases
-#' logarithmically towards 0, which corresponds to the score of the
-#' first overlap not included in the filtered data frame (i.e., if
-#' the filtered data frame contains 100 overlaps, the 101st overlap
-#' corresponds to a score of 0).
 #'
-#' @param overlapDF A filtered overlap data frame.
-#' @param osMethod The method used to compute overlap scores.
-#' Options are 'log' and 'minmax'.
-#' @param firstOutRawRank The raw rank of the highest-ranked
-#' overlap that was not recorded among top overlaps. Ignored
-#' if osMethod is set to 'log'.
+#' @details Both the log and the minmax method assign higher scores to better
+#' ranks and equal scores to equal ranks. All scores are in (0, 1].
 #'
-#' @return A data frame with ranked overlaps.
+#' The log method maps each of the \eqn{n} unique overlap raw ranks sorted
+#' increasingly to \eqn{\log\left(e - \frac{(e - 1) k}{n}\right)},
+#'  \eqn{k \in \{0, \ldots n - 1\}}.
 #'
-#' @export
+#' The minmax method performs min-max normalization on the set consisting of
+#' the unique overlap raw ranks and a minimum raw rank provided by
+#' \code{prepareFiltering} in the standard pipeline. The latter is introduced
+#' to guarantee that all top overlaps will get a positive score.
+#'
+#' @param overlapDF A ranked and filtered overlap data frame.
+#' @param osMethod Method used to compute overlap scores.
+#' Options are "log" and "minmax".
+#' @param firstOutRawRank Raw rank of the highest-ranked non-top overlap.
+#' Ignored if \code{osMethod} is "log".
+#'
+#' @return An overlap data frame with overlap scores.
 #'
 #' @examples
 #' mat <- matrix(0, 500, 300)
@@ -222,6 +250,8 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #' overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
 #' overlapDF <- scoreOverlaps(overlapDF)
 #' head(overlapDF)
+#'
+#' @export
 #'
 scoreOverlaps <- function(overlapDF,
                           osMethod = 'log',

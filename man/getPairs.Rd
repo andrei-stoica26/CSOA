@@ -7,18 +7,17 @@
 getPairs(v)
 }
 \arguments{
-\item{v}{A vector}
+\item{v}{A vector.}
 }
 \value{
-A list of vectors of length 2
+A list of vectors of length 2.
 }
 \description{
 This function returns all unorderded pairs of two elements
-from a vector as a list of vectors of length 2
+from a vector.
 }
 \examples{
 v <- c('ASD', 'VBN', 'HJKL')
 getPairs(v)
-
 
 }

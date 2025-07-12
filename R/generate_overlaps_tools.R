@@ -51,17 +51,20 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #' @param pairs Pairs of cell sets to be assessed. If NULL (as default), all
 #' pairs will be assessed.
 #' @param overlapFileName The name of the file where the overlap data frame
-#' will be saved. Default is NULL (the overlap data frame will not be saved).
+#' will be saved. Default is \code{NULL} (the overlap data frame will not
+#' be saved).
 #'
-#' @return A data frame listing statistics for all cell set overlaps.
-#'
-#' @export
+#' @return A data frame listing statistics for all cell set overlaps: cell set
+#' sizes, recorded and expected shared cells, the recorded-over-expected ratio
+#' and the hypergeometric p-value.
 #'
 #' @examples
 #' cellSets <- list(G1 = c('A', 'H', 'J'),
 #' G2 = c('B', 'D', 'E', 'F', 'J'),
 #' G3 = c('C', 'I', 'L'))
 #' cellSetsOverlaps(cellSets, 40)
+#'
+#' @export
 #'
 cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
                              overlapFileName = NULL){

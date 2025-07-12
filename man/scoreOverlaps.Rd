@@ -7,25 +7,32 @@
 scoreOverlaps(overlapDF, osMethod = "log", firstOutRawRank = NULL)
 }
 \arguments{
-\item{overlapDF}{A filtered overlap data frame.}
+\item{overlapDF}{A ranked and filtered overlap data frame.}
 
-\item{osMethod}{The method used to compute overlap scores.
-Options are 'log' and 'minmax'.}
+\item{osMethod}{Method used to compute overlap scores.
+Options are "log" and "minmax".}
 
-\item{firstOutRawRank}{The raw rank of the highest-ranked
-overlap that was not recorded among top overlaps. Ignored
-if osMethod is set to 'log'.}
+\item{firstOutRawRank}{Raw rank of the highest-ranked non-top overlap.
+Ignored if \code{osMethod} is "log".}
 }
 \value{
-A data frame with ranked overlaps.
+An overlap data frame with overlap scores.
 }
 \description{
 This function scores cell set overlaps based on their ranks.
-The score of the top overlap is set to 1, and the score decreases
-logarithmically towards 0, which corresponds to the score of the
-first overlap not included in the filtered data frame (i.e., if
-the filtered data frame contains 100 overlaps, the 101st overlap
-corresponds to a score of 0).
+}
+\details{
+Both the log and the minmax method assign higher scores to better
+ranks and equal scores to equal ranks. All scores are in (0, 1].
+
+The log method maps each of the \eqn{n} unique overlap raw ranks sorted
+increasingly to \eqn{\log\left(e - \frac{(e - 1) k}{n}\right)},
+ \eqn{k \in \{0, \ldots n - 1\}}.
+
+The minmax method performs min-max normalization on the set consisting of
+the unique overlap raw ranks and a minimum raw rank provided by
+\code{prepareFiltering} in the standard pipeline. The latter is introduced
+to guarantee that all top overlaps will get a positive score.
 }
 \examples{
 mat <- matrix(0, 500, 300)

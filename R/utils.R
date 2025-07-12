@@ -7,12 +7,10 @@
 #'
 NULL
 
-#' Adjust a dataframe column of p-values with
-#' Benjamini-Yekutieli
+#' Perform multiple testing correction and filtering with Benjamini-Yekutieli
 #'
-#' This function performs the Benjamini-Yekutieli
-#' correction for multiple testing in a dataframe
-#' column of p-values and filters the data-frame
+#' This function performs the Benjamini-Yekutieli correction for multiple
+#' testing in a dataframe column of p-values and filters the data-frame
 #' based on p-values.
 #'
 #' @param df A dataframe with a column of p-values.
@@ -21,13 +19,12 @@ NULL
 #'
 #' @return The data frame with Benjamini-Yekutieli-corrected p-values.
 #'
-#' @export
-#'
 #' @examples
 #' df <- data.frame(elem = c('A', 'B', 'C', 'D', 'E'),
 #' pval = c(0.032, 0.001, 0.0045, 0.051, 0.048))
 #' byCorrectDF(df)
 #'
+#' @export
 #'
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
@@ -40,18 +37,17 @@ byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
 #' Get all unordered pairs of two elements from a vector
 #'
 #' This function returns all unorderded pairs of two elements
-#' from a vector as a list of vectors of length 2
+#' from a vector.
 #'
-#' @param v A vector
+#' @param v A vector.
 #'
-#' @return A list of vectors of length 2
-#'
-#' @export
+#' @return A list of vectors of length 2.
 #'
 #' @examples
 #' v <- c('ASD', 'VBN', 'HJKL')
 #' getPairs(v)
 #'
+#' @export
 #'
 getPairs <- function(v)
   return(utils::combn(v, 2, simplify=FALSE))
@@ -103,20 +99,18 @@ matrixRowFilter <- function(matObj, rows = NULL){
 
 #' Read and delete a .qs file
 #'
-#' This functions reads a .qs file, deletes it,
-#' and returns it content
+#' This functions reads a .qs file, deletes it, and returns its content.
 #'
-#' @param qsFile Name of .qs file including
-#' its path
+#' @param qsFile Name of .qs file with path.
 #'
-#' @return The content of the .qs file
-#'
-#' @export
+#' @return The content of the .qs file.
 #'
 #' @examples
 #' library(qs)
 #' qsave(c(1, 2, 3), 'temp.qs')
 #' qGrab('temp.qs')
+#'
+#' @export
 #'
 qGrab <- function(qsFile){
   res <- qread(qsFile)
@@ -126,37 +120,36 @@ qGrab <- function(qsFile){
 
 #' Get all genes from an overlap data frame
 #'
-#' This function gets all genes from an overlap data frame
+#' This function gets all genes from an overlap data frame.
 #'
 #' @inheritParams rankOverlaps
 #'
-#' @return A character vector of genes
-#'
-#' @export
+#' @return A character vector of genes.
 #'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
 #' gene1 = paste0('G', c(2, 7, 8)))
 #' overlapGenes(overlapDF)
 #'
+#' @export
+#'
 overlapGenes <- function(overlapDF)
   return(union(overlapDF$gene1, overlapDF$gene2))
 
-#' Extract gene pairs from overlap matrix
+#' Extract gene pairs from overlap data frame
 #'
-#' This function extracts the gene pairs
-#' from an overlap matrix
+#' This function extracts the gene pairs from an overlap data frame.
 #'
 #' @inheritParams rankOverlaps
 #'
-#' @return A list of gene pairs
-#'
-#' @export
+#' @return A list of gene pairs.
 #'
 #' @examples
 #' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
 #' gene1 = paste0('G', c(2, 7, 8)))
 #' overlapPairs(overlapDF)
+#'
+#' @export
 #'
 #'
 overlapPairs <- function(overlapDF)

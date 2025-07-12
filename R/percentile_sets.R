@@ -5,22 +5,16 @@ NULL
 
 #' Generates cell expressing input genes at an input percentile
 #'
-#' This function first finds, for each input gene, the cells with a non-zero
-#' expression of the gene. Subsequently, each cell set is filtered as to contain
-#' only the cells showcasing the input percentile of the expression of the gene
-#' defining the set.
+#' This function constructs, for each gene in the expression matrix, a set of
+#' cells expressing the gene at or above the input percentile.
 #'
 #' @param geneSetExp A gene expression non-sparse matrix with the rows
-#' restricted to the genes
-#' for which cell sets will be computed
-#' @param percentile A non-negative number below 100
+#' restricted to the genes for which cell sets will be computed.
+#' @param percentile A positive number under 100.
 #'
 #' @return A named list of character vectors of length
-#' equaling the number of input genes, storing, for each gene,
-#' the cells showing the input percentile in terms of their
-#' expression of the gene
-#'
-#' @export
+#' equaling the number of input genes. Each vector stores the cells expressing
+#' the gene at or above the input percentile.
 #'
 #' @examples
 #' mat <- matrix(0, 1000, 500)
@@ -29,6 +23,8 @@ NULL
 #' mat[sample(length(mat), 70000)] <- sample(50, 70000, TRUE)
 #' mat <- mat[paste0('G', sample(1000, 3)), ]
 #' percentileSets(mat)
+#'
+#' @export
 #'
 percentileSets <- function(geneSetExp, percentile=90){
   if (!is.numeric(percentile) | length(percentile) > 2 |

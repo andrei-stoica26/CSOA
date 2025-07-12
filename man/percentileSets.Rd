@@ -8,22 +8,18 @@ percentileSets(geneSetExp, percentile = 90)
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows
-restricted to the genes
-for which cell sets will be computed}
+restricted to the genes for which cell sets will be computed.}
 
-\item{percentile}{A non-negative number below 100}
+\item{percentile}{A positive number under 100.}
 }
 \value{
 A named list of character vectors of length
-equaling the number of input genes, storing, for each gene,
-the cells showing the input percentile in terms of their
-expression of the gene
+equaling the number of input genes. Each vector stores the cells expressing
+the gene at or above the input percentile.
 }
 \description{
-This function first finds, for each input gene, the cells with a non-zero
-expression of the gene. Subsequently, each cell set is filtered as to contain
-only the cells showcasing the input percentile of the expression of the gene
-defining the set.
+This function constructs, for each gene in the expression matrix, a set of
+cells expressing the gene at or above the input percentile.
 }
 \examples{
 mat <- matrix(0, 1000, 500)

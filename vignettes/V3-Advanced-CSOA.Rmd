@@ -2,6 +2,7 @@
 title: "Advanced CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
+date: July 12, 2025
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Advanced CSOA}
@@ -11,8 +12,8 @@ vignette: >
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(
-  collapse=TRUE,
-  comment="#>"
+    collapse=TRUE,
+    comment="#>"
 )
 ```
 
@@ -79,13 +80,14 @@ We aim to compare the results with those obtained using the original `47` acinar
 
 ```{r}
 printStats <- function(seuratObj, col1, col2){
-  paste0('Pearson correlation: ', cor(seuratObj[[]][[col1]], 
-                                            seuratObj[[]][[col2]]))
-  absDiffs <- abs(seuratObj[[]][[col1]] - seuratObj[[]][[col2]])
-  absDiffsStats <- sapply(list(mean, median, max, min), 
-                          function(fun) fun(absDiffs))
-  names(absDiffsStats) <- paste0(c('mean', 'median', 'max', 'min'), 'AbsDiff')
-  absDiffsStats
+    paste0('Pearson correlation: ', cor(seuratObj[[]][[col1]], 
+                                        seuratObj[[]][[col2]]))
+    absDiffs <- abs(seuratObj[[]][[col1]] - seuratObj[[]][[col2]])
+    absDiffsStats <- sapply(list(mean, median, max, min), 
+                            function(fun) fun(absDiffs))
+    names(absDiffsStats) <- paste0(c('mean', 'median', 'max', 'min'), 
+                                   'AbsDiff')
+    absDiffsStats
 }
 ```
 
@@ -141,13 +143,13 @@ First, we build a function for this task:
 ```{r}
 runCSOAReplace <- function(seuratObj, markers, nReplacedGenes, 
                            pairFileName = NULL){
-  genesComplement <- setdiff(rownames(seuratObj), markers)
-  testGenes <- c(sample(markers, length(markers) - nReplacedGenes), 
+    genesComplement <- setdiff(rownames(seuratObj), markers)
+    testGenes <- c(sample(markers, length(markers) - nReplacedGenes), 
                  sample(genesComplement, nReplacedGenes))
-  newColumn <- paste0('CSOA_replace', nReplacedGenes)
-  seuratObj <- runCSOA(seuratObj, testGenes, newColumn, 
-                       pairFileName=pairFileName)
-  return(seuratObj)
+    newColumn <- paste0('CSOA_replace', nReplacedGenes)
+    seuratObj <- runCSOA(seuratObj, testGenes, newColumn, 
+                         pairFileName=pairFileName)
+    return(seuratObj)
 }
 ```
 
@@ -232,9 +234,9 @@ Next, we are interested in scoring the major gene modules in order to ascertain 
 components <- c(1, 2)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
 p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
-  theme(axis.text.y = element_blank())
+    theme(axis.text.y = element_blank())
 p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
-  theme(axis.text.y = element_blank())
+    theme(axis.text.y = element_blank())
 p1 / p2
 
 ```
@@ -287,9 +289,9 @@ dfNetwork <- connectedComponents(dfNetwork)
 components <- unique(dfNetwork$component)
 seuratObj <- scoreModules(seuratObj, dfNetwork, components)
 p1 <- VlnPlot(seuratObj, 'CSOA_component1', group.by='label') + NoLegend() +
-  theme(axis.text.y=element_blank())
+    theme(axis.text.y=element_blank())
 p2 <- VlnPlot(seuratObj, 'CSOA_component2', group.by='label') + NoLegend() +
-  theme(axis.text.y=element_blank())
+    theme(axis.text.y=element_blank())
 p1 / p2
 ```
 

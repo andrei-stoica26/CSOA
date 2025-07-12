@@ -10,14 +10,14 @@ computePCSetScores(pcPairScores, colStr = "CSOA")
 \item{pcPairScores}{A date frame of pair scores in each cell for each pair
 in the overlap data frame}
 
-\item{colStr}{The name of the column where CSOA results will be stored}
+\item{colStr}{The name of the column where CSOA results will be stored.}
 }
 \value{
-A data frame with the per-cell gene signature score as a column
+A data frame with the per-cell gene signature score as a column.
 }
 \description{
 This function aggregates per-cell gene pair scores into per-cell gene
-signature scores
+signature scores.
 }
 \examples{
 df <- data.frame(

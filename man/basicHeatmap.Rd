@@ -18,7 +18,7 @@ basicHeatmap(
 \arguments{
 \item{mat}{A matrix.}
 
-\item{aesNames}{A character vector of size 3 representing the y, x and fill
+\item{aesNames}{A character vector of length 3 representing the y, x and fill
 aes elements.}
 
 \item{title}{Plot title.}
@@ -37,7 +37,7 @@ here.}
 \item{wesHigh}{Index of color marking high values.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
 This function plots a simple heatmap, with clustering but no dendograms.

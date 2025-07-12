@@ -1,14 +1,12 @@
 #' Find the connected components of the graph determined by the overlaps
 #'
 #' This function finds the connected components of the graph having the filtered
-#' overlaps as edges
+#' overlaps as edges.
 #'
 #' @param df A data frame with gene1 and gene2 columns.
 #' @param colName Name of the connected components column to be added.
 #' @return An overlap data frame with a column indicated the number of the
 #' connected component.
-#'
-#' @export
 #'
 #' @examples
 #' df <- data.frame(
@@ -18,6 +16,8 @@
 #' 32, 24, 24, 26, 26))
 #' )
 #' connectedComponents(df)
+#'
+#' @export
 #'
 connectedComponents <- function(df, colName = 'component'){
   warnUnfiltered(df)
@@ -52,20 +52,19 @@ connectedComponents <- function(df, colName = 'component'){
 #' Run CSOA separately on the connected components of the overlap graph
 #'
 #' This function runs CSOA on the connected components of the graph having the
-#' filtered overlaps as edges
+#' filtered overlaps as edges.
 #'
 #' @inheritParams runCSOA
-#' @param df A data frame with gene1, gene2 and component columns
+#' @param df A data frame with \code{gene1}, \code{gene2} and component
+#' columns.
 #' @param components Vector of connected components that will be scored
 #' @param colStrTemplate Character used in the naming of the component
-#' gene sets
-#' @param ... Additional parameters to other functions
+#' gene sets.
+#' @param ... Additional parameters passed to \code{runCSOAMultiple}.
 #'
 #' @return An object of the same class as scObj with CSOA scores
 #' corresponding to the genes defining each connected components
-#' assigned for each cell
-#'
-#' @export
+#' assigned for each cell.
 #'
 #' @examples
 #' mat <- matrix(0, 500, 300)
@@ -73,9 +72,11 @@ connectedComponents <- function(df, colName = 'component'){
 #' colnames(mat) <- paste0('C', seq(300))
 #' mat[sample(8000)] <- runif(8000, max=13)
 #' genes1 <- paste0('G', seq(100))
-#' mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15), nrow = 100, ncol = 31)
+#' mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15),
+#' nrow = 100, ncol = 31)
 #' genes2 <- paste0('G', seq(101, 200))
-#' mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15), nrow = 100, ncol = 31)
+#' mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15),
+#' nrow = 100, ncol = 31)
 #' genes <- union(genes1, genes2)
 #' mat <- mat[genes, ]
 #' overlapDF <- generateOverlaps(mat)
@@ -83,6 +84,8 @@ connectedComponents <- function(df, colName = 'component'){
 #' overlapDF <- connectedComponents(overlapDF)
 #' df <- scoreModules(mat, overlapDF, unique(overlapDF$component))
 #' head(df)
+#'
+#' @export
 #'
 scoreModules <- function(scObj, df, components,
                          colStrTemplate = 'CSOA_component', ...){

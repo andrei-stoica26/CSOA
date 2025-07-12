@@ -13,8 +13,11 @@ findRankCutoff(freqDF)
 Rank cutoff.
 }
 \description{
-This function finds the cutoff for rank-based
-filtering of overlaps.
+This function finds the rank cutoff for overlap filtering.
+}
+\details{
+The rank cutoff is the average of the minimum and maximum
+highest-frequency rank.
 }
 \examples{
 freqDF <- data.frame(rank = c(1, 2, 4, 7),

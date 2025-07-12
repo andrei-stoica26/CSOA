@@ -7,17 +7,21 @@
 filterOverlaps(overlapDF, firstOutRawRank = NULL)
 }
 \arguments{
-\item{overlapDF}{A ranked overlap data frame}
+\item{overlapDF}{A ranked overlap data frame.}
 
 \item{firstOutRawRank}{The raw aggregate rank of the
-first overlap that will be excluded}
+first overlap that will be excluded.}
 }
 \value{
-A filtered overlap data frame
+A filtered overlap data frame.
 }
 \description{
 This function filters cell set overlaps after the overlap data frame
-has been ranked
+has been ranked.
+}
+\details{
+If \code{firstOutRawRank} is \code{NULL}, the data frame will be
+returned unchanged.
 }
 \examples{
 overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),

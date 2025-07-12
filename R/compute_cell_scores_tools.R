@@ -3,13 +3,14 @@
 #' This function scores each gene pair corresponding to a top overlap in each
 #' cell.
 #'
+#' @details The score is calculated by multiplying the overlap score with the
+#' min-max-normalized expression of the two corresponding genes.
+#'
 #' @param overlapDF An overlap data frame.
 #' @param normExp A min-max normalized expression matrix of the genes involved in
 #' top overlaps.
 #'
-#' @return A data frame with the same dimensions as normExp.
-#'
-#' @export
+#' @return A data frame with gene pairs as rows and cells as columns.
 #'
 #' @examples
 #' overlapDF <- data.frame(
@@ -23,6 +24,8 @@
 #' rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
 #' colnames(normExp) <- LETTERS[1:18]
 #' computePCPairScores(overlapDF, normExp)
+#'
+#' @export
 #'
 computePCPairScores <- function(overlapDF, normExp){
   if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
@@ -96,14 +99,12 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
 #' Aggregate per-cell gene pair scores
 #'
 #' This function aggregates per-cell gene pair scores into per-cell gene
-#' signature scores
+#' signature scores.
 #'
 #' @inheritParams computePairScores
-#' @param colStr The name of the column where CSOA results will be stored
+#' @param colStr The name of the column where CSOA results will be stored.
 #'
-#' @return A data frame with the per-cell gene signature score as a column
-#'
-#' @export
+#' @return A data frame with the per-cell gene signature score as a column.
 #'
 #' @examples
 #' df <- data.frame(
@@ -113,6 +114,8 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
 #' )
 #' rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
 #' computePCSetScores(df)
+#'
+#' @export
 #'
 computePCSetScores <- function(pcPairScores, colStr = 'CSOA'){
   if(max(pcPairScores) > 1 | max(pcPairScores) < 0)

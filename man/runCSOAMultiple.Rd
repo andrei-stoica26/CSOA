@@ -20,27 +20,28 @@ runCSOAMultiple(
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
-expression matrix}
+expression matrix.}
 
 \item{geneSets}{List of character vectors}
 
 \item{geneSetNames}{Character vector of names of gene sets.}
 
-\item{percentile}{A non-negative number below 100}
+\item{percentile}{A positive number under 100.}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved).}
+will be saved. Default is \code{NULL} (the overlap data frame will not
+be saved).}
 
 \item{pvalThr}{p-value threshold.}
 
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
-Jaccard scores. NULL by default (no filtering of such edges
-will be performed).}
+Jaccard scores. If \code{NULL} (as default), no filtering of such edges
+will be performed.}
 
-\item{osMethod}{The method used to compute overlap scores.
-Options are 'log' and 'minmax'.}
+\item{osMethod}{Method used to compute overlap scores.
+Options are "log" and "minmax".}
 
 \item{pairFileTemplate}{Character object used in the naming of the files
 where the pair data frames will be saved. Default is NULL (the pair
@@ -52,15 +53,18 @@ pairFileName is NULL}
 }
 \value{
 An object of the same class as scObj with per-gene-set CSOA scores
-assigned for each cell
+assigned for each cell.
 }
 \description{
 This function generates cell set overlaps for input gene sets
 based on percentiles of gene expression, computes the significance
-of these overlaps, ranks, filters and scores the overlaps based on
-significance, and builds per-cell score by summing the products of
-the scores of these overlaps and the custom-normalized per-cell
-expressions of the corresponding pairs of genes.
+of these overlaps, ranks, filters and scores the overlaps, and builds a
+per-cell score by summing the products of overlap scores and the
+min-max-normalized expression of the corresponding pairs of genes.
+}
+\details{
+#' @details Wrapper around \code{expMat}, \code{generateOverlaps},
+\code{scoreCellsMultiple} and \code{attachCellScores}.
 }
 \examples{
 mat <- matrix(0, 500, 300)
@@ -68,11 +72,11 @@ rownames(mat) <- paste0('G', seq(500))
 colnames(mat) <- paste0('C', seq(300))
 mat[sample(8000)] <- runif(8000, max=13)
 genes <- paste0('G', seq(200))
-mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
+mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15),
+nrow = 200, ncol = 31)
 geneSet1 <- paste0('G', seq(1, 150))
 geneSet2 <- paste0('G', seq(50, 200))
 df <- runCSOAMultiple(mat, list(geneSet1, geneSet2), c('set1', 'set2'))
 head(df)
-
 
 }

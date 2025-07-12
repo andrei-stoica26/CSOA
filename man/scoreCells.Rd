@@ -18,23 +18,22 @@ scoreCells(
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows
-restricted to the genes
-for which cell sets will be computed}
+restricted to the genes for which cell sets will be computed.}
 
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A data frame created with generate_overlaps.}
 
-\item{colStr}{The name of the column where CSOA results will be stored}
+\item{colStr}{The name of the column where CSOA results will be stored.}
 
 \item{pvalThr}{p-value threshold.}
 
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
-Jaccard scores. NULL by default (no filtering of such edges
-will be performed).}
+Jaccard scores. If \code{NULL} (as default), no filtering of such edges
+will be performed.}
 
-\item{osMethod}{The method used to compute overlap scores.
-Options are 'log' and 'minmax'.}
+\item{osMethod}{Method used to compute overlap scores.
+Options are "log" and "minmax".}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
@@ -50,6 +49,9 @@ A data frame with a column corresponding to the CSOA scores
 This function computes per-cell CSOA scores after the overlap data frame has
 been generated.
 }
+\details{
+Wrapper around \code{processOverlaps} and \code{computeCellScores}.
+}
 \examples{
 mat <- matrix(0, 500, 300)
 rownames(mat) <- paste0('G', seq(500))
@@ -62,6 +64,5 @@ mat <- mat[genes, ]
 overlapDF <- generateOverlaps(mat)
 scoreDF <- scoreCells(mat, overlapDF)
 head(scoreDF)
-
 
 }

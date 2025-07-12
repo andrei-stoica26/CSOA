@@ -14,7 +14,7 @@ geneRadialPlot(
 )
 }
 \arguments{
-\item{overlapObj}{An overlap data frame or list of overlap data frames}
+\item{overlapObj}{An overlap data frame or list of overlap data frames.}
 
 \item{groupLegendName}{The title of the group legend; if NULL, no groups will
 be distinguished.}
@@ -34,8 +34,13 @@ the points representing the genes. Default is 0}
 A ggplot object.
 }
 \description{
-This functions draws a radial plot for an overlap data frame to illustrate
+This function draws a radial plot for an overlap data frame to illustrate
 gene participation in top overlaps.
+}
+\details{
+The function can separate genes by groups. The groups can be, for
+instance, different gene sets, or different connected components of the same
+overlap data frame.
 }
 \examples{
 edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,

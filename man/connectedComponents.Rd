@@ -17,7 +17,7 @@ connected component.
 }
 \description{
 This function finds the connected components of the graph having the filtered
-overlaps as edges
+overlaps as edges.
 }
 \examples{
 df <- data.frame(

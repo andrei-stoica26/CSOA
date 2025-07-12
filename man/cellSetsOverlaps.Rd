@@ -15,10 +15,13 @@ cellSetsOverlaps(cellSets, nCells, pairs = NULL, overlapFileName = NULL)
 pairs will be assessed.}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved).}
+will be saved. Default is \code{NULL} (the overlap data frame will not
+be saved).}
 }
 \value{
-A data frame listing statistics for all cell set overlaps.
+A data frame listing statistics for all cell set overlaps: cell set
+sizes, recorded and expected shared cells, the recorded-over-expected ratio
+and the hypergeometric p-value.
 }
 \description{
 This function computes the statistical significance of overlaps of pairs of

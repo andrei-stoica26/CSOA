@@ -20,27 +20,28 @@ runCSOA(
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
-expression matrix}
+expression matrix.}
 
-\item{genes}{Vector of genes. Must include at least two genes}
+\item{genes}{Vector of genes. Must include at least two genes.}
 
-\item{colStr}{The name of the column where CSOA results will be stored}
+\item{colStr}{The name of the column where CSOA results will be stored.}
 
-\item{percentile}{A non-negative number below 100}
+\item{percentile}{A positive number under 100.}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved).}
+will be saved. Default is \code{NULL} (the overlap data frame will not
+be saved).}
 
 \item{pvalThr}{p-value threshold.}
 
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
-Jaccard scores. NULL by default (no filtering of such edges
-will be performed).}
+Jaccard scores. If \code{NULL} (as default), no filtering of such edges
+will be performed.}
 
-\item{osMethod}{The method used to compute overlap scores.
-Options are 'log' and 'minmax'.}
+\item{osMethod}{Method used to compute overlap scores.
+Options are "log" and "minmax".}
 
 \item{pairFileName}{The name of the file where the pair data frame
 will be saved. Default is NULL (the pair data frame will not be saved)}
@@ -51,15 +52,18 @@ pairFileName is NULL}
 }
 \value{
 An object of the same class as scObj with a CSOA score assigned
-for each cell
+for each cell.
 }
 \description{
 This function generates cell set overlaps for an input gene set
 based on percentiles of gene expression, computes the significance
-of these overlaps, ranks, filters and scores the overlaps based on
-this significance, and builds a per-cell score by summing the products
-of the scores of these overlaps and thecustom-normalized per-cell
-expressions of the corresponding pairs of genes.
+of these overlaps, ranks, filters and scores the overlaps, and builds a
+per-cell score by summing the products of overlap scores and the
+min-max-normalized expression of the corresponding pairs of genes.
+}
+\details{
+Wrapper around \code{expMat}, \code{generateOverlaps},
+\code{scoreCells} and \code{attachCellScores}.
 }
 \examples{
 mat <- matrix(0, 500, 300)

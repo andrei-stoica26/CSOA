@@ -7,9 +7,9 @@
 prepareFiltering(overlapDF, saveCutoffPlot = FALSE)
 }
 \arguments{
-\item{overlapDF}{A ranked overlap data frame}
+\item{overlapDF}{A ranked overlap data frame.}
 
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot}
+\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
 }
 \value{
 A numeric value
@@ -18,12 +18,15 @@ A numeric value
 This function finds the raw aggregate rank of the
 highest non-top overlap.
 }
+\details{
+This function calls \code{findRankCutoff} to determine the rank
+cutoff and uses this cutoff to find the best-ranking overlap excluded by it.
+}
 \examples{
 overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 7)),
 gene2 = paste0('G', c(2, 5, 1, 8, 4, 9)),
 rawAggRank = c(7, 9, 9, 11.5, 11.5, 13),
 rank = c(1, 2, 2, 4, 4, 6))
 prepareFiltering(overlapDF)
-
 
 }

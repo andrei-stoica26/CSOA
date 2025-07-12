@@ -2,6 +2,7 @@
 title: "The CSOA algorithm"
 author: "Andrei-Florian Stoica"
 package: CSOA
+date: July 12, 2025
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{The CSOA algorithm}
@@ -215,7 +216,7 @@ head(df)
 Finally, we attach the CSOA scores to the `Seurat` object:
 
 ```{r, message=FALSE}
-seuratObj <- storeCellScores(seuratObj, df)
+seuratObj <- attachCellScores(seuratObj, df)
 head(seuratObj$CSOA_acinar)
 ```
 
@@ -237,7 +238,7 @@ dfComputeCellScores <- computeCellScores(po2, normExp, 'CSOA_acinar')
 identical(dfComputeCellScores$CSOA_acinar, df$CSOA_acinar)
 ```
 
-Finally, the `runCSOA` wrapper runs the whole pipeline including `storeCellScores`:  
+Finally, the `runCSOA` wrapper runs the whole pipeline including `attachCellScores`:  
 
 ```{r}
 seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')

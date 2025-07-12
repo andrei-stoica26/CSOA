@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{featureWes}
 \alias{featureWes}
-\title{Improved feature plot with a highly distinctive color scheme}
+\title{A feature plot with a more distinctive color scheme.}
 \usage{
 featureWes(
   seuratObj,
@@ -24,8 +24,8 @@ featureWes(
 
 \item{title}{Plot title.}
 
-\item{idClass}{Column to be used for labelling. If NULL, no column-based labels
-will be generated.}
+\item{idClass}{Column to be used for labelling. If NULL, no column-based
+labels will be generated.}
 
 \item{labelSize}{Size of labels. Ignored if idClass is NULL.}
 
@@ -37,14 +37,14 @@ will be generated.}
 
 \item{wesHigh}{Index of color marking high values.}
 
-\item{...}{Additional arguments passed to FeaturePlot.}
+\item{...}{Additional arguments passed to \code{Seurat::FeaturePlot}.}
 }
 \value{
 A ggplot object.
 }
 \description{
-This function customizes the appearance of Seurat's FeaturePlot for improved
-distinctiveness and aesthetics.
+This function customizes the appearance of \code{Seurat::FeaturePlot} for
+improved distinctiveness and aesthetics.
 }
 \examples{
 library(Seurat)

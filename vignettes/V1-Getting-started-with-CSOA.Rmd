@@ -2,6 +2,7 @@
 title: "Getting started with CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
+date: July 12, 2025
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Getting started with CSOA}
@@ -11,14 +12,18 @@ vignette: >
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(
-  collapse=TRUE,
-  comment="#>"
+    collapse=TRUE,
+    comment="#>"
 )
 ```
 
 # Introduction
 
-CSOA is a tool for scoring gene set signatures in scRNA-seq data. It constructs, for each input gene, a set of cells highly expressing the gene, then assesses all pairs of cell sets for statistical significance. The significant overlaps are ranked, and the top-ranked overlaps receive scores used to calculate per-cell CSOA scores.
+CSOA is a tool for scoring gene set signatures in scRNA-seq data. It 
+constructs, for each input gene, a set of cells highly expressing the gene, 
+then assesses all pairs of cell sets for statistical significance. 
+The significant overlaps are ranked, and the top-ranked overlaps receive 
+scores used to calculate per-cell CSOA scores.
 
 # Installation
 To install CSOA, run the following commands in an R session:
@@ -26,7 +31,7 @@ To install CSOA, run the following commands in an R session:
 if (!require("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("andrei-stoica26/CSOA")
+BiocManager::install("CSOA")
 ```
 
 # Prerequisites
@@ -38,9 +43,11 @@ In addition to CSOA, you need to install [patchwork](https://patchwork.data-imag
 
 This tutorial uses an scRNA-seq human pancreas dataset with provided cell type annotations. 
 
-After loading the required packages, download the dataset using the `BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
+After loading the required packages, download the dataset using the 
+`BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
 
-CSOA requires the input scRNA-seq data to be normalized and log-transformed. We will employ the `logNormCounts` function from `scuttle` for this step.
+CSOA requires the input scRNA-seq data to be normalized and log-transformed. 
+We will employ the `logNormCounts` function from `scuttle` for this step.
   
 ```{r message=FALSE, warning=FALSE, results=FALSE}
 library(CSOA)
@@ -73,7 +80,9 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
                    'CTRB2', 'PLA2G1B', 'PRSS2', 'CLPS', 'REG1A', 'SYCN')
 ```
 
-Before running CSOA, we will convert the `SingleCellExperiment` object to a `Seurat` object in order to visualize the results using `VlnPlot`. Using the input acinar markers, CSOA identifies the acinar cells in the dataset:
+Before running CSOA, we will convert the `SingleCellExperiment` object to a 
+`Seurat` object in order to visualize the results using `VlnPlot`. Using the 
+input acinar markers, CSOA identifies the acinar cells in the dataset:
 
 ```{r warning=FALSE, out.height='80%', out.width='80%', fig.height=4, fig.width=5}
 seuratObj <- as.Seurat(sceObj)
@@ -81,35 +90,48 @@ seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
 VlnPlot(seuratObj, 'CSOA_acinar', group.by='label') + NoLegend()
 ```
 
-Alternatively, CSOA can be run on a `SingleCellExperiment` object. The results will be stored as a column in the object's `colData` matrix:
+Alternatively, CSOA can be run on a `SingleCellExperiment` object. 
+The results will be stored as a column in the object's `colData` matrix:
 
 ```{r}
 sceObj <- runCSOA(sceObj, acinarMarkers, 'CSOA_acinar')
 ```
 
-Furthermore, CSOA can be run directly on an expression matrix. CSOA requires a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, the `expMat` function will be employed. This function extracts the log-transformed and normalized expression matrix of the input object—`data` for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the `matrix` class.
+Furthermore, CSOA can be run directly on an expression matrix. CSOA requires 
+a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) 
+used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, 
+the `expMat` function will be employed. This function extracts the 
+log-transformed and normalized expression matrix of the input object—`data` 
+for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the 
+`matrix` class.
 
 ```{r}
 geneSetExp <- expMat(seuratObj)
 ```
 
-When running directly on an expression matrix, CSOA will return a data frame. The CSOA scores are stored in a column named using the `colStr` parameter, set to `'CSOA_acinar'` in our example:
+When running directly on an expression matrix, CSOA will return a list in which 
+the first element is the expression matrix and the second is the CSOA result,
+stored as a data frame.
+
+The CSOA scores are stored in a column named using the `colStr` parameter, 
+set to `'CSOA_acinar'` in our example:
 
 ```{r}
-df <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
-head(df)
+res <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
+head(res[[2]])
 ```
 
 We verify that the results of the three runs are identical:
 
 ```{r}
 identical(seuratObj[[]]$CSOA_acinar, sceObj$CSOA_acinar)
-identical(seuratObj[[]]$CSOA_acinar, df$CSOA_acinar)
+identical(seuratObj[[]]$CSOA_acinar, res[[2]]$CSOA_acinar)
 ```
 
 # Scoring multiple gene sets
 
-CSOA can score multiple gene sets using the `runCSOAMultiple` function. We provide three additional marker lists selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
+CSOA can score multiple gene sets using the `runCSOAMultiple` function. 
+We provide three additional marker lists selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
 
 ```{r}
 alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
@@ -121,7 +143,7 @@ alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
                   'PCSK1', 'PRRG2', 'IRX2', 'ALDH1A1','PEMT', 'SMIM24', 
                   'F10', 'SCGN', 'SLC30A8')
 
-ductalMarkers <-	c('CFTR', 'SERPINA5', 'SLPI', 'TFF1', 'CFB', 'LGALS4', 
+ductalMarkers <- c('CFTR', 'SERPINA5', 'SLPI', 'TFF1', 'CFB', 'LGALS4', 
                    'CTSH',	'PERP', 'PDLIM3',	'WFDC2', 'SLC3A1', 'AQP1', 
                    'ALDH1A3', 'VTCN1',	'KRT19', 'TFF2', 'KRT7', 'CLDN4',
                    'LAMB3', 'TACSTD2', 'CCL2', 'DCDC2','CXCL2', 'CLDN10',
@@ -149,16 +171,17 @@ We can now visualize the results:
 
 ```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=6}
 plots <- lapply(geneSetNames, function(x) {
-  VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
-    theme(axis.text = element_text(size=10),
-          axis.title.x = element_blank(),
-          plot.title = element_text (size=11))
+    VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
+        theme(axis.text = element_text(size=10),
+              axis.title.x = element_blank(),
+              plot.title = element_text (size=11))
 })
     
 (plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
 ```
 
-Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` object:
+Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` 
+object:
 
 ```{r, message=FALSE}
 sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
@@ -166,13 +189,15 @@ sapply(geneSetNames,
        function(x) identical(seuratObj[[]][[x]], colData(sceObj)[[x]]))
 ```
 
-It can also score multiple gene sets directly on an expression matrix. The results will again be available as a data frame:
+It can also score multiple gene sets directly on an expression matrix. 
+The results will again be available as a data frame in a list of two elements,
+the first containing the expression matrix
 
 ```{r, message=FALSE}
-df <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
-head(df)
+res <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
+head(res[[2]])
 sapply(geneSetNames, 
-       function(x) identical(seuratObj[[]][[x]], df[[x]]))
+       function(x) identical(seuratObj[[]][[x]], res[[2]][[x]]))
 ```
 
 # Session information {-}

@@ -2,24 +2,22 @@
 % Please edit documentation in R/utils.R
 \name{overlapPairs}
 \alias{overlapPairs}
-\title{Extract gene pairs from overlap matrix}
+\title{Extract gene pairs from overlap data frame}
 \usage{
 overlapPairs(overlapDF)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps}
+\item{overlapDF}{A data frame created with generate_overlaps.}
 }
 \value{
-A list of gene pairs
+A list of gene pairs.
 }
 \description{
-This function extracts the gene pairs
-from an overlap matrix
+This function extracts the gene pairs from an overlap data frame.
 }
 \examples{
 overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3)),
 gene1 = paste0('G', c(2, 7, 8)))
 overlapPairs(overlapDF)
-
 
 }

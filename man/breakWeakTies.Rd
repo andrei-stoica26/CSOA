@@ -7,19 +7,26 @@
 breakWeakTies(overlapDF, cutoff = 1/3, doConnComp = FALSE)
 }
 \arguments{
-\item{overlapDF}{An overlap data frame}
+\item{overlapDF}{An overlap data frame.}
 
-\item{cutoff}{A cutoff used in the filtering of edges with low Jaccard scores}
+\item{cutoff}{A cutoff used in the filtering of edges with low Jaccard
+scores.}
 
-\item{doConnComp}{Whether to calculate the connected components}
+\item{doConnComp}{Whether to calculate the connected components.}
 }
 \value{
 An overlap data frame in which edges with low Jaccard scores have
-been removed
+been removed.
 }
 \description{
-This function iteratively removes all overlap pairs with Jaccard score below
-a fixed cutoff until no overlap pairs can be removed
+This function iteratively removes all overlap pairs with neighbor Jaccard
+score below a fixed cutoff until no overlap pairs can be removed.
+Subsequently, overlap ranks are recalculated.
+}
+\details{
+The functions removes overlaps for which the two involved genes
+record too few shared neighbors—genes whose cell set significantly overlaps with
+those of both overlap genes.
 }
 \examples{
 overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),

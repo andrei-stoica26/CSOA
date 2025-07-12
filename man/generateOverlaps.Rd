@@ -13,26 +13,28 @@ generateOverlaps(
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows
-restricted to the genes
-for which cell sets will be computed}
+restricted to the genes for which cell sets will be computed.}
 
-\item{percentile}{A non-negative number below 100}
+\item{percentile}{A positive number under 100.}
 
 \item{pairs}{Pairs of cell sets to be assessed. If NULL (as default), all
 pairs will be assessed.}
 
 \item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is NULL (the overlap data frame will not be saved).}
+will be saved. Default is \code{NULL} (the overlap data frame will not
+be saved).}
 }
 \value{
 A data frame listing statistics for all cell set overlaps
 }
 \description{
-This function builds a set of cells for each input gene by first selecting
-all the cells expressing the gene and then retaining only the cells
-expressing the gene at the input percentile. Subsequently, overlaps of
-pairs of the constructed cell sets are assessed for statistical
-significance.
+This function constructs, for each gene in the expression matrix, a set of
+cells expressing the gene at or above the input percentile.
+Subsequently, overlaps of pairs of the constructed cell sets are assessed
+for statistical significance.
+}
+\details{
+Wrapper around \code{percentileSets} and \code{cellSetsOverlaps}.
 }
 \examples{
 mat <- matrix(0, 2000, 500)

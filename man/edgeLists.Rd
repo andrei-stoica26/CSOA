@@ -17,9 +17,9 @@ data frames}
 edgeLists(overlapObj, ...)
 }
 \arguments{
-\item{overlapObj}{An overlap data frame or list of overlap data frames}
+\item{overlapObj}{An overlap data frame or list of overlap data frames.}
 
-\item{...}{Arguments passed to other methods}
+\item{...}{Additional arguments.}
 
 \item{groupNames}{Names of groups. If provided, must be a vector
 of the same length as the list of overlap data frames}
@@ -28,7 +28,7 @@ of the same length as the list of overlap data frames}
 refiltering. If NULL (as default), no refiltering will be performed}
 }
 \value{
-A list of data frames
+A list of data frames.
 }
 \description{
 This function creates a list of data frames with three columns:

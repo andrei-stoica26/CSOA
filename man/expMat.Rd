@@ -23,9 +23,9 @@ expMat(scObj, ...)
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
-expression matrix}
+expression matrix.}
 
-\item{...}{Arguments passed to other methods}
+\item{...}{Additional arguments.}
 
 \item{genes}{Genes retained in the expression matrix. If NULL, all genes
 will be retained}
@@ -35,7 +35,7 @@ An expression matrix.
 }
 \description{
 This function extracts the data expression matrix from object as a
-non-sparse matrix
+non-sparse matrix. Selected genes can be specified as input.
 }
 \examples{
 library(Seurat)

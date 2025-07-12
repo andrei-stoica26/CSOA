@@ -15,8 +15,8 @@ cellDistribution(cellSets, allCells)
 A logical matrix with genes as rows and cells as columns.
 }
 \description{
-This function returns a matrix that shows the presence of cell sets among
-cells.
+This function returns a logical matrix that shows the representation of
+cell sets among all cells.
 }
 \examples{
 cellSets <- list(c('A', 'H', 'J'),
