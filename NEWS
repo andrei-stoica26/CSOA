@@ -1,3 +1,8 @@
+Changes in version 0.99.1 (2025-08-13)
+-------------------------------------------------------------------------------
+- Refactoring and extended testing after Bioconductor review
+
+
 Changes in version 0.99.0 (2025-07-12)
 -------------------------------------------------------------------------------
 - Submitted to Bioconductor

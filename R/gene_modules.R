@@ -82,7 +82,7 @@ connectedComponents <- function(df, colName = 'component'){
 #' overlapDF <- generateOverlaps(mat)
 #' overlapDF <- processOverlaps(overlapDF)
 #' overlapDF <- connectedComponents(overlapDF)
-#' df <- scoreModules(mat, overlapDF, unique(overlapDF$component))
+#' df <- scoreModules(mat, overlapDF, unique(overlapDF$component))[[2]]
 #' head(df)
 #'
 #' @export
@@ -91,8 +91,8 @@ scoreModules <- function(scObj, df, components,
                          colStrTemplate = 'CSOA_component', ...){
     geneSets <- lapply(components,
                        function(i) overlapGenes(subset(df, component == i)))
-    geneSetNames <- paste0(colStrTemplate, components)
-    return(runCSOAMultiple(scObj, geneSets, geneSetNames, ...))
+    names(geneSets) <- paste0(colStrTemplate, components)
+    return(runCSOA(scObj, geneSets, ...))
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

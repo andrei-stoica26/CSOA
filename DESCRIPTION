@@ -1,11 +1,11 @@
 Package: CSOA
 Type: Package
 Title: Calculate per-cell gene signature scores using cell set overlaps
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: person('Andrei-Florian', 'Stoica', 
-      email='andreistoica@foxmail.com',
-     role=c('aut','cre'),
-     comment=c(ORCID='0000-0002-5253-0826'))
+    email='andreistoica@foxmail.com',
+    role=c('aut','cre'),
+    comment=c(ORCID='0000-0002-5253-0826'))
 Description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene signature scores 
     in a scRNA-seq dataset. CSOA constructs a set for each gene in the signature, consisting of the 
     cells that highly express the gene. Next, all overlaps of pairs of cell sets are computed, ranked, 
@@ -35,28 +35,12 @@ Imports:
     sgof,
     spatstat.utils,
     stats,
-    stringr,
     textshape,
     tidygraph,
     viridis,
     wesanderson
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-Collate: 
-    'compute_cell_scores_tools.R'
-    'extra_filter.R'
-    'gene_degrees.R'
-    'gene_modules.R'
-    'generate_overlaps_tools.R'
-    'generics.R'
-    'geometry.R'
-    'main.R'
-    'multiple_gene_sets.R'
-    'percentile_sets.R'
-    'process_overlaps_tools.R'
-    'utils.R'
-    'visualization_aux.R'
-    'visualization.R'
 Suggests: 
     BiocStyle,
     knitr,
@@ -64,6 +48,7 @@ Suggests:
     rmarkdown,
     scRNAseq,
     scuttle,
+    stringr,
     testthat (>= 3.0.0)
 biocViews: 
     Software,

@@ -1,7 +1,6 @@
 #' @importFrom methods is
 #' @importFrom kerntools minmax
-#' @importFrom qs qread
-#' @importFrom stats runif
+#' @importFrom qs qread qsave
 #' @importFrom SeuratObject LayerData
 #' @importFrom sgof BY
 #'
@@ -19,12 +18,7 @@ NULL
 #'
 #' @return The data frame with Benjamini-Yekutieli-corrected p-values.
 #'
-#' @examples
-#' df <- data.frame(elem = c('A', 'B', 'C', 'D', 'E'),
-#' pval = c(0.032, 0.001, 0.0045, 0.051, 0.048))
-#' byCorrectDF(df)
-#'
-#' @export
+#' @keywords internal
 #'
 #'
 byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
@@ -97,32 +91,11 @@ matrixRowFilter <- function(matObj, rows = NULL){
     return(as.matrix(matObj)[sort(rownames(matObj)), ])
 }
 
-#' Read and delete a .qs file
-#'
-#' This functions reads a .qs file, deletes it, and returns its content.
-#'
-#' @param qsFile Name of .qs file with path.
-#'
-#' @return The content of the .qs file.
-#'
-#' @examples
-#' library(qs)
-#' qsave(c(1, 2, 3), 'temp.qs')
-#' qGrab('temp.qs')
-#'
-#' @export
-#'
-qGrab <- function(qsFile){
-    res <- qread(qsFile)
-    file.remove(qsFile)
-    return(res)
-}
-
 #' Get all genes from an overlap data frame
 #'
 #' This function gets all genes from an overlap data frame.
 #'
-#' @inheritParams rankOverlaps
+#' @inheritParams processOverlaps
 #'
 #' @return A character vector of genes.
 #'
@@ -140,7 +113,7 @@ overlapGenes <- function(overlapDF)
 #'
 #' This function extracts the gene pairs from an overlap data frame.
 #'
-#' @inheritParams rankOverlaps
+#' @inheritParams processOverlaps
 #'
 #' @return A list of gene pairs.
 #'
@@ -172,6 +145,27 @@ overlapPairs <- function(overlapDF)
 #'
 overlapSlice <- function(overlapDF, pairs)
     return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
+
+#' Read and delete a .qs file
+#'
+#' This functions reads a .qs file, deletes it, and returns its content.
+#'
+#' @param qsFile Name of .qs file with path.
+#'
+#' @return The content of the .qs file.
+#'
+#' @examples
+#' library(qs)
+#' qsave(c(1, 2, 3), 'temp.qs')
+#' qGrab('temp.qs')
+#'
+#' @export
+#'
+qGrab <- function(qsFile){
+    res <- qread(qsFile)
+    file.remove(qsFile)
+    return(res)
+}
 
 #' Helper function to ensure easy testing of different
 #' rank methods

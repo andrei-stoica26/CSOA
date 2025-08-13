@@ -12,20 +12,7 @@
 #'
 #' @return A data frame with gene pairs as rows and cells as columns.
 #'
-#' @examples
-#' overlapDF <- data.frame(
-#' gene1 = paste0('G', c(1, 2, 3)),
-#' gene2 = paste0('G', c(2, 3, 4)),
-#' score = c(0.4, 1, 0.68)
-#' )
-#' normExp <- matrix(0, 4, 18)
-#' normExp[sample(length(normExp), 50)] <- runif(50)
-#' normExp[1, 2] <- 1
-#' rownames(normExp) <- union(overlapDF$gene1, overlapDF$gene2)
-#' colnames(normExp) <- LETTERS[1:18]
-#' computePCPairScores(overlapDF, normExp)
-#'
-#' @export
+#' @keywords internal
 #'
 computePCPairScores <- function(overlapDF, normExp){
     if(length(setdiff(c('gene1', 'gene2', 'score'), colnames(overlapDF))))
@@ -56,23 +43,22 @@ computePCPairScores <- function(overlapDF, normExp){
 #' This function assesses the relative contribution of each gene pair to the
 #' CSOA score
 #'
-#' @inheritParams computeCellScores
+#' @inheritParams computePCPairScores
 #' @param pcPairScores A date frame of pair scores in each cell for each pair
-#' in the overlap data frame
+#' in the overlap data frame.
 #' @param pairFileName The name of the file where the pair data frame
-#' will be saved. Default is NULL (the pair data frame will not be saved)
-#' @param keepOverlapOrder Keep the rank-based order of overlaps in the pair
-#' score file, as opposed to changing it to a pair score-based order. Ignored if
-#' pairFileName is NULL
+#' will be saved.
+#' @param keepOverlapOrder Whether to keep the rank-based order of overlaps
+#' in the pair score file, as opposed to changing it to a
+#' pair score-based order.
 #'
-#' @return A data frame with overlap and pair scores and ranks
+#' @return A data frame with overlap and pair scores and ranks.
 #'
 #' @keywords internal
 #'
-computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
+computePairScores <- function(overlapDF, pcPairScores, pairFileName = 'pairs',
                               keepOverlapOrder = FALSE){
-    if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-        stop('Values in pcPairScores must be between 0 and 1.')
+
     df <- overlapDF[, c('gene1', 'gene2', 'score', 'rank')]
     colnames(df)[c(3, 4)] <- paste0('overlap', c('Score', 'Rank'))
 
@@ -88,43 +74,9 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = NULL,
     if (keepOverlapOrder)
         df <- df[order(df$overlapScore, decreasing=TRUE), ]
 
-    if (!is.null(pairFileName)){
-        pairFile <- paste0(pairFileName, '.qs')
-        message('Saving pair scores file: ', pairFile, '...')
-        qsave(df, pairFile)
-    }
+    pairFile <- paste0(pairFileName, '.qs')
+    message('Saving pair scores file: ', pairFile, '...')
+    qsave(df, pairFile)
 
     return(df)
-}
-
-#' Aggregate per-cell gene pair scores
-#'
-#' This function aggregates per-cell gene pair scores into per-cell gene
-#' signature scores.
-#'
-#' @inheritParams computePairScores
-#' @param colStr The name of the column where CSOA results will be stored.
-#'
-#' @return A data frame with the per-cell gene signature score as a column.
-#'
-#' @examples
-#' df <- data.frame(
-#' C1 = c(0, 0.025, 1, 0.03),
-#' C2 = c(0, 0.01, 0, 0.08),
-#' C3 = c(0.1, 0.8, 0.03, 0.3)
-#' )
-#' rownames(df) <- c('G1_G2', 'G2_G3', 'G2_G5', 'G3_G8')
-#' computePCSetScores(df)
-#'
-#' @export
-#'
-computePCSetScores <- function(pcPairScores, colStr = 'CSOA'){
-    if(max(pcPairScores) > 1 | max(pcPairScores) < 0)
-        stop('Values in pcPairScores must be between 0 and 1.')
-    message('Computing per-cell gene signature scores...')
-    scores <- colSums(pcPairScores)
-    scores <- vMinmax(scores)
-    scoreDF <- data.frame(setNames(list(scores), colStr))
-    rownames(scoreDF) <- colnames(pcPairScores)
-    return(scoreDF)
 }

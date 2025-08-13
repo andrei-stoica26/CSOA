@@ -23,7 +23,7 @@ BiocManager::install("andrei-stoica26/CSOA")
 The basic command to run CSOA is:
 
 ```
-runCSOA(scObj, genes)
+runCSOA(scObj, geneSets)
 ```
 
 `scObj` must contain normalized and log-transformed gene expression data 
@@ -36,13 +36,4 @@ provided in one of the following formats:
 - `matrix`
 - `dgCMatrix`
 
-`genes` must be a character vector. 
-
-CSOA can also score multiple gene signatures in one call using the 
-`runCSOAMultiple` function:
-
-```
-runCSOAMultiple(scObj, geneSets, geneSetNames)
-```
-`geneSets` must be a list of character vectors and `geneSetNames` must be 
-a character vector of the same length.
+`geneSets` must be a named list of character vectors. 

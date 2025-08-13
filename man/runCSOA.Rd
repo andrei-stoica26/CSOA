@@ -6,15 +6,12 @@
 \usage{
 runCSOA(
   scObj,
-  genes,
-  colStr = "CSOA",
+  geneSets,
   percentile = 90,
-  overlapFileName = NULL,
   pvalThr = 0.05,
-  saveCutoffPlot = FALSE,
   jaccardCutoff = NULL,
-  osMethod = "log",
-  pairFileName = NULL,
+  osMethod = c("log", "minmax"),
+  pairFileTemplate = NULL,
   keepOverlapOrder = FALSE
 )
 }
@@ -22,19 +19,12 @@ runCSOA(
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
 expression matrix.}
 
-\item{genes}{Vector of genes. Must include at least two genes.}
-
-\item{colStr}{The name of the column where CSOA results will be stored.}
+\item{geneSets}{Named list of character vectors of which each must contain
+at least two genes.}
 
 \item{percentile}{A positive number under 100.}
 
-\item{overlapFileName}{The name of the file where the overlap data frame
-will be saved. Default is \code{NULL} (the overlap data frame will not
-be saved).}
-
-\item{pvalThr}{p-value threshold.}
-
-\item{saveCutoffPlot}{Whether to save overlap cutoff plot.}
+\item{pvalThr}{P-value threshold used for initial filtering.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges
@@ -43,36 +33,40 @@ will be performed.}
 \item{osMethod}{Method used to compute overlap scores.
 Options are "log" and "minmax".}
 
-\item{pairFileName}{The name of the file where the pair data frame
-will be saved. Default is NULL (the pair data frame will not be saved)}
+\item{pairFileTemplate}{Character object used in the naming of the files
+where the pair data frames will be saved. Default is \code{NULL} (the pair
+data frames will not be saved).}
 
-\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the pair
-score file, as opposed to changing it to a pair score-based order. Ignored if
-pairFileName is NULL}
+\item{keepOverlapOrder}{Keep the rank-based order of overlaps in the
+pair score file, as opposed to changing it to a pair score-based order.
+Ignored if \code{pairFileTemplate} is \code{NULL}.}
 }
 \value{
-An object of the same class as scObj with a CSOA score assigned
-for each cell.
+An object of the same class as scObj with per-gene-set CSOA scores
+assigned for each cell.
 }
 \description{
-This function generates cell set overlaps for an input gene set
+This function generates cell set overlaps for input gene sets
 based on percentiles of gene expression, computes the significance
 of these overlaps, ranks, filters and scores the overlaps, and builds a
 per-cell score by summing the products of overlap scores and the
 min-max-normalized expression of the corresponding pairs of genes.
 }
 \details{
-Wrapper around \code{expMat}, \code{generateOverlaps},
-\code{scoreCells} and \code{attachCellScores}.
+#' @details Wrapper around \code{expMat}, \code{generateOverlaps},
+\code{scoreCellsMultiple} and \code{attachCellScores}.
 }
 \examples{
 mat <- matrix(0, 500, 300)
 rownames(mat) <- paste0('G', seq(500))
 colnames(mat) <- paste0('C', seq(300))
-mat[sample(8000)] <- runif(8000, max=15)
+mat[sample(8000)] <- runif(8000, max=13)
 genes <- paste0('G', seq(200))
-mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15), nrow = 200, ncol = 31)
-df <- runCSOA(mat, genes)
+mat[genes, 20:50] <- matrix(runif(200 * 31, min = 14, max = 15),
+nrow = 200, ncol = 31)
+geneSet1 <- paste0('G', seq(1, 150))
+geneSet2 <- paste0('G', seq(50, 200))
+df <- runCSOA(mat, list(a = geneSet1, b = geneSet2))
 head(df)
 
 }

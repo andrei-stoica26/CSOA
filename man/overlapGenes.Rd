@@ -7,7 +7,7 @@
 overlapGenes(overlapDF)
 }
 \arguments{
-\item{overlapDF}{A data frame created with generate_overlaps.}
+\item{overlapDF}{Overlap data frame.}
 }
 \value{
 A character vector of genes.

@@ -1,8 +1,8 @@
 ---
-title: "Getting started with CSOA"
+title: "CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: July 12, 2025
+date: August 13, 2025
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{Getting started with CSOA}
@@ -39,7 +39,7 @@ In addition to CSOA, you need to install [patchwork](https://patchwork.data-imag
 [scRNAseq](https://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html) and [scuttle](https://www.bioconductor.org/packages/release/bioc/html/scuttle.html) for this tutorial.
 
 
-# Scoring a gene set
+# Scoring gene sets
 
 This tutorial uses an scRNA-seq human pancreas dataset with provided cell type annotations. 
 
@@ -67,7 +67,10 @@ We can take a look at the cell types found in this dataset:
 table(colData(sceObj)$label)
 ```
 
-Next, we will define a vector of acinar markers based on [PanglaoDB](https://www.panglaodb.se/markers.html):
+Next, we will define gene sets of acinar, alpha, ductal and gamma markers 
+based on [PanglaoDB](https://www.panglaodb.se/markers.html). The gene sets must
+be provided as a named list of character vectors. The names of the list will be
+used as column names when storing the results.
 
 ```{r}
 acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1', 
@@ -78,62 +81,7 @@ acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',
                    'SPINK1', 'ZG16', 'CEL', 'CELA2A', 'CPB1', 'CELA1', 
                    'PNLIPRP1', 'RNASE1', 'AMY2B', 'CPA2','CPA1', 'CELA3B', 
                    'CTRB2', 'PLA2G1B', 'PRSS2', 'CLPS', 'REG1A', 'SYCN')
-```
 
-Before running CSOA, we will convert the `SingleCellExperiment` object to a 
-`Seurat` object in order to visualize the results using `VlnPlot`. Using the 
-input acinar markers, CSOA identifies the acinar cells in the dataset:
-
-```{r warning=FALSE, out.height='80%', out.width='80%', fig.height=4, fig.width=5}
-seuratObj <- as.Seurat(sceObj)
-seuratObj <- runCSOA(seuratObj, acinarMarkers, 'CSOA_acinar')
-VlnPlot(seuratObj, 'CSOA_acinar', group.by='label') + NoLegend()
-```
-
-Alternatively, CSOA can be run on a `SingleCellExperiment` object. 
-The results will be stored as a column in the object's `colData` matrix:
-
-```{r}
-sceObj <- runCSOA(sceObj, acinarMarkers, 'CSOA_acinar')
-```
-
-Furthermore, CSOA can be run directly on an expression matrix. CSOA requires 
-a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) 
-used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, 
-the `expMat` function will be employed. This function extracts the 
-log-transformed and normalized expression matrix of the input object—`data` 
-for`Seurat`,  `logcounts` for `SingleCellExperiment`—and converts it to the 
-`matrix` class.
-
-```{r}
-geneSetExp <- expMat(seuratObj)
-```
-
-When running directly on an expression matrix, CSOA will return a list in which 
-the first element is the expression matrix and the second is the CSOA result,
-stored as a data frame.
-
-The CSOA scores are stored in a column named using the `colStr` parameter, 
-set to `'CSOA_acinar'` in our example:
-
-```{r}
-res <- runCSOA(geneSetExp, acinarMarkers, 'CSOA_acinar')
-head(res[[2]])
-```
-
-We verify that the results of the three runs are identical:
-
-```{r}
-identical(seuratObj[[]]$CSOA_acinar, sceObj$CSOA_acinar)
-identical(seuratObj[[]]$CSOA_acinar, res[[2]]$CSOA_acinar)
-```
-
-# Scoring multiple gene sets
-
-CSOA can score multiple gene sets using the `runCSOAMultiple` function. 
-We provide three additional marker lists selected from [PanglaoDB](https://www.panglaodb.se/markers.html):
-
-```{r}
 alphaMarkers <- c('GCG', 'TTR', 'PCSK2', 'FXYD5', 'LDB2', 'MAFB',
                   'CHGA', 'SCGB2A1', 'GLS', 'FAP', 'DPP4', 'GPR119',
                   'PAX6', 'NEUROD1', 'LOXL4', 'PLCE1', 'GC', 'KLHL41',
@@ -158,19 +106,23 @@ gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3',
                   'SERTM1', 'PXK', 'PPY2P', 'ETV1', 'ARX', 'CMTM8', 'SCGB2A1', 
                   'FXYD2', 'SCGN')
 
-```
-
-Now we run CSOA on the four provided marker lists:
-```{r warning=FALSE}
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
-geneSetNames <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
-seuratObj <- runCSOAMultiple(seuratObj, geneSets, geneSetNames)
+names(geneSets) <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
+
 ```
 
-We can now visualize the results:
+Before running CSOA, we will convert the `SingleCellExperiment` object to a 
+`Seurat` object in order to employ the `VlnPlot` function for visualization.
 
-```{r, out.height='100%', out.width='100%', fig.height=6, fig.width=6}
-plots <- lapply(geneSetNames, function(x) {
+```{r, warning=FALSE}
+seuratObj <- as.Seurat(sceObj)
+seuratObj <- runCSOA(seuratObj, geneSets)
+```
+
+We can now display the results:
+
+```{r, warning=FALSE, out.height='100%', out.width='100%', fig.height=8, fig.width=8}
+plots <- lapply(names(geneSets), function(x) {
     VlnPlot(seuratObj, x, group.by = 'label') + NoLegend() +
         theme(axis.text = element_text(size=10),
               axis.title.x = element_blank(),
@@ -180,24 +132,54 @@ plots <- lapply(geneSetNames, function(x) {
 (plots[[1]] | plots[[2]]) / (plots[[3]] | plots[[4]])
 ```
 
-Alternatively, CSOA can score multiple gene sets using a `SingleCellExperiment` 
-object:
+Alternatively, CSOA can be run on a `SingleCellExperiment` object. 
+The results will be stored as a column in the object's `colData` matrix:
 
-```{r, message=FALSE}
-sceObj <- runCSOAMultiple(sceObj, geneSets, geneSetNames)
-sapply(geneSetNames, 
-       function(x) identical(seuratObj[[]][[x]], colData(sceObj)[[x]]))
+```{r}
+sceObj <- runCSOA(sceObj, geneSets)
 ```
 
-It can also score multiple gene sets directly on an expression matrix. 
-The results will again be available as a data frame in a list of two elements,
-the first containing the expression matrix
+We verify that the results are identical:
+```{r, message=FALSE}
+sceObj <- runCSOA(sceObj, geneSets)
+vapply(names(geneSets), 
+       function(x) identical(seuratObj[[]][[x]], colData(sceObj)[[x]]),
+       logical(1))
+```
+
+Additionally, CSOA can be run directly on an expression matrix. The `expMat`
+function extracts the log-transformed and normalized expression matrix—`data` 
+for`Seurat`, `logcounts` for `SingleCellExperiment`—from the input object,
+and converts it to a dense matrix.
+
+CSOA requires 
+a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) 
+used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, 
+the `expMat` function will be employed. This function extracts the 
+
+
+```{r}
+geneSetExp <- expMat(seuratObj)
+```
+
+**Note**: `runCSOA` also accepts the sparse matrix class used by `Seurat` and
+`SingleCellExperiment` (`dgCMatrix`) as input. Internally, `runCSOA` filters the 
+`dgCMatrix` as to contain only the genes present in the input gene sets, then
+densifies the matrix using `expMat`.
+
+When running directly on an expression matrix, `runCSOA` will return a list in 
+which the first element is the expression matrix and the second is the data 
+frame of CSOA scores.
 
 ```{r, message=FALSE}
-res <- runCSOAMultiple(geneSetExp, geneSets, geneSetNames)
+res <- runCSOA(geneSetExp, geneSets)
 head(res[[2]])
-sapply(geneSetNames, 
-       function(x) identical(seuratObj[[]][[x]], res[[2]][[x]]))
+```
+
+The results are identical with those obtained earlier for the Seurat object:
+```{r}
+vapply(names(geneSets), 
+       function(x) identical(seuratObj[[]][[x]], res[[2]][[x]]), logical(1))
 ```
 
 # Session information {-}

@@ -45,7 +45,7 @@ mat <- mat[genes, ]
 overlapDF <- generateOverlaps(mat)
 overlapDF <- processOverlaps(overlapDF)
 overlapDF <- connectedComponents(overlapDF)
-df <- scoreModules(mat, overlapDF, unique(overlapDF$component))
+df <- scoreModules(mat, overlapDF, unique(overlapDF$component))[[2]]
 head(df)
 
 }

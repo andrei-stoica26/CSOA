@@ -8,10 +8,9 @@ NULL
 #' from an overlap data frame ranked using p-values
 #' and recorded-over-expected ratios.
 #'
-#' @param overlapDF Overlap data frame with the pvalRank
-#' and ratioRank columns
+#' @param overlapDF Overlap data frame.
 #' @param asRanks Whether to replace connectivity
-#' scores by ranks
+#' scores by ranks.
 #'
 #' @return A data frame with genes involved in the overlaps
 #' as row names, and two columns, corresponding to connectivity
@@ -59,18 +58,11 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #' raw aggregate rank is constructed.
 #'
 #'
-#' @param overlapDF A data frame created with generate_overlaps.
+#' @param overlapDF An overlap data frame.
 #'
 #' @return A data frame with ranked overlaps.
 #'
-#' @examples
-#' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
-#' gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
-#' ratio=runif(10, 2, 10),
-#' pval=runif(10, 0, 1e-10))
-#' rankOverlaps(overlapDF)
-#'
-#' @export
+#' @noRd
 #'
 rankOverlaps <- function(overlapDF){
     if (!nrow(overlapDF))
@@ -101,16 +93,11 @@ rankOverlaps <- function(overlapDF){
 #' @details The rank cutoff is the average of the minimum and maximum
 #' highest-frequency rank.
 #'
-#' @param freqDF A frequency data frame of overlap ranks.
+#' @param freqDF A data frame of overlap rank frequencies.
 #'
 #' @return Rank cutoff.
 #'
-#' @examples
-#' freqDF <- data.frame(rank = c(1, 2, 4, 7),
-#' n = c(1, 3, 3, 2))
-#' findRankCutoff(freqDF)
-#'
-#' @export
+#' @noRd
 #'
 findRankCutoff <- function(freqDF){
     freqSub <- subset(freqDF, n == max(n))
@@ -127,47 +114,17 @@ findRankCutoff <- function(freqDF){
 #' cutoff and uses this cutoff to find the best-ranking overlap excluded by it.
 #'
 #' @param overlapDF A ranked overlap data frame.
-#' @param saveCutoffPlot Whether to save overlap cutoff plot.
 #'
 #' @return A numeric value
 #'
-#' @examples
-#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 7)),
-#' gene2 = paste0('G', c(2, 5, 1, 8, 4, 9)),
-#' rawAggRank = c(7, 9, 9, 11.5, 11.5, 13),
-#' rank = c(1, 2, 2, 4, 4, 6))
-#' prepareFiltering(overlapDF)
+#' @noRd
 #'
-#' @export
-#'
-prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
+prepareFiltering <- function(overlapDF){
     if (!nrow(overlapDF))
         return(NULL)
 
     freqDF <- dplyr::count(overlapDF, rank)
     rankCutoff <- findRankCutoff(freqDF)
-
-    if(saveCutoffPlot){
-        if (nrow(freqDF) < 2)
-            stop('overlapCutoffPlot requires at least two points.')
-
-        freqs <- freqDF$n
-        nFreq <- length(unique(freqs))
-
-        if (nFreq < 2)
-            stop('overlapCutoffPlot requires at least two',
-                ' distinct rank frequencies.')
-
-        maxFreq <- max(freqs)
-        maxApps <- which(freqs %in% maxFreq)
-        if (length(maxApps) == 1)
-        if (maxApps %in% c(1, nrow(freqDF)))
-            stop('overlapCutoffPlot requires that the',
-                 ' maximum rank frequency is reached at a non-extremal point.')
-
-        devPlot(overlapCutoffPlot, freqDF, rankCutoff)
-    }
-
     outDF <- subset(overlapDF, rank > rankCutoff)
     if (nrow(outDF))
         firstOutRawRank <- outDF$rawAggRank[1] else
@@ -187,19 +144,13 @@ prepareFiltering <- function(overlapDF, saveCutoffPlot = FALSE){
 #' @details If \code{firstOutRawRank} is \code{NULL}, the data frame will be
 #' returned unchanged.
 #'
-#' @inheritParams prepareFiltering
+#' @param overlapDF A ranked overlap data frame.
 #' @param firstOutRawRank The raw aggregate rank of the
 #' first overlap that will be excluded.
 #'
 #' @return A filtered overlap data frame.
 #'
-#' @examples
-#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7)),
-#' gene2 = paste0('G', c(2, 5, 1, 8, 4)),
-#' rawAggRank = c(1, 2, 2, 4, 4))
-#' filterOverlaps(overlapDF, 2)
-#'
-#' @export
+#' @noRd
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
     if(is.null(firstOutRawRank) | !nrow(overlapDF))
@@ -231,31 +182,10 @@ filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
 #'
 #' @return An overlap data frame with overlap scores.
 #'
-#' @examples
-#' mat <- matrix(0, 500, 300)
-#' rownames(mat) <- paste0('G', seq(500))
-#' colnames(mat) <- paste0('C', seq(300))
-#' mat[sample(8000)] <- runif(8000, max=13)
-#' genes1 <- paste0('G', seq(100))
-#' mat[genes1, 20:50] <- matrix(runif(100 * 31, min = 14, max = 15),
-#' nrow = 100, ncol = 31)
-#' genes2 <- paste0('G', seq(101, 200))
-#' mat[genes2, 70:100] <- matrix(runif(100 * 31, min = 14, max = 15),
-#' nrow = 100, ncol = 31)
-#' genes <- union(genes1, genes2)
-#' mat <- mat[genes, ]
-#' overlapDF <- generateOverlaps(mat)
-#' overlapDF <- byCorrectDF(overlapDF)
-#' overlapDF <- rankOverlaps(overlapDF)
-#' firstOutRawRank <- prepareFiltering(overlapDF)
-#' overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
-#' overlapDF <- scoreOverlaps(overlapDF)
-#' head(overlapDF)
-#'
-#' @export
+#' @noRd
 #'
 scoreOverlaps <- function(overlapDF,
-                          osMethod = 'log',
+                          osMethod = c('log', 'minmax'),
                           firstOutRawRank = NULL){
     message(nrow(overlapDF), ' overlap', rep('s', nrow(overlapDF) != 1),
             ' will be used in the calculation of CSOA scores.')
@@ -263,9 +193,6 @@ scoreOverlaps <- function(overlapDF,
         overlapDF$score <- 1
         return(overlapDF)
     }
-    if(!osMethod %in% c('log', 'minmax'))
-        stop('Unrecognized overlap scoring method.',
-            ' See ?CSOA::scoreOverlaps for the accepted methods.')
 
     if (osMethod == 'log'){
         rankVals <- unique(overlapDF$rank)
@@ -281,4 +208,62 @@ scoreOverlaps <- function(overlapDF,
     }
 
     return(overlapDF)
+}
+
+#' Process data frame of overlaps of cell sets
+#'
+#' This function filters, ranks and scores previously generated
+#' overlaps of cell sets.
+#'
+#' @details Wrapper around \code{byCorrectDF}, \code{rankOverlaps},
+#' \code{prepareFiltering}, \code{filterOverlaps} and \code{scoreOverlaps}.
+#'
+#' If \code{jaccardCutoff} is not \code{NULL}, it also calls
+#' \code{breakWeakTies} between \code{filterOverlaps} and \code{scoreOverlaps}.
+#'
+#' @param overlapDF Overlap data frame.
+#' @param pvalThr P-value threshold used for initial filtering.
+#' @param jaccardCutoff A cutoff used in the filtering of edges with low
+#' Jaccard scores. If \code{NULL} (as default), no filtering of such edges
+#' will be performed.
+#' @param osMethod Method used to compute overlap scores.
+#' Options are "log" and "minmax".
+#'
+#' @return A data frame consisting of filtered, ranked and scored cell sets
+#' overlaps
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1=paste0('G',
+#' c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+#' gene2=paste0('G',
+#' c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+#' ratio=runif(10, 2, 10),
+#' pval=runif(10, 0, 1e-10))
+#' processOverlaps(overlapDF)
+#'
+#' @export
+#'
+processOverlaps <- function(overlapDF,
+                            pvalThr = 0.05,
+                            jaccardCutoff = NULL,
+                            osMethod = c('log', 'minmax')){
+
+    osMethod <- match.arg(osMethod, c('log', 'minmax'))
+    if (nrow(overlapDF) > 1)
+        overlapDF <- byCorrectDF(overlapDF, pvalThr) else
+            overlapDF$pval_adj <- overlapDF$pval
+
+        if (!nrow(overlapDF))
+            return(overlapDF)
+
+        overlapDF <- rankOverlaps(overlapDF)
+        firstOutRawRank <- prepareFiltering(overlapDF)
+        overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+        if (!is.null(jaccardCutoff)){
+            overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
+            firstOutRawRank <- NULL
+        }
+
+        overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
+        return(overlapDF)
 }

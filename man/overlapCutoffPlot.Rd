@@ -4,12 +4,11 @@
 \alias{overlapCutoffPlot}
 \title{Plot the selection of overlaps}
 \usage{
-overlapCutoffPlot(freqDF, rankCutoff, title = "Overlap cutoff plot")
+overlapCutoffPlot(overlapDF, title = "Overlap cutoff plot")
 }
 \arguments{
-\item{freqDF}{A frequency data frame of overlap ranks.}
-
-\item{rankCutoff}{Rank cutoff.}
+\item{overlapDF}{Processed overlap data frame created
+with \code{processOverlaps}.}
 
 \item{title}{Plot title.}
 }
@@ -22,10 +21,9 @@ by plotting rank frequencies against ranks and showcasing the convex hull of
 the rank-frequency points.
 }
 \examples{
-freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
-12, 13, 15, 16),
-n = c(1, 1, 2, 3, 3, 2,
-1, 2, 1))
-overlapCutoffPlot(freqDF, 8.5)
+overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+rank=c(1, 2, 3, 4, 4, 6, 7, 7, 7, 10))
+overlapCutoffPlot(overlapDF)
 
 }

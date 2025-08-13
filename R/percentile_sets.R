@@ -1,4 +1,4 @@
-#' @importFrom stats quantile
+#' @importFrom stats phyper quantile runif setNames
 #'
 NULL
 
@@ -45,10 +45,10 @@ percentileSets <- function(geneSetExp, percentile=90){
     names(expList) <- genes
     expList <- expList[vapply(expList, length, numeric(1)) > 0]
     if (!length(expList))
-        warning('No cell sets can be constructed at the indicated percentile ',
+        warning('No cell sets can be constructed at the indicated percentile',
                 ' for the input genes.')
     if (length(expList) < length(genes))
-        warning(length(genes) - length(expList), ' gene(s) had no ',
+        warning(length(genes) - length(expList), ' gene(s) had no',
                 ' top cells at the indicated percentile.',
                 ' These are now excluded from the gene signature.')
     return(expList)

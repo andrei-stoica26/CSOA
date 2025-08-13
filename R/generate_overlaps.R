@@ -1,9 +1,3 @@
-#' @importFrom qs qsave
-#' @importFrom stringr str_c
-#' @importFrom stats phyper
-#'
-NULL
-
 #' Compute the pairwise overlaps of a list of cell sets
 #'
 #' This function performs the pairwise overlaps of a list of cell sets.
@@ -48,11 +42,8 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 #' @param cellSets A list of character arrays.
 #' @param nCells The total number of cells in the Seurat object.
-#' @param pairs Pairs of cell sets to be assessed. If NULL (as default), all
-#' pairs will be assessed.
-#' @param overlapFileName The name of the file where the overlap data frame
-#' will be saved. Default is \code{NULL} (the overlap data frame will not
-#' be saved).
+#' @param pairs Pairs of cell sets to be assessed. If \code{NULL} (as default),
+#' all pairs will be assessed.
 #'
 #' @return A data frame listing statistics for all cell set overlaps: cell set
 #' sizes, recorded and expected shared cells, the recorded-over-expected ratio
@@ -66,8 +57,7 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 #' @export
 #'
-cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
-                             overlapFileName = NULL){
+cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL){
     message('Assessing gene overlaps...')
     genes <- names(cellSets)
     if(!length(genes))
@@ -75,10 +65,36 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL,
     if(is.null(pairs))
         pairs <- getPairs(genes)
     df <- pairOverlap(cellSets, pairs, nCells)
-    if (!is.null(overlapFileName)){
-        overlapFile <- paste0(overlapFileName, '.qs')
-        message('Saving overlap file: ', overlapFile, '...')
-        qsave(df, overlapFile)
-    }
-  return(df)
+    return(df)
+}
+
+#' Generate overlaps of cell sets for input genes
+#'
+#' This function constructs, for each gene in the expression matrix, a set of
+#' cells expressing the gene at or above the input percentile.
+#' Subsequently, overlaps of pairs of the constructed cell sets are assessed
+#' for statistical significance.
+#'
+#' @details Wrapper around \code{percentileSets} and \code{cellSetsOverlaps}.
+#' @inheritParams percentileSets
+#' @inheritParams cellSetsOverlaps
+#'
+#' @return A data frame listing statistics for all cell set overlaps
+#'
+#' @examples
+#' mat <- matrix(0, 2000, 500)
+#' rownames(mat) <- paste0('G', seq(2000))
+#' colnames(mat) <- paste0('C', seq(500))
+#' mat[sample(length(mat), 270000)] <- sample(50, 270000, TRUE)
+#' mat <- mat[paste0('G', sample(2000, 5)), ]
+#' generateOverlaps(mat)
+#'
+#' @export
+#'
+generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL){
+    cellSets <- percentileSets(geneSetExp, percentile)
+    if(!length(cellSets))
+        return(data.frame())
+    overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs)
+    return(overlapDF)
 }

@@ -27,52 +27,96 @@ pointsOnCircle <- function(r, nPoints){
 #' points.
 #'
 #' @param pointsDF A data frame with the x and y coordinates of the points.
-#' @inheritParams upperConvexHull
+#' Each point must appear only once.
+#' @param joinEnds Whether to join the last point with the first one.
 #'
 #' @return A data frame of segments.
 #'
 #' @noRd
 #'
-pointsToSegments <- function(pointsDF, xIndex = 1, yIndex = 2){
-    df <- data.frame(x = pointsDF[seq_len(nrow(pointsDF) - 1), xIndex],
-                     y = pointsDF[seq_len(nrow(pointsDF) - 1), yIndex],
-                     xEnd = pointsDF[seq(2, nrow(pointsDF)), xIndex],
-                     yEnd = pointsDF[seq(2, nrow(pointsDF)), yIndex])
+pointsToSegments <- function(pointsDF,
+                             joinEnds = TRUE){
+    df <- data.frame(x = pointsDF[seq_len(nrow(pointsDF) - 1), 1],
+                     y = pointsDF[seq_len(nrow(pointsDF) - 1), 2],
+                     xEnd = pointsDF[seq(2, nrow(pointsDF)), 1],
+                     yEnd = pointsDF[seq(2, nrow(pointsDF)), 2])
+    if(joinEnds)
+        df <- rbind(df, c(df$xEnd[nrow(df)],
+                          df$yEnd[nrow(df)],
+                          df$x[1],
+                          df$y[1]))
     return(df)
 }
 
-#' Construct a data frame of segments from a data frame of points
+#' Construct the convex hull of a set of points
 #'
-#' This function constructs a data frame of segments from a data frame of
-#' points.
+#' This function constructs the convex hull of a set points.
 #'
-#' @param hull A data frame representing an upper convex hull of a set of points
-#' with columns rank and freq.
-#' @param xInt The x coordinate of the point where a vertical line will be drawn
-#' @param type Whether to compute the polygon corresponding to the retained
-#' overlaps ('in', default value) or the one corresponding to the discarded
-#' overlaps (any other value).
+#' @details The points must be provided as a data frame with two columns.
 #'
-#' @return A data frame of polygon vertices.
+#' @param pointsDF A data frame with the x and y coordinates of the points.
+#' @param hullIndices Precalculated hull indices. Default is \code{NULL}: hull
+#' indices are not provided, but they are calculated by \code{convexHull}.
+#'
+#' @return The points on the convex hull of the original set of points.
 #'
 #' @noRd
 #'
-hullToPolygon <- function(hull, xInt, type = 'in'){
-    yMax <- max(hull$y)
-    if (type == 'in'){
-        df <- subset(hull, x <= xInt)
-        if(df$x[nrow(df)] != xInt)
-            df <- rbind(df, c(xInt, yMax))
-        yMin <- min(df$y)
-        if (yMax != yMin)
-        df <- rbind(df, c(xInt, yMin))
-    } else{
-        df <- subset(hull, x >= xInt)
-        if(df$x[nrow(df)] != xInt)
-            df <- rbind(c(xInt, yMax), df)
-        yMin <- min(df$y)
-        if (yMax != yMin)
-            df <- rbind(c(xInt, yMin), df)
+convexHull <- function(pointsDF, hullIndices=NULL){
+    if(!is.null(hullIndices))
+        hull <- pointsDF[hullIndices, c(1, 2)] else
+            hull <- pointsDF[chull(pointsDF[, 1], pointsDF[, 2]), c(1, 2)]
+        colnames(hull) <- c('x', 'y')
+        return(hull)
+}
+
+#' Find the coordinates where vertical or horizontal line intersects the hull
+#'
+#' This function finds the coordinates where vertical or horizontal line
+#' intersects the hull.
+#'
+#'
+#' @param df A four-column data frame representing segments.
+#' @param axis An integer representing the axis intersected by the vertical or
+#' horizontal line, x (1) or y (2).
+#' @param axisIntersect The coordinate where the vertical or horizontal line
+#' intersects the relevant axis.
+#'
+#' @return A vector of size two representing the coordinates of the two
+#' intersection points between the vertical or horizontal line and the convex
+#' hull on the axis different from the input axis.
+#'
+#' @keywords internal
+#'
+borderCoords <- function(df, axis, axisIntersect){
+
+    if(is.null(axisIntersect))
+        return(c('None', 'None'))
+
+    otherAxis <- axis %% 2 + 1
+    axisEnd <- axis + 2
+    otherAxisEnd <- otherAxis + 2
+    axisVals <- df[, axis]
+    axisEndVals <- df[, axisEnd]
+
+    coords <- c(df[axisVals == axisIntersect, ][, otherAxis])
+
+    if (length(coords) < 2){
+        df <- df[axisVals < axisIntersect & axisEndVals > axisIntersect |
+                     axisVals > axisIntersect & axisEndVals < axisIntersect, ]
+
+        axisVals <- df[, axis]
+        axisEndVals <- df[, axisEnd]
+        otherAxisVals <- df[, otherAxis]
+        otherAxisEndVals <- df[, otherAxisEnd]
+
+        df$diffRatio <- (otherAxisEndVals - otherAxisVals) /
+            (axisEndVals  - axisVals)
+        df$newCoord <- df$diffRatio * (axisIntersect - axisVals) +
+            otherAxisVals
+
+        coords <- c(coords, df$newCoord)
     }
-    return(df)
+
+    return(sort(coords))
 }

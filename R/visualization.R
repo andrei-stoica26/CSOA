@@ -16,34 +16,6 @@
 #'
 NULL
 
-#' @rdname devPlot
-#' @export
-#'
-devPlot.default <- function(plotObject, ...)
-    stop('Unrecognized input type: plotObject must be a function,',
-         ' a ggplot object or a list of ggplot objects')
-
-#' @rdname devPlot
-#' @export
-#'
-devPlot.function <- function(plotObject, ...){
-    dev.new(noRStudioGD = TRUE)
-    print(plotObject(...))
-    dev.off()
-}
-
-#' @rdname devPlot
-#' @export
-#'
-devPlot.ggplot <- function(plotObject, ...)
-    devPlot.function(identity, plotObject)
-
-#' @rdname devPlot
-#' @export
-#'
-devPlot.list <- function(plotObject, ...)
-    invisible(lapply(plotObject, devPlot.ggplot))
-
 #' Add a centered title to a plot
 #'
 #' This function adds a centered title to a ggplot object
@@ -265,49 +237,72 @@ basicHeatmap <- function(mat,
 #' by plotting rank frequencies against ranks and showcasing the convex hull of
 #' the rank-frequency points.
 #'
-#' @inheritParams findRankCutoff
-#' @param rankCutoff Rank cutoff.
+#' @param overlapDF Processed overlap data frame created
+#' with \code{processOverlaps}.
 #' @param title Plot title.
 #'
 #' @return A ggplot object.
 #'
 #' @examples
-#' freqDF <- data.frame(rank = c(1, 2, 4, 7, 10,
-#' 12, 13, 15, 16),
-#' n = c(1, 1, 2, 3, 3, 2,
-#' 1, 2, 1))
-#' overlapCutoffPlot(freqDF, 8.5)
+#' overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
+#' gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
+#' rank=c(1, 2, 3, 4, 4, 6, 7, 7, 7, 10))
+#' overlapCutoffPlot(overlapDF)
 #'
 #' @export
 #'
-overlapCutoffPlot <- function(freqDF, rankCutoff, title = 'Overlap cutoff plot'){
-    if(length(setdiff(c('rank', 'n'), colnames(freqDF))))
-        stop('freqDF must have columns rank and n.')
-    xMin <- min(freqDF$rank)
-    xMax <- max(freqDF$rank)
-    yMin <- min(freqDF$n)
-    yMax <- max(freqDF$n)
+overlapCutoffPlot <- function(overlapDF, title = 'Overlap cutoff plot'){
+    if(!'rank' %in% colnames(overlapDF))
+        stop('rank column not found in overlapDF.',
+             ' Use process_overlaps to generate it.')
+    freqDF <- dplyr::count(overlapDF, rank)
+    rankCutoff <- findRankCutoff(freqDF)
 
     if (nrow(freqDF) < 2)
         stop('overlapCutoffPlot requires at least two points.')
 
+    freqs <- freqDF$n
+    nFreq <- length(unique(freqs))
+    if (nFreq < 2)
+        stop('overlapCutoffPlot requires at least two',
+             ' distinct rank frequencies.')
+
+    yMin <- min(freqs)
+    yMax <- max(freqs)
+
+    maxApps <- which(freqs %in% yMax)
+    if (length(maxApps) == 1)
+        if (maxApps %in% c(1, nrow(freqDF)))
+            stop('overlapCutoffPlot requires that the',
+                 ' maximum rank frequency is reached at a non-extremal point.')
+
+    xMin <- min(freqDF$rank)
+    xMax <- max(freqDF$rank)
+
     colors <- c('purple', 'gold')
 
-    hull <- freqDF[sort(chull(freqDF$rank, freqDF$n)), c('rank', 'n')]
-    colnames(hull) <- c('x', 'y')
+    hullIndices <- chull(freqDF$rank, freqDF$n)
+    hull <- convexHull(freqDF, hullIndices)
     hullSegments <- pointsToSegments(hull)
-    plg <- hullToPolygon(hull, rankCutoff)
-    plgOut <- hullToPolygon(hull, rankCutoff, 'out')
+
+    vCoords <- borderCoords(hullSegments, 1, rankCutoff)
+    borderPoints <- list(c(rankCutoff, rankCutoff), vCoords)
+
+    df1 <- rbind(freqDF[freqDF[, 1] < rankCutoff, ], borderPoints)
+    df2 <- rbind(freqDF[freqDF[, 1] > rankCutoff, ], borderPoints)
+
+    hullSegments1 <- pointsToSegments(convexHull(df1))
+    hullSegments2 <- pointsToSegments(convexHull(df2))
 
     p <- ggplot() + theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
         labs(x='Overlap rank', y='Frequency') +
-        geom_polygon(data = plg, aes(x, y, fill='Accepted overlaps'),
+        geom_polygon(data=hullSegments1, aes(x, y, fill='Accepted overlaps'),
                      alpha=0.2, ) +
-        geom_polygon(data = plgOut, aes(x, y, fill='Discarded overlaps'),
+        geom_polygon(data=hullSegments2, aes(x, y, fill='Discarded overlaps'),
                      alpha=0.2) +
-        geom_segment(data = hullSegments, aes(x, y, xend=xEnd, yend=yEnd),
+        geom_segment(data=hullSegments, aes(x, y, xend=xEnd, yend=yEnd),
                      color='black', linewidth=0.8) +
-        geom_point(data = freqDF, aes(rank, n), color = 'black',
+        geom_point(data=freqDF, aes(rank, n), color='black',
                    size=1, shape=24) +
         scale_fill_manual(values=colors,
                           labels=c('Accepted overlaps', 'Discarded overlaps')) +
