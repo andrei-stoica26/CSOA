@@ -1,8 +1,8 @@
-test_that("basicHeatmap returns a gg object", {
+test_that("basicHeatmap returns a ggplot object", {
     mat <- matrix(0, 10, 20)
     mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
     p <- basicHeatmap(mat)
-    expect_equal(is(p), 'gg')
+    expect_equal(length(intersect(is(p), c('gg', 'ggplot2::ggplot'))), 1)
 })
 
 test_that("connectedComponents works", {
@@ -44,14 +44,14 @@ test_that("getPairs works", {
                                        c('VBN', 'HJKL')))
 })
 
-test_that("geneRadialPlot returns a gg object", {
+test_that("geneRadialPlot returns a ggplot object", {
     edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
                                                 11, 11, 10, 10, 10)),
                           gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
                                                 13, 14, 13, 16, 14)))
     edgesDF <- connectedComponents(edgesDF, 'group')
     p <- geneRadialPlot(edgesDF, 'component', extraCircles=1)
-    expect_equal(is(p), 'gg')
+    expect_equal(length(intersect(is(p), c('gg', 'ggplot2::ggplot'))), 1)
 })
 
 test_that("networkPlot returns a ggraph object", {
@@ -67,7 +67,7 @@ test_that("overlapCutoffPlot returns a gg object", {
                             gene2=paste0('G', c(2, 7, 2, 5, 4, 5, 1, 2, 2, 8)),
                             rank=c(1, 2, 3, 4, 4, 6, 7, 7, 7, 10))
     p <- overlapCutoffPlot(overlapDF)
-    expect_equal(is(p), 'gg')
+    expect_equal(length(intersect(is(p), c('gg', 'ggplot2::ggplot'))), 1)
 })
 
 test_that("percentileSets works", {
