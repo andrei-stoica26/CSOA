@@ -15,13 +15,15 @@
 scoreCellsCore <- function(geneSetExp,
                            overlapDF,
                            colStr = 'CSOA',
-                           pvalThr = 0.05,
+                           mtMethod = c('by', 'bh', 'bf'),
                            jaccardCutoff = NULL,
                            osMethod = c('log', 'minmax'),
                            pairFileName = NULL,
-                           keepOverlapOrder = FALSE){
-    osMethod <- match.arg(osMethod, c('log', 'minmax'))
-    overlapDF <- processOverlaps(overlapDF, pvalThr, jaccardCutoff, osMethod)
+                           keepOverlapOrder = FALSE,
+                           ...){
+
+    overlapDF <- processOverlaps(overlapDF, mtMethod,
+                                 jaccardCutoff, osMethod, ...)
     if(!nrow(overlapDF)){
         warning('No significant overlaps were identified.',
                 ' All cells will get a score of 0.')
@@ -95,13 +97,18 @@ scoreCells <- function(geneSetExp,
                        overlapDF,
                        setPairs,
                        geneSetNames,
-                       pvalThr = 0.05,
+                       mtMethod = c('by', 'bh', 'bf'),
                        jaccardCutoff = NULL,
                        osMethod = c('log', 'minmax'),
                        pairFileTemplate = NULL,
-                       keepOverlapOrder = FALSE){
+                       keepOverlapOrder = FALSE,
+                       ...){
 
+    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
+
+    message('Processing overlaps...')
+
     if(!is.null(pairFileTemplate))
         pairFileName <- paste0(pairFileTemplate, geneSetNames) else
             pairFileName <- NULL
@@ -109,8 +116,8 @@ scoreCells <- function(geneSetExp,
     scoreDFList <- lapply(seq_along(setPairs), function(i) {
         setOverlapDF <- overlapSlice(overlapDF, setPairs[[i]])
         scoreDF <- scoreCellsCore(geneSetExp, setOverlapDF, geneSetNames[i],
-                                  pvalThr, jaccardCutoff, osMethod,
-                                  pairFileName[i], keepOverlapOrder)
+                                  mtMethod, jaccardCutoff, osMethod,
+                                  pairFileName[i], keepOverlapOrder, ...)
         return(scoreDF)
     })
 

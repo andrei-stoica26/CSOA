@@ -44,6 +44,11 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #' @param nCells The total number of cells in the Seurat object.
 #' @param pairs Pairs of cell sets to be assessed. If \code{NULL} (as default),
 #' all pairs will be assessed.
+#' @param overlapFileName The name of the file where the overlap data frame
+#' will be saved. This option can be used to save time when performing
+#' exploratory analyses such as trying different \code{jaccardCutoff} parameters
+#' in \code{breakWeakTies}. Default is \code{NULL} (the overlap data frame will
+#' not be saved).
 #'
 #' @return A data frame listing statistics for all cell set overlaps: cell set
 #' sizes, recorded and expected shared cells, the recorded-over-expected ratio
@@ -57,14 +62,22 @@ pairOverlap <- function(cellSets, pairs, nCells){
 #'
 #' @export
 #'
-cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL){
-    message('Assessing gene overlaps...')
+cellSetsOverlaps <- function(cellSets,
+                             nCells,
+                             pairs = NULL,
+                             overlapFileName = NULL){
+    message('Generating cell set overlaps...')
     genes <- names(cellSets)
     if(!length(genes))
-        stop('The cell sets must be named')
+        stop('The cell sets must have names.')
     if(is.null(pairs))
         pairs <- getPairs(genes)
     df <- pairOverlap(cellSets, pairs, nCells)
+    if (!is.null(overlapFileName)){
+        overlapFile <- paste0(overlapFileName, '.qs')
+        message('Saving overlap file: ', overlapFile, '...')
+        qsave(df, overlapFile)
+    }
     return(df)
 }
 
@@ -91,10 +104,16 @@ cellSetsOverlaps <- function(cellSets, nCells, pairs = NULL){
 #'
 #' @export
 #'
-generateOverlaps <- function(geneSetExp, percentile = 90, pairs = NULL){
+generateOverlaps <- function(geneSetExp,
+                             percentile = 90,
+                             pairs = NULL,
+                             overlapFileName = NULL){
     cellSets <- percentileSets(geneSetExp, percentile)
     if(!length(cellSets))
         return(data.frame())
-    overlapDF <- cellSetsOverlaps(cellSets, dim(geneSetExp)[2], pairs)
+    overlapDF <- cellSetsOverlaps(cellSets,
+                                  dim(geneSetExp)[2],
+                                  pairs,
+                                  overlapFileName)
     return(overlapDF)
 }

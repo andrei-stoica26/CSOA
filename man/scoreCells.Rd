@@ -9,11 +9,12 @@ scoreCells(
   overlapDF,
   setPairs,
   geneSetNames,
-  pvalThr = 0.05,
+  mtMethod = c("by", "bh", "bf"),
   jaccardCutoff = NULL,
   osMethod = c("log", "minmax"),
   pairFileTemplate = NULL,
-  keepOverlapOrder = FALSE
+  keepOverlapOrder = FALSE,
+  ...
 )
 }
 \arguments{
@@ -26,7 +27,9 @@ restricted to the genes for which cell sets will be computed.}
 
 \item{geneSetNames}{Character vector of names of gene sets.}
 
-\item{pvalThr}{P-value threshold used for initial filtering.}
+\item{mtMethod}{Multiple testing correction method. Options are
+Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
+Benjamini-Yekutieli ('by').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges
@@ -42,6 +45,8 @@ data frames will not be saved).}
 \item{keepOverlapOrder}{Keep the rank-based order of overlaps in the
 pair score file, as opposed to changing it to a pair score-based order.
 Ignored if pairFileTemplate is \code{NULL}.}
+
+\item{...}{Additional arguments passed to \code{mtCorrectDF}.}
 }
 \value{
 A data frame whose columns correspond to the CSOA scores of the

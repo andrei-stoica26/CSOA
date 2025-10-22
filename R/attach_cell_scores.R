@@ -1,10 +1,15 @@
-#' @param scoreDF Dataframe of CSOA scores
+#' @importFrom SummarizedExperiment assay colData colData<-
+#'
+NULL
+
+
+#' @param scoreDF Data frame of CSOA scores.
 #'
 #' @rdname attachCellScores
 #' @export
 #'
 attachCellScores.default <- function(scObj, scoreDF, ...)
-    stop('Unrecognized input type: scObj must be a Seurat object with a',
+    stop('Unrecognized input type: `scObj` must be a Seurat object with a',
          ' data assay, a SingleCellExperiment with a logcounts assay',
          ' a matrix or a dgCMatrix.')
 

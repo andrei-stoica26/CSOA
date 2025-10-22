@@ -100,7 +100,9 @@ rankOverlaps <- function(overlapDF){
 #' @noRd
 #'
 findRankCutoff <- function(freqDF){
-    freqSub <- subset(freqDF, n == max(n))
+    if(length(setdiff(c('rank', 'n'), colnames(freqDF))))
+        stop('Columns `rank` and `n` must exist in the data frame.')
+    freqSub <- freqDF[freqDF$n == max(freqDF$n), , drop=FALSE]
     rankCutoff <- mean(c(max(freqSub$rank), min(freqSub$rank)))
     return(rankCutoff)
 }
@@ -153,9 +155,11 @@ prepareFiltering <- function(overlapDF){
 #' @noRd
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
+    if(!'rawAggRank' %in% colnames(overlapDF))
+        stop('Column `rawAggRank` must exist in the data frame.')
     if(is.null(firstOutRawRank) | !nrow(overlapDF))
         return(overlapDF)
-    return(subset(overlapDF, rawAggRank < firstOutRawRank))
+    return(overlapDF[overlapDF$rawAggRank < firstOutRawRank, , drop=FALSE])
 }
 
 #' Score cell set overlaps
@@ -222,12 +226,15 @@ scoreOverlaps <- function(overlapDF,
 #' \code{breakWeakTies} between \code{filterOverlaps} and \code{scoreOverlaps}.
 #'
 #' @param overlapDF Overlap data frame.
-#' @param pvalThr P-value threshold used for initial filtering.
+#' @param mtMethod Multiple testing correction method. Options are
+#' Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
+#' Benjamini-Yekutieli ('by').
 #' @param jaccardCutoff A cutoff used in the filtering of edges with low
 #' Jaccard scores. If \code{NULL} (as default), no filtering of such edges
 #' will be performed.
 #' @param osMethod Method used to compute overlap scores.
 #' Options are "log" and "minmax".
+#' @param ... Additional arguments passed to \code{mtCorrectDF}.
 #'
 #' @return A data frame consisting of filtered, ranked and scored cell sets
 #' overlaps
@@ -244,26 +251,29 @@ scoreOverlaps <- function(overlapDF,
 #' @export
 #'
 processOverlaps <- function(overlapDF,
-                            pvalThr = 0.05,
+                            mtMethod = c('by', 'bh', 'bf'),
                             jaccardCutoff = NULL,
-                            osMethod = c('log', 'minmax')){
+                            osMethod = c('log', 'minmax'),
+                            ...){
 
+    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
+
     if (nrow(overlapDF) > 1)
-        overlapDF <- byCorrectDF(overlapDF, pvalThr) else
+        overlapDF <- mtCorrectDF(overlapDF, mtMethod, ...) else
             overlapDF$pval_adj <- overlapDF$pval
 
-        if (!nrow(overlapDF))
-            return(overlapDF)
-
-        overlapDF <- rankOverlaps(overlapDF)
-        firstOutRawRank <- prepareFiltering(overlapDF)
-        overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
-        if (!is.null(jaccardCutoff)){
-            overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
-            firstOutRawRank <- NULL
-        }
-
-        overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
+    if (!nrow(overlapDF))
         return(overlapDF)
+
+    overlapDF <- rankOverlaps(overlapDF)
+    firstOutRawRank <- prepareFiltering(overlapDF)
+    overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)
+    if (!is.null(jaccardCutoff)){
+        overlapDF <- breakWeakTies(overlapDF, jaccardCutoff)
+        firstOutRawRank <- NULL
+    }
+
+    overlapDF <- scoreOverlaps(overlapDF, osMethod, firstOutRawRank)
+    return(overlapDF)
 }

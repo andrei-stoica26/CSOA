@@ -1,35 +1,57 @@
-#'@importFrom Seurat FeaturePlot
-#'@importFrom ggeasy easy_remove_axes
-#'@importFrom ggforce geom_circle
-#'@importFrom ggnewscale new_scale_color new_scale_fill
-#'@importFrom ggplot2 aes annotate coord_fixed element_blank element_text geom_hline geom_line geom_point geom_polygon geom_segment geom_tile geom_vline ggplot ggtitle labs margin scale_color_discrete scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual scale_size_continuous scale_x_continuous scale_y_continuous theme theme_classic theme_minimal theme_void xlim ylim
-#'@importFrom ggraph geom_edge_link geom_node_point geom_node_text ggraph scale_edge_width
-#'@importFrom ggrepel geom_text_repel
-#'@importFrom graphics par
-#'@importFrom grDevices chull dev.new dev.off
-#'@importFrom reshape2 melt
-#'@importFrom SeuratObject Idents
-#'@importFrom textshape cluster_matrix
-#'@importFrom tidygraph as_tbl_graph
-#'@importFrom viridis scale_color_viridis scale_fill_viridis
-#'@importFrom wesanderson wes_palette
+#' @importFrom Seurat FeaturePlot Idents<-
+#' @importFrom ggplot2 aes element_blank element_text geom_tile ggplot scale_color_gradientn scale_color_manual scale_fill_gradientn scale_fill_manual theme theme_minimal
+#' @importFrom henna centerTitle connectedComponents hullPlot networkPlot radialPlot
+#' @importFrom reshape2 melt
+#' @importFrom rlang .data
+#' @importFrom textshape cluster_matrix
+#' @importFrom wesanderson wes_palette
 #'
 NULL
 
-#' Add a centered title to a plot
+#' Plot a simple heatmap
 #'
-#' This function adds a centered title to a ggplot object
+#' This function plots a simple heatmap, with clustering but no dendograms.
 #'
-#' @param p A ggplot object.
+#' @param mat A matrix.
+#' @param aesNames A character vector of length 3 representing the y, x and fill
+#' aes elements.
 #' @param title Plot title.
-#' @param ... Other arguments passed to element_text.
+#' @param axisTextSize Axis text size.
+#' @inheritParams wesBinaryGradient
+#' @param ... Other arguments passed to \code{henna::centerTitle}.
 #'
 #' @return A ggplot object.
 #'
-#' @noRd
+#' @examples
+#' mat <- matrix(0, 10, 20)
+#' mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
+#' basicHeatmap(mat)
 #'
-titlePlot <- function(p, title, ...)
-    return(p + ggtitle(title) + theme(plot.title=element_text(hjust=0.5, ...)))
+#' @export
+#'
+basicHeatmap <- function(mat,
+                         aesNames = c('x', 'y', 'Score'),
+                         title = 'Heatmap',
+                         axisTextSize = 7,
+                         palType = 'fillCont',
+                         wesPal = 'Royal1',
+                         wesLow = 3,
+                         wesHigh = 2,
+                         ...){
+    df <- heatmapDF(mat, aesNames)
+    p <- ggplot(df, aes(x=.data[[aesNames[2]]],
+                        y=.data[[aesNames[1]]],
+                        fill=.data[[aesNames[3]]])) +
+        geom_tile() +
+        theme_minimal() +
+        theme(axis.text.x=element_blank(),
+              axis.ticks.y=element_blank(),
+              axis.text.y=element_text(size = axisTextSize),
+              axis.title=element_blank())
+    p <- wesBinaryGradient(p, palType, wesPal, wesLow, wesHigh)
+    p <- centerTitle(p, title, ...)
+    return(p)
+}
 
 #' A feature plot with a more distinctive color scheme.
 #'
@@ -65,7 +87,7 @@ titlePlot <- function(p, title, ...)
 featureWes <- function(seuratObj, feature,
                        title = feature,
                        idClass = NULL,
-                       labelSize = 3,
+                       labelSize = 3.5,
                        titleSize = 12,
                        wesPal = 'Royal1',
                        wesLow = 3,
@@ -73,48 +95,15 @@ featureWes <- function(seuratObj, feature,
                        ...){
     if(is.null(idClass))
         p <- FeaturePlot(seuratObj, feature) else{
-        Idents(seuratObj) <- idClass
-        p <- FeaturePlot(seuratObj, feature, label=TRUE,
-                         label.size=labelSize, ...)
+            if(!idClass %in% colnames(seuratObj[[]]))
+                stop('Grouping variable `', idClass,
+                     '` not found in the metadata of the Seurat object.')
+            Idents(seuratObj) <- idClass
+            p <- FeaturePlot(seuratObj, feature, label=TRUE,
+                             label.size=labelSize, ...)
         }
-    p <- titlePlot(p, title, size = titleSize)
+    p <- centerTitle(p, title, size=titleSize)
     p <- wesBinaryGradient(p, 'colorCont', wesPal, wesLow, wesHigh)
-    return(p)
-}
-
-#' Plot the overlaps as a network
-#'
-#' This function plots the graph of the overlap data frame, with genes as vertices
-#' and overlaps as edges.
-#'
-#' @inheritParams networkPlotDF
-#' @param title Plot title.
-#' @param nodePointSize Point size of graph nodes.
-#' @param nodeTextSize Text size of graph nodes.
-#' @param ... Additional parameters passed to titlePlot.
-#'
-#' @return A network plot.
-#'
-#' @examples
-#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
-#' gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
-#' rank = c(1, 1, 3, 3, 3, 3))
-#' networkPlot(overlapDF)
-#'
-#' @export
-#'
-networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol = 'rank',
-                        edgeScale = 2, nodePointSize = 10, nodeTextSize = 2.3, ...){
-    df <- networkPlotDF(overlapDF, rankCol, edgeScale)
-    tblGraph <- tidygraph::as_tbl_graph(df, directed=FALSE)
-    p <- ggraph(tblGraph, layout="nicely") +
-        geom_edge_link(aes(width=weight), color='green4') +
-        scale_edge_width(range=c(0.1, 0.3)) +
-        geom_node_point(size=nodePointSize, color='orange') +
-        geom_node_text(aes(label=name), color='black', size=nodeTextSize) +
-        theme_void() +
-        theme(legend.position='none')
-    p <- titlePlot(p, title, ...)
     return(p)
 }
 
@@ -125,13 +114,16 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #'
 #' @details The function can separate genes by groups. The groups can be, for
 #' instance, different gene sets, or different connected components of the same
-#' overlap data frame.
+#' overlap data frame. A wrapper around \code{henna::radialPlot}
 #'
 #' @inheritParams edgeLists.list
 #' @param title Plot title.
-#' @param groupLegendName The title of the group legend; if NULL, no groups will
-#' be distinguished.
-#' @inheritParams circleCoords
+#' @param degreeLegendTitle The title of the degree legend.
+#' @param groupLegendTitle The title of the group legend. If \code{NULL},
+#' no groups will be distinguished.
+#' @param extraCircles Number of extra circles to be displayed on the plot.
+#' @inheritParams edgeLists.list
+#' @param ... Additional parameters passed to \code{henna::radialPlot}.
 #'
 #' @return A ggplot object.
 #'
@@ -140,96 +132,30 @@ networkPlot <- function(overlapDF, title = 'Top overlaps network plot', rankCol 
 #' 11, 11, 10, 10, 10)),
 #' gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
 #' 13, 14, 13, 16, 14)))
-#' edgesDF <- connectedComponents(edgesDF, 'group')
-#' geneRadialPlot(edgesDF, 'component', extraCircles=1)
+#' edgesDF <- henna::connectedComponents(edgesDF, 'group')
+#' geneRadialPlot(edgesDF, groupLegendTitle='Component', extraCircles=1)
 #'
 #' @export
 #'
-geneRadialPlot <- function(overlapObj, groupLegendName = NULL, groupNames = NULL, cutoff = NULL,
+geneRadialPlot <- function(overlapObj,
                            title = 'Top overlap genes plot',
-                           extraCircles = 2){
+                           degreeLegendTitle = 'Number of top overlaps',
+                           groupLegendTitle = 'Group',
+                           extraCircles = 2,
+                           groupNames = NULL,
+                           cutoff = NULL,
+                           ...){
 
-    geneCoordsDF <- geneCoords(overlapObj, groupNames, cutoff)
-    colors <- c('red', 'purple1', 'olivedrab1','darkorange1',
-                'lavender', 'thistle1','green1','violetred4',
-                'goldenrod1', 'firebrick4')
-    nColors <- length(colors)
-    if(!is.null(groupLegendName) & length(unique(geneCoordsDF$group)) > nColors)
-        stop('Only up to ', nColors, ' groups are allowed.')
-
-    circleCoordsDF <- circleCoords(geneCoordsDF, extraCircles)
-
-    legendStep <- as.integer(geneCoordsDF$nEdges[1] / 6) + 1
-    p <- ggplot() +
-        geom_circle(aes(x0=x, y0=y, r=r, fill=nEdges, color=nEdges),
-                    data=circleCoordsDF) +
-        scale_fill_viridis(option='viridis', begin=0.4,
-                           breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep)) +
-        scale_color_viridis(option='viridis', begin=0.4,
-                            breaks=seq(geneCoordsDF$nEdges[1], 1, -legendStep),
-                            guide='none') +
-        labs(fill='Number of top overlaps') +
-        theme_classic() + easy_remove_axes() + coord_fixed() +
-        theme(plot.margin=margin(0, 0, 0, 0),
-              legend.title=element_text(size=10),
-              legend.text=element_text(size=10)) +
-        geom_text_repel(aes(x, y, label=gene), data=geneCoordsDF, size=3)
-    if (!is.null(groupLegendName))
-        p <- p + new_scale_color() +
-        new_scale_fill() +
-        geom_point(aes(x, y, color=group), data = geneCoordsDF, size=0.8) +
-        scale_color_discrete(type=colors) +
-        labs(color=groupLegendName) else p <- p + geom_point(aes(x, y),
-                                                             data=geneCoordsDF,
-                                                             color='red',
-                                                             size=0.8)
-  p <- titlePlot(p, title)
-  return(p)
-}
-
-#' Plot a simple heatmap
-#'
-#' This function plots a simple heatmap, with clustering but no dendograms.
-#'
-#' @param mat A matrix.
-#' @param aesNames A character vector of length 3 representing the y, x and fill
-#' aes elements.
-#' @param title Plot title.
-#' @param axisTextSize Axis text size.
-#' @inheritParams wesBinaryGradient
-#'
-#' @return A ggplot object.
-#'
-#' @examples
-#' mat <- matrix(0, 10, 20)
-#' mat[sample(length(mat), 50)] <- runif(50, max = 2.5)
-#' basicHeatmap(mat)
-#'
-#' @export
-#'
-basicHeatmap <- function(mat,
-                         aesNames = c('x', 'y', 'Score'),
-                         title = 'Heatmap',
-                         axisTextSize = 7,
-                         palType = 'fillCont',
-                         wesPal = 'Royal1',
-                         wesLow = 3,
-                         wesHigh = 2){
-    df <- heatmapDF(mat, aesNames)
-    p <- ggplot(df, aes(x=.data[[aesNames[2]]],
-                        y=.data[[aesNames[1]]],
-                        fill=.data[[aesNames[3]]])) +
-        geom_tile() +
-        theme_minimal() +
-        theme(axis.text.x=element_blank(),
-              axis.ticks.y=element_blank(),
-              axis.text.y=element_text(size = axisTextSize),
-              axis.title=element_blank())
-    p <- wesBinaryGradient(p, palType, wesPal, wesLow, wesHigh)
-    p <- titlePlot(p, title)
+    edgesDFs <- edgeLists(overlapObj, groupNames, cutoff)
+    degreesDF <- geneDegrees(edgesDFs)
+    p <- radialPlot(degreesDF,
+                    title,
+                    degreeLegendTitle,
+                    groupLegendTitle,
+                    extraCircles,
+                    ...)
     return(p)
 }
-
 
 #' Plot the selection of overlaps
 #'
@@ -237,9 +163,19 @@ basicHeatmap <- function(mat,
 #' by plotting rank frequencies against ranks and showcasing the convex hull of
 #' the rank-frequency points.
 #'
+#' @details A wrapper around \code{henna::hullPlot}.
+#'
 #' @param overlapDF Processed overlap data frame created
 #' with \code{processOverlaps}.
 #' @param title Plot title.
+#' @param palette Color palette. Must have two colors, the first one
+#' representing accepted overlaps and the other representing discarded overlaps.
+#' @param hullWidth Width of the convex hull.
+#' @param xLab x axis label.
+#' @param yLab y axis label.
+#' @param legendLabs Legend labels.
+#' @param pointShape Point shape.
+#' @param ... Additional arguments passed to \code{henna::hullPlot}.
 #'
 #' @return A ggplot object.
 #'
@@ -251,65 +187,82 @@ basicHeatmap <- function(mat,
 #'
 #' @export
 #'
-overlapCutoffPlot <- function(overlapDF, title = 'Overlap cutoff plot'){
+overlapCutoffPlot <- function(overlapDF,
+                              title = 'Overlap cutoff plot',
+                              palette = c('purple', 'yellow'),
+                              hullWidth = 0.8,
+                              xLab = 'Overlap rank',
+                              yLab = 'Frequency',
+                              legendLabs=c('Accepted overlaps',
+                                           'Discarded overlaps'),
+                              pointShape = 24,
+                              ...
+){
     if(!'rank' %in% colnames(overlapDF))
-        stop('rank column not found in overlapDF.',
-             ' Use process_overlaps to generate it.')
+        stop('rank column not found in `overlapDF`.',
+             ' Use `process_overlaps` to generate it.')
     freqDF <- dplyr::count(overlapDF, rank)
-    rankCutoff <- findRankCutoff(freqDF)
 
     if (nrow(freqDF) < 2)
-        stop('overlapCutoffPlot requires at least two points.')
+        stop('`overlapCutoffPlot` requires at least two points.')
 
     freqs <- freqDF$n
-    nFreq <- length(unique(freqs))
-    if (nFreq < 2)
-        stop('overlapCutoffPlot requires at least two',
+    if (length(unique(freqs)) < 2)
+        stop('`overlapCutoffPlot` requires at least two',
              ' distinct rank frequencies.')
 
-    yMin <- min(freqs)
-    yMax <- max(freqs)
+    maxApps <- which(freqs %in% max(freqs))
+    if (identical(maxApps, 1)  | identical(maxApps, nrow(freqDF)))
+        stop('`overlapCutoffPlot` requires that the',
+             ' maximum rank frequency is reached at a non-extremal point.')
 
-    maxApps <- which(freqs %in% yMax)
-    if (length(maxApps) == 1)
-        if (maxApps %in% c(1, nrow(freqDF)))
-            stop('overlapCutoffPlot requires that the',
-                 ' maximum rank frequency is reached at a non-extremal point.')
+        rankCutoff <- findRankCutoff(freqDF)
 
-    xMin <- min(freqDF$rank)
-    xMax <- max(freqDF$rank)
-
-    colors <- c('purple', 'gold')
-
-    hullIndices <- chull(freqDF$rank, freqDF$n)
-    hull <- convexHull(freqDF, hullIndices)
-    hullSegments <- pointsToSegments(hull)
-
-    vCoords <- borderCoords(hullSegments, 1, rankCutoff)
-    borderPoints <- list(c(rankCutoff, rankCutoff), vCoords)
-
-    df1 <- rbind(freqDF[freqDF[, 1] < rankCutoff, ], borderPoints)
-    df2 <- rbind(freqDF[freqDF[, 1] > rankCutoff, ], borderPoints)
-
-    hullSegments1 <- pointsToSegments(convexHull(df1))
-    hullSegments2 <- pointsToSegments(convexHull(df2))
-
-    p <- ggplot() + theme_classic() + xlim(xMin, xMax) + ylim(yMin, yMax) +
-        labs(x='Overlap rank', y='Frequency') +
-        geom_polygon(data=hullSegments1, aes(x, y, fill='Accepted overlaps'),
-                     alpha=0.2, ) +
-        geom_polygon(data=hullSegments2, aes(x, y, fill='Discarded overlaps'),
-                     alpha=0.2) +
-        geom_segment(data=hullSegments, aes(x, y, xend=xEnd, yend=yEnd),
-                     color='black', linewidth=0.8) +
-        geom_point(data=freqDF, aes(rank, n), color='black',
-                   size=1, shape=24) +
-        scale_fill_manual(values=colors,
-                          labels=c('Accepted overlaps', 'Discarded overlaps')) +
-        geom_vline(xintercept=rankCutoff, color='blue', linewidth=0.3,
-                   linetype='dashed') +
-        theme(legend.title=element_blank(),
-              legend.position='bottom')
-    p <- titlePlot(p, title)
-    return(p)
+        p <- hullPlot(freqDF,
+                      title,
+                      rankCutoff,
+                      palette=palette,
+                      hullWidth=hullWidth,
+                      xLab=xLab,
+                      yLab=yLab,
+                      legendLabs=legendLabs,
+                      pointShape=pointShape,
+                      ...)
+        return(p)
 }
+
+#' Plot the overlaps as a network
+#'
+#' This function plots the graph of the overlap data frame, with genes as
+#' vertices and overlaps as edges.
+#'
+#' @details A thin wrapper around \code{henna::networkPlot}.
+#'
+#' @param overlapDF Overlap data frame.
+#' @param title Plot title.
+#' @param nodeColor The color of nodes. If \code{NULL}, the default
+#' \code{henna::networkPlot} color scheme will be used, which uses different
+#' colors for nodes belonging to different connected components.
+#' @param edgeColor The color of edges.
+#' @param ... Additional parameters passed to \code{henna::networkPlot}.
+#'
+#' @return An overlap network plot.
+#'
+#' @examples
+#' overlapDF <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
+#' gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
+#' rank = c(1, 1, 3, 3, 3, 3))
+#' overlapNetworkPlot(overlapDF)
+#'
+#' @export
+#'
+overlapNetworkPlot <- function(overlapDF,
+                               title = 'Top overlaps network plot',
+                               nodeColor = 'orange',
+                               edgeColor = 'green4',
+                               ...)
+    return(networkPlot(overlapDF,
+                       title,
+                       nodeColor=nodeColor,
+                       edgeColor=edgeColor,
+                       ...))

@@ -22,17 +22,17 @@ edgeLists(overlapObj, ...)
 \item{...}{Additional arguments.}
 
 \item{groupNames}{Names of groups. If provided, must be a vector
-of the same length as the list of overlap data frames}
+of the same length as the list of overlap data frames.}
 
 \item{cutoff}{Number of retained edges from each overlap data frame after
-refiltering. If NULL (as default), no refiltering will be performed}
+refiltering. If \code{NULL} (as default), no refiltering will be performed.}
 }
 \value{
 A list of data frames.
 }
 \description{
 This function creates a list of data frames with three columns:
-gene1, gene2 and group. If overlapObj is an overlap data frame,
+gene1, gene2 and group. If \code{overlapObj} is an overlap data frame,
 the groups correspond to the connected components. If it is a
 list of overlap data frames, the groups must be specified as
 groupNames.

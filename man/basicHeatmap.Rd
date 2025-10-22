@@ -12,7 +12,8 @@ basicHeatmap(
   palType = "fillCont",
   wesPal = "Royal1",
   wesLow = 3,
-  wesHigh = 2
+  wesHigh = 2,
+  ...
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ here.}
 \item{wesLow}{Index of color marking low values.}
 
 \item{wesHigh}{Index of color marking high values.}
+
+\item{...}{Other arguments passed to \code{henna::centerTitle}.}
 }
 \value{
 A ggplot object.

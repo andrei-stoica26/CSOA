@@ -4,7 +4,12 @@
 \alias{generateOverlaps}
 \title{Generate overlaps of cell sets for input genes}
 \usage{
-generateOverlaps(geneSetExp, percentile = 90, pairs = NULL)
+generateOverlaps(
+  geneSetExp,
+  percentile = 90,
+  pairs = NULL,
+  overlapFileName = NULL
+)
 }
 \arguments{
 \item{geneSetExp}{A gene expression non-sparse matrix with the rows
@@ -14,6 +19,12 @@ restricted to the genes for which cell sets will be computed.}
 
 \item{pairs}{Pairs of cell sets to be assessed. If \code{NULL} (as default),
 all pairs will be assessed.}
+
+\item{overlapFileName}{The name of the file where the overlap data frame
+will be saved. This option can be used to save time when performing
+exploratory analyses such as trying different \code{jaccardCutoff} parameters
+in \code{breakWeakTies}. Default is \code{NULL} (the overlap data frame will
+not be saved).}
 }
 \value{
 A data frame listing statistics for all cell set overlaps

@@ -5,37 +5,6 @@ test_that("basicHeatmap returns a ggplot object", {
     expect_equal(length(intersect(is(p), c('gg', 'ggplot2::ggplot'))), 1)
 })
 
-test_that("connectedComponents works", {
-    df <- data.frame(gene1 = paste0('G', c(1, 2, 12, 3, 4, 4, 7, 8, 12, 11)),
-                     gene2 = paste0('G', c(2, 3, 6, 3, 7, 8, 8, 9, 10, 12)))
-    expect_equal(max(connectedComponents(df)$component), 3)
-
-    df <- data.frame(gene1 = paste0('G', c(1, 15, 4, 1, 1, 7, 7, 22, 12, 7)),
-                     gene2 = paste0('G', c(2, 7, 6, 15, 2, 4, 5, 7, 7, 6)))
-    expect_equal(max(connectedComponents(df)$component), 1)
-
-    df <- data.frame(gene1 = paste0('G', c(1, 3, 5, 7, 9)),
-                     gene2 = paste0('G', c(2, 4, 6, 8, 10)))
-    expect_equal(max(connectedComponents(df)$component), 5)
-})
-
-test_that("findRankCutoff works", {
-    freqDF <- data.frame(rank = c(1, 2, 4, 8),
-                         n = c(1, 3, 4, 2))
-    expect_equal(findRankCutoff(freqDF), 4)
-
-    freqDF <- data.frame(rank = c(1, 2, 5, 8, 11, 14),
-                         n = c(1, 3, 3, 3, 3, 2))
-    expect_equal(findRankCutoff(freqDF), 6.5)
-
-    freqDF <- data.frame(apples = c(1, 2, 5, 8, 11, 14),
-                         oranges = c(1, 3, 3, 3, 3, 2))
-    expect_error(findRankCutoff(freqDF))
-
-    freqDF <- data.frame(rank = c(),
-                         n = c())
-    expect_error(findRankCutoff(freqDF))
-})
 
 test_that("getPairs works", {
     v <- c('ASD', 'VBN', 'HJKL')
@@ -49,16 +18,16 @@ test_that("geneRadialPlot returns a ggplot object", {
                                                 11, 11, 10, 10, 10)),
                           gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
                                                 13, 14, 13, 16, 14)))
-    edgesDF <- connectedComponents(edgesDF, 'group')
+    edgesDF <- henna::connectedComponents(edgesDF, 'group')
     p <- geneRadialPlot(edgesDF, 'component', extraCircles=1)
     expect_equal(length(intersect(is(p), c('gg', 'ggplot2::ggplot'))), 1)
 })
 
-test_that("networkPlot returns a ggraph object", {
+test_that("overlapNetworkPlot returns a ggraph object", {
     df <- data.frame(gene1 = paste0('G', c(1, 2, 5, 6, 7, 17)),
                      gene2 = paste0('G', c(2, 5, 8, 11, 11, 11)),
                      rank = c(1, 1, 3, 3, 3, 3))
-    p <- networkPlot(df)
+    p <- overlapNetworkPlot(df)
     expect_equal(is(p), 'ggraph')
 })
 
@@ -113,7 +82,6 @@ test_that("overlapPairs works", {
 })
 
 test_that("runCSOA works", {
-    library(SingleCellExperiment)
     sceObj <- scRNAseq::BaronPancreasData('human')
     sceObj <- scuttle::logNormCounts(sceObj)
     acinarMarkers <- c('PRSS1', 'KLK1', 'CTRC', 'PNLIP', 'AKR1C3', 'CTRB1',

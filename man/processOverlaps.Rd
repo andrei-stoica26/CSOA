@@ -6,15 +6,18 @@
 \usage{
 processOverlaps(
   overlapDF,
-  pvalThr = 0.05,
+  mtMethod = c("by", "bh", "bf"),
   jaccardCutoff = NULL,
-  osMethod = c("log", "minmax")
+  osMethod = c("log", "minmax"),
+  ...
 )
 }
 \arguments{
 \item{overlapDF}{Overlap data frame.}
 
-\item{pvalThr}{P-value threshold used for initial filtering.}
+\item{mtMethod}{Multiple testing correction method. Options are
+Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
+Benjamini-Yekutieli ('by').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges
@@ -22,6 +25,8 @@ will be performed.}
 
 \item{osMethod}{Method used to compute overlap scores.
 Options are "log" and "minmax".}
+
+\item{...}{Additional arguments passed to \code{mtCorrectDF}.}
 }
 \value{
 A data frame consisting of filtered, ranked and scored cell sets

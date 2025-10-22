@@ -72,8 +72,8 @@ neighborJaccard <- function(overlapDF){
 breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
     if(length(setdiff(c('gene1', 'gene2', 'ratio', 'pval'),
                       colnames(overlapDF))))
-        stop('Columns gene1, gene2, ratio and pval must',
-            ' exist in the dataframe.')
+        stop('Columns `gene1`, `gene2`, `ratio` and `pval` must',
+            ' exist in the data frame.')
     prevNEdges <- -1
     nEdges <- nrow(overlapDF)
     message(nEdges, ' overlap', rep('s', nEdges != 1),

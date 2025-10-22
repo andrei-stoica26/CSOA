@@ -2,7 +2,7 @@
 title: "CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: August 13, 2025
+date: October 21, 2025
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{Getting started with CSOA}
@@ -41,10 +41,12 @@ In addition to CSOA, you need to install [patchwork](https://patchwork.data-imag
 
 # Scoring gene sets
 
-This tutorial uses an scRNA-seq human pancreas dataset with provided cell type annotations. 
+This tutorial uses an scRNA-seq human pancreas dataset with provided cell type 
+annotations. 
 
 After loading the required packages, download the dataset using the 
-`BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a `SingleCellExperiment` object. 
+`BaronPancreasData` function from `scRNAseq`. The dataset will be stored as a 
+`SingleCellExperiment` object. 
 
 CSOA requires the input scRNA-seq data to be normalized and log-transformed. 
 We will employ the `logNormCounts` function from `scuttle` for this step.
@@ -108,7 +110,6 @@ gammaMarkers <- c('PPY', 'ABCC9', 'FGB', 'ZNF503', 'MEIS1', 'LMO3', 'EGR3',
 
 geneSets <- list(acinarMarkers, alphaMarkers, ductalMarkers, gammaMarkers)
 names(geneSets) <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
-
 ```
 
 Before running CSOA, we will convert the `SingleCellExperiment` object to a 
@@ -149,16 +150,11 @@ vapply(names(geneSets),
 
 Additionally, CSOA can be run directly on an expression matrix. The `expMat`
 function extracts the log-transformed and normalized expression matrix—`data` 
-for`Seurat`, `logcounts` for `SingleCellExperiment`—from the input object,
+for `Seurat`, `logcounts` for `SingleCellExperiment`—from the input object,
 and converts it to a dense matrix.
 
-CSOA requires 
-a dense expression matrix, as opposed to the sparse matrix class (`dgCMatrix`) 
-used by `Seurat` and `SingleCellExperiment`. To satisfy this requirement, 
-the `expMat` function will be employed. This function extracts the 
 
-
-```{r}
+```{r, warning=FALSE}
 geneSetExp <- expMat(seuratObj)
 ```
 
@@ -177,6 +173,7 @@ head(res[[2]])
 ```
 
 The results are identical with those obtained earlier for the Seurat object:
+
 ```{r}
 vapply(names(geneSets), 
        function(x) identical(seuratObj[[]][[x]], res[[2]][[x]]), logical(1))

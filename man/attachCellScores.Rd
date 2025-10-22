@@ -25,7 +25,7 @@ attachCellScores(scObj, ...)
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
 expression matrix.}
 
-\item{scoreDF}{Dataframe of CSOA scores}
+\item{scoreDF}{Data frame of CSOA scores.}
 
 \item{...}{Additional arguments.}
 }

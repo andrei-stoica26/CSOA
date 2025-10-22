@@ -9,7 +9,7 @@ featureWes(
   feature,
   title = feature,
   idClass = NULL,
-  labelSize = 3,
+  labelSize = 3.5,
   titleSize = 12,
   wesPal = "Royal1",
   wesLow = 3,

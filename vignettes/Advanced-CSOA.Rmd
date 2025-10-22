@@ -2,7 +2,7 @@
 title: "Advanced CSOA"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: August 13, 2025
+date: October 21, 2025
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{Advanced CSOA}
@@ -37,6 +37,7 @@ list of acinar markers.
 ```{r message=FALSE, warning=FALSE, results=FALSE}
 library(CSOA)
 library(ggplot2)
+library(henna)
 library(patchwork)
 library(scRNAseq)
 library(scuttle)
@@ -242,10 +243,10 @@ We can interpret the overlap data frame as a graph, with genes as vertices and o
 
 ```{r, out.height='80%', out.width='80%', fig.height=5, fig.width=5}
 dfNetwork <- qGrab('pairsCSOA_mixed.qs')
-networkPlot(dfNetwork, rankCol='overlapRank')
+overlapNetworkPlot(dfNetwork, rankCol='overlapRank')
 ```
 
-We remark that the graph is not **connected**: it has no vertex from which we can reach all other vertices by travelling on the graph edges. Instead, some subgraphs are connected. We refer to these as **connected components**. Their significance is that they can be interpreted as **gene modules**—groups of genes linked by the highly significant overlaps of some of their corresponding cell sets. The graph contains two connected components, `1` and `2`:
+We remark that the graph is not **connected**: it has no vertex from which we can reach all other vertices by travelling on the graph edges. Instead, some subgraphs are connected. We refer to these as **connected components**. Their significance is that they can be interpreted as **gene modules**—groups of genes linked by the highly significant overlaps of some of their corresponding cell sets. Using the `connectedComponents` function from `henna`, we find that the graph contains two connected components, `1` and `2`:
 
 ```{r}
 dfNetwork <- connectedComponents(dfNetwork)
@@ -310,7 +311,7 @@ little, as calculated using the Jaccard score. The resulting graph has two conne
 
 ```{r, out.height='80%', out.width='80%', fig.height=5, fig.width=5}
 dfNetwork <- qGrab('pairsCSOA_mixed.qs')
-networkPlot(dfNetwork, rankCol='overlapRank')
+overlapNetworkPlot(dfNetwork, rankCol='overlapRank')
 ```
 These correspond to acinar and ductal cells, respectively:
 
@@ -360,7 +361,7 @@ seuratObj <- runCSOA(seuratObj, geneSets, pairFileTemplate='pairs',
                              keepOverlapOrder=TRUE)
 
 geneRadialPlot(lapply(paste0('pairs', names(geneSets), '.qs'), qGrab),
-               groupLegendName='Gene set',
+               groupLegendTitle='Gene set',
                groupNames=str_remove(names(geneSets), 'CSOA_'),
                cutoff=15,
                title='Top 15 overlap genes',

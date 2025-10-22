@@ -1,7 +1,3 @@
-#' @importFrom SingleCellExperiment colData
-#' @importFrom SummarizedExperiment assay
-NULL
-
 #' Run the CSOA pipeline
 #'
 #' This function generates cell set overlaps for input gene sets
@@ -10,8 +6,8 @@ NULL
 #' per-cell score by summing the products of overlap scores and the
 #' min-max-normalized expression of the corresponding pairs of genes.
 #'
-#' #' @details Wrapper around \code{expMat}, \code{generateOverlaps},
-#' \code{scoreCellsMultiple} and \code{attachCellScores}.
+#' @details Wrapper around \code{expMat}, \code{generateOverlaps},
+#' \code{scoreCells} and \code{attachCellScores}.
 #'
 #' @inheritParams expMat
 #' @inheritParams generateOverlaps
@@ -46,23 +42,28 @@ NULL
 runCSOA <- function(scObj,
                     geneSets,
                     percentile = 90,
-                    pvalThr = 0.05,
+                    mtMethod = c('by', 'bh', 'bf'),
                     jaccardCutoff = NULL,
                     osMethod = c('log', 'minmax'),
+                    overlapFileName = NULL,
                     pairFileTemplate = NULL,
-                    keepOverlapOrder = FALSE){
+                    keepOverlapOrder = FALSE,
+                    ...){
+
+    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
     if (is.null(names(geneSets)))
-        stop('The gene sets must be named.')
+        stop('The gene sets must have names.')
     geneSets <- lapply(geneSets, sort)
     setPairs <- lapply(geneSets, getPairs)
     pairs <- Reduce(union, setPairs)
     genes <- Reduce(union, geneSets)
     geneSetExp <- expMat(scObj, genes)
-    overlapDF <- generateOverlaps(geneSetExp, percentile, pairs)
+    overlapDF <- generateOverlaps(geneSetExp, percentile, pairs,
+                                  overlapFileName)
     scoreDF <- scoreCells(geneSetExp, overlapDF, setPairs, names(geneSets),
-                          pvalThr, jaccardCutoff, osMethod, pairFileTemplate,
-                          keepOverlapOrder)
+                          mtMethod, jaccardCutoff, osMethod, pairFileTemplate,
+                          keepOverlapOrder, ...)
     return(attachCellScores(scObj, scoreDF))
 }
 

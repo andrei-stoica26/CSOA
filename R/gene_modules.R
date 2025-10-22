@@ -1,63 +1,12 @@
-#' Find the connected components of the graph determined by the overlaps
-#'
-#' This function finds the connected components of the graph having the filtered
-#' overlaps as edges.
-#'
-#' @param df A data frame with gene1 and gene2 columns.
-#' @param colName Name of the connected components column to be added.
-#' @return An overlap data frame with a column indicated the number of the
-#' connected component.
-#'
-#' @examples
-#' df <- data.frame(
-#' gene1 = paste('G', c(1, 2, 6, 7, 8, 9,
-#' 11, 25, 32, 17, 18)),
-#' gene2 = paste('G', c(2, 8, 8, 8, 1, 25,
-#' 32, 24, 24, 26, 26))
-#' )
-#' connectedComponents(df)
-#'
-#' @export
-#'
-connectedComponents <- function(df, colName = 'component'){
-    warnUnfiltered(df)
-    if(!nrow(df))
-        stop('The dataframe has no rows.')
-    df[[colName]] <- -1
-    rownames(df) <- seq(dim(df)[1])
-    vertices <- overlapGenes(df)
-    seen <- c()
-    nextComp <- 1
-    for (v in vertices){
-        if (v %in% seen)
-            next
-        currVertices <- c(v)
-        while (length(currVertices)){
-            v <- currVertices[1]
-            leftdf <- subset(df, gene1 == v)
-            rightdf <- subset(df, gene2 == v)
-            seen <- c(seen, v)
-            newEdges <- as.integer(c(rownames(leftdf), rownames(rightdf)))
-            df[newEdges, colName] <- nextComp
-            neighbors <- setdiff(c(leftdf$gene2, rightdf$gene1),
-                                 c(currVertices, seen))
-            currVertices <- c(currVertices, neighbors)
-            currVertices <- currVertices[-1]
-        }
-        nextComp <- nextComp + 1
-    }
-    return(df)
-}
-
 #' Run CSOA separately on the connected components of the overlap graph
 #'
 #' This function runs CSOA on the connected components of the graph having the
 #' filtered overlaps as edges.
 #'
 #' @inheritParams runCSOA
-#' @param df A data frame with \code{gene1}, \code{gene2} and component
+#' @param networkDF A data frame with \code{gene1}, \code{gene2} and component
 #' columns.
-#' @param components Vector of connected components that will be scored
+#' @inheritParams overlapGenes
 #' @param colStrTemplate Character used in the naming of the component
 #' gene sets.
 #' @param ... Additional parameters passed to \code{runCSOAMultiple}.
@@ -81,16 +30,15 @@ connectedComponents <- function(df, colName = 'component'){
 #' mat <- mat[genes, ]
 #' overlapDF <- generateOverlaps(mat)
 #' overlapDF <- processOverlaps(overlapDF)
-#' overlapDF <- connectedComponents(overlapDF)
+#' overlapDF <- henna::connectedComponents(overlapDF)
 #' df <- scoreModules(mat, overlapDF, unique(overlapDF$component))[[2]]
 #' head(df)
 #'
 #' @export
 #'
-scoreModules <- function(scObj, df, components,
+scoreModules <- function(scObj, networkDF, components,
                          colStrTemplate = 'CSOA_component', ...){
-    geneSets <- lapply(components,
-                       function(i) overlapGenes(subset(df, component == i)))
+    geneSets <- overlapGenes(networkDF, components)
     names(geneSets) <- paste0(colStrTemplate, components)
     return(runCSOA(scObj, geneSets, ...))
 }
@@ -104,8 +52,8 @@ scoreModules <- function(scObj, df, components,
 #' @keywords internal
 #'
 edgeLists.default <- function(overlapObj, ...)
-    stop('Unrecognized input type: overlapObj must be',
-         ' data frame or a list of data frames.')
+    stop('Unrecognized input type: `overlapObj` must be',
+         ' a data frame or a list of data frames.')
 
 #' @rdname edgeLists
 #'
@@ -121,9 +69,9 @@ edgeLists.data.frame <- function(overlapObj, ...){
 }
 
 #' @param groupNames Names of groups. If provided, must be a vector
-#' of the same length as the list of overlap data frames
+#' of the same length as the list of overlap data frames.
 #' @param cutoff Number of retained edges from each overlap data frame after
-#' refiltering. If NULL (as default), no refiltering will be performed
+#' refiltering. If \code{NULL} (as default), no refiltering will be performed.
 #'
 #' @rdname edgeLists
 #'

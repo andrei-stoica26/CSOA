@@ -8,11 +8,13 @@ runCSOA(
   scObj,
   geneSets,
   percentile = 90,
-  pvalThr = 0.05,
+  mtMethod = c("by", "bh", "bf"),
   jaccardCutoff = NULL,
   osMethod = c("log", "minmax"),
+  overlapFileName = NULL,
   pairFileTemplate = NULL,
-  keepOverlapOrder = FALSE
+  keepOverlapOrder = FALSE,
+  ...
 )
 }
 \arguments{
@@ -24,7 +26,9 @@ at least two genes.}
 
 \item{percentile}{A positive number under 100.}
 
-\item{pvalThr}{P-value threshold used for initial filtering.}
+\item{mtMethod}{Multiple testing correction method. Options are
+Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
+Benjamini-Yekutieli ('by').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges
@@ -33,6 +37,12 @@ will be performed.}
 \item{osMethod}{Method used to compute overlap scores.
 Options are "log" and "minmax".}
 
+\item{overlapFileName}{The name of the file where the overlap data frame
+will be saved. This option can be used to save time when performing
+exploratory analyses such as trying different \code{jaccardCutoff} parameters
+in \code{breakWeakTies}. Default is \code{NULL} (the overlap data frame will
+not be saved).}
+
 \item{pairFileTemplate}{Character object used in the naming of the files
 where the pair data frames will be saved. Default is \code{NULL} (the pair
 data frames will not be saved).}
@@ -40,6 +50,8 @@ data frames will not be saved).}
 \item{keepOverlapOrder}{Keep the rank-based order of overlaps in the
 pair score file, as opposed to changing it to a pair score-based order.
 Ignored if \code{pairFileTemplate} is \code{NULL}.}
+
+\item{...}{Additional arguments.}
 }
 \value{
 An object of the same class as scObj with per-gene-set CSOA scores
@@ -53,8 +65,8 @@ per-cell score by summing the products of overlap scores and the
 min-max-normalized expression of the corresponding pairs of genes.
 }
 \details{
-#' @details Wrapper around \code{expMat}, \code{generateOverlaps},
-\code{scoreCellsMultiple} and \code{attachCellScores}.
+Wrapper around \code{expMat}, \code{generateOverlaps},
+\code{scoreCells} and \code{attachCellScores}.
 }
 \examples{
 mat <- matrix(0, 500, 300)

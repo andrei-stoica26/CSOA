@@ -4,13 +4,38 @@
 \alias{overlapCutoffPlot}
 \title{Plot the selection of overlaps}
 \usage{
-overlapCutoffPlot(overlapDF, title = "Overlap cutoff plot")
+overlapCutoffPlot(
+  overlapDF,
+  title = "Overlap cutoff plot",
+  palette = c("purple", "yellow"),
+  hullWidth = 0.8,
+  xLab = "Overlap rank",
+  yLab = "Frequency",
+  legendLabs = c("Accepted overlaps", "Discarded overlaps"),
+  pointShape = 24,
+  ...
+)
 }
 \arguments{
 \item{overlapDF}{Processed overlap data frame created
 with \code{processOverlaps}.}
 
 \item{title}{Plot title.}
+
+\item{palette}{Color palette. Must have two colors, the first one
+representing accepted overlaps and the other representing discarded overlaps.}
+
+\item{hullWidth}{Width of the convex hull.}
+
+\item{xLab}{x axis label.}
+
+\item{yLab}{y axis label.}
+
+\item{legendLabs}{Legend labels.}
+
+\item{pointShape}{Point shape.}
+
+\item{...}{Additional arguments passed to \code{henna::hullPlot}.}
 }
 \value{
 A ggplot object.
@@ -19,6 +44,9 @@ A ggplot object.
 This function illustrates the process of selecting the overlap rank cutoff
 by plotting rank frequencies against ranks and showcasing the convex hull of
 the rank-frequency points.
+}
+\details{
+A wrapper around \code{henna::hullPlot}.
 }
 \examples{
 overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),

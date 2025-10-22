@@ -8,11 +8,12 @@ scoreCellsCore(
   geneSetExp,
   overlapDF,
   colStr = "CSOA",
-  pvalThr = 0.05,
+  mtMethod = c("by", "bh", "bf"),
   jaccardCutoff = NULL,
   osMethod = c("log", "minmax"),
   pairFileName = NULL,
-  keepOverlapOrder = FALSE
+  keepOverlapOrder = FALSE,
+  ...
 )
 }
 \arguments{
@@ -23,7 +24,9 @@ restricted to the genes for which cell sets will be computed.}
 
 \item{colStr}{Name of column where CSOA scores will be stored.}
 
-\item{pvalThr}{P-value threshold used for initial filtering.}
+\item{mtMethod}{Multiple testing correction method. Options are
+Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
+Benjamini-Yekutieli ('by').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges
@@ -38,6 +41,8 @@ will be saved.}
 \item{keepOverlapOrder}{Whether to keep the rank-based order of overlaps
 in the pair score file, as opposed to changing it to a
 pair score-based order.}
+
+\item{...}{Additional arguments passed to \code{mtCorrectDF}.}
 }
 \value{
 A data frame with a column corresponding to the CSOA scores.

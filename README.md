@@ -1,6 +1,6 @@
 # CSOA
 Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene 
-signature scores in a scRNA-seq dataset. CSOA constructs a set for 
+signature scores in an scRNA-seq dataset. CSOA constructs a set for 
 each gene in the signature, consisting of the cells that highly express the 
 gene. Next, all overlaps of pairs of cell sets are computed, ranked, 
 filtered and scored. The CSOA per-cell score is calculated by summing up all 
@@ -15,7 +15,7 @@ To install CSOA, run the following R code:
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
     
-BiocManager::install("andrei-stoica26/CSOA")
+BiocManager::install("CSOA")
 ```
 
 ## Usage

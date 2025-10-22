@@ -4,16 +4,23 @@
 \alias{scoreModules}
 \title{Run CSOA separately on the connected components of the overlap graph}
 \usage{
-scoreModules(scObj, df, components, colStrTemplate = "CSOA_component", ...)
+scoreModules(
+  scObj,
+  networkDF,
+  components,
+  colStrTemplate = "CSOA_component",
+  ...
+)
 }
 \arguments{
 \item{scObj}{A Seurat object, SingleCellExperiment object, or
 expression matrix.}
 
-\item{df}{A data frame with \code{gene1}, \code{gene2} and component
+\item{networkDF}{A data frame with \code{gene1}, \code{gene2} and component
 columns.}
 
-\item{components}{Vector of connected components that will be scored}
+\item{components}{A numeric vector representing the connected components
+of the overlap data frame graph.}
 
 \item{colStrTemplate}{Character used in the naming of the component
 gene sets.}
@@ -44,7 +51,7 @@ genes <- union(genes1, genes2)
 mat <- mat[genes, ]
 overlapDF <- generateOverlaps(mat)
 overlapDF <- processOverlaps(overlapDF)
-overlapDF <- connectedComponents(overlapDF)
+overlapDF <- henna::connectedComponents(overlapDF)
 df <- scoreModules(mat, overlapDF, unique(overlapDF$component))[[2]]
 head(df)
 

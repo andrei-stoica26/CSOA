@@ -26,7 +26,7 @@ expMat <- function(scObj, ...)
 #' data frames
 #'
 #' This function creates a list of data frames with three columns:
-#' gene1, gene2 and group. If overlapObj is an overlap data frame,
+#' gene1, gene2 and group. If \code{overlapObj} is an overlap data frame,
 #' the groups correspond to the connected components. If it is a
 #' list of overlap data frames, the groups must be specified as
 #' groupNames.

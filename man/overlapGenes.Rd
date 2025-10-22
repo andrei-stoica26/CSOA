@@ -4,10 +4,13 @@
 \alias{overlapGenes}
 \title{Get all genes from an overlap data frame}
 \usage{
-overlapGenes(overlapDF)
+overlapGenes(overlapDF, components = NULL)
 }
 \arguments{
 \item{overlapDF}{Overlap data frame.}
+
+\item{components}{A numeric vector representing the connected components
+of the overlap data frame graph.}
 }
 \value{
 A character vector of genes.

@@ -2,31 +2,8 @@
 #' @importFrom kerntools minmax
 #' @importFrom qs qread qsave
 #' @importFrom SeuratObject LayerData
-#' @importFrom sgof BY
 #'
 NULL
-
-#' Perform multiple testing correction and filtering with Benjamini-Yekutieli
-#'
-#' This function performs the Benjamini-Yekutieli correction for multiple
-#' testing in a dataframe column of p-values and filters the data-frame
-#' based on p-values.
-#'
-#' @param df A dataframe with a column of p-values.
-#' @param pvalThr p-value threshold.
-#' @param colStr Name of the column of p-values.
-#'
-#' @return The data frame with Benjamini-Yekutieli-corrected p-values.
-#'
-#' @keywords internal
-#'
-#'
-byCorrectDF <- function(df, pvalThr = 0.05, colStr = 'pval'){
-    df <- df[order(df[[colStr]]), ]
-    df$pvalAdj <- BY(df[[colStr]], pvalThr)$Adjusted.pvalues
-    df <- subset(df, pvalAdj < pvalThr)
-    return(df)
-}
 
 #' Get all unordered pairs of two elements from a vector
 #'
@@ -96,6 +73,8 @@ matrixRowFilter <- function(matObj, rows = NULL){
 #' This function gets all genes from an overlap data frame.
 #'
 #' @inheritParams processOverlaps
+#' @param components A numeric vector representing the connected components
+#' of the overlap data frame graph.
 #'
 #' @return A character vector of genes.
 #'
@@ -106,8 +85,13 @@ matrixRowFilter <- function(matObj, rows = NULL){
 #'
 #' @export
 #'
-overlapGenes <- function(overlapDF)
-    return(union(overlapDF$gene1, overlapDF$gene2))
+overlapGenes <- function(overlapDF, components=NULL){
+    if(is.null(components))
+        return(union(overlapDF$gene1, overlapDF$gene2))
+    return(lapply(components,
+                  function(i)
+                      overlapGenes(overlapDF[overlapDF$component == i, ])))
+}
 
 #' Extract gene pairs from overlap data frame
 #'

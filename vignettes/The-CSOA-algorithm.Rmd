@@ -2,7 +2,7 @@
 title: "The CSOA algorithm"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: August 13, 2025
+date: October 21, 2025
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{The CSOA algorithm}
@@ -96,7 +96,8 @@ function.
 cso <- cellSetsOverlaps(cellSets, nCells=dim(seuratObj)[2])
 ```
 
-**! Note:** The `nCells` argument must be set to the total number of cells in the Seurat object, not to the number of cells in the cell sets.
+**! Note:** The `nCells` argument must be set to the total number of cells in 
+the Seurat object, not to the number of cells in the cell sets.
 
 We can inspect the output of this function:
 
@@ -104,9 +105,11 @@ We can inspect the output of this function:
 head(cso)
 ```
 
-The number of rows (`1081`) equals the number of all possible unordered pairs that can be generated from a list of `47` genes (`47 * 46 / 2 = 1081`).
+The number of rows (`1081`) equals the number of all possible unordered pairs 
+that can be generated from a list of `47` genes (`47 * 46 / 2 = 1081`).
 
-To perform both steps—creating cell sets and assessing overlaps of pairs of cell sets—in a single call, the `generateOverlaps` function can be used:
+To perform both steps—creating cell sets and assessing overlaps of pairs of 
+cell sets—in a single call, the `generateOverlaps` function can be used:
 
 ```{r}
 cso2 <- generateOverlaps(geneSetExp, percentile = 90)

@@ -6,29 +6,34 @@
 \usage{
 geneRadialPlot(
   overlapObj,
-  groupLegendName = NULL,
+  title = "Top overlap genes plot",
+  degreeLegendTitle = "Number of top overlaps",
+  groupLegendTitle = "Group",
+  extraCircles = 2,
   groupNames = NULL,
   cutoff = NULL,
-  title = "Top overlap genes plot",
-  extraCircles = 2
+  ...
 )
 }
 \arguments{
 \item{overlapObj}{An overlap data frame or list of overlap data frames.}
 
-\item{groupLegendName}{The title of the group legend; if NULL, no groups will
-be distinguished.}
-
-\item{groupNames}{Names of groups. If provided, must be a vector
-of the same length as the list of overlap data frames}
-
-\item{cutoff}{Number of retained edges from each overlap data frame after
-refiltering. If NULL (as default), no refiltering will be performed}
-
 \item{title}{Plot title.}
 
-\item{extraCircles}{Number of circles drawn beyond those needed to include
-the points representing the genes.}
+\item{degreeLegendTitle}{The title of the degree legend.}
+
+\item{groupLegendTitle}{The title of the group legend. If \code{NULL},
+no groups will be distinguished.}
+
+\item{extraCircles}{Number of extra circles to be displayed on the plot.}
+
+\item{groupNames}{Names of groups. If provided, must be a vector
+of the same length as the list of overlap data frames.}
+
+\item{cutoff}{Number of retained edges from each overlap data frame after
+refiltering. If \code{NULL} (as default), no refiltering will be performed.}
+
+\item{...}{Additional parameters passed to \code{henna::radialPlot}.}
 }
 \value{
 A ggplot object.
@@ -40,14 +45,14 @@ gene participation in top overlaps.
 \details{
 The function can separate genes by groups. The groups can be, for
 instance, different gene sets, or different connected components of the same
-overlap data frame.
+overlap data frame. A wrapper around \code{henna::radialPlot}
 }
 \examples{
 edgesDF <- data.frame(gene1 = paste0('G', c(1, 2, 3, 4, 7, 8, 10,
 11, 11, 10, 10, 10)),
 gene2 = paste0('G', c(2, 5, 1, 8, 4, 9, 12,
 13, 14, 13, 16, 14)))
-edgesDF <- connectedComponents(edgesDF, 'group')
-geneRadialPlot(edgesDF, 'component', extraCircles=1)
+edgesDF <- henna::connectedComponents(edgesDF, 'group')
+geneRadialPlot(edgesDF, groupLegendTitle='Component', extraCircles=1)
 
 }
