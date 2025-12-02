@@ -6,7 +6,7 @@
 \usage{
 processOverlaps(
   overlapDF,
-  mtMethod = c("by", "bh", "bf"),
+  mtMethod = c("BY", "BH"),
   jaccardCutoff = NULL,
   osMethod = c("log", "minmax"),
   ...
@@ -15,9 +15,8 @@ processOverlaps(
 \arguments{
 \item{overlapDF}{Overlap data frame.}
 
-\item{mtMethod}{Multiple testing correction method. Options are
-Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
-Benjamini-Yekutieli ('by').}
+\item{mtMethod}{Multiple testing correction method. Choose between
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges

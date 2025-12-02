@@ -52,6 +52,8 @@ neighborJaccard <- function(overlapDF){
 #' record too few shared neighbors—genes whose cell set significantly overlaps with
 #' those of both overlap genes.
 #'
+#' @inheritParams prefilterOverlaps
+#'
 #' @param overlapDF An overlap data frame.
 #' @param cutoff A cutoff used in the filtering of edges with low Jaccard
 #' scores.
@@ -69,11 +71,17 @@ neighborJaccard <- function(overlapDF){
 #'
 #' @export
 #'
-breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
+breakWeakTies <- function(overlapDF,
+                          cutoff = 1/3,
+                          doConnComp = FALSE,
+                          mtMethod = c('BY', 'BH')){
     if(length(setdiff(c('gene1', 'gene2', 'ratio', 'pval'),
                       colnames(overlapDF))))
         stop('Columns `gene1`, `gene2`, `ratio` and `pval` must',
             ' exist in the data frame.')
+
+    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
+
     prevNEdges <- -1
     nEdges <- nrow(overlapDF)
     message(nEdges, ' overlap', rep('s', nEdges != 1),
@@ -88,10 +96,14 @@ breakWeakTies <- function(overlapDF, cutoff = 1/3, doConnComp = FALSE){
             message(nRemovedEdges, ' edge', rep('s', nRemovedEdges != 1),
                     paste(' with low neighbor Jaccard',
                           ' scores have been removed.'))
+        }
     }
-  }
+
+    overlapDF <- prefilterOverlaps(overlapDF, mtMethod)
     overlapDF <- rankOverlaps(overlapDF)
+
     if (doConnComp)
         overlapDF <- connectedComponents(overlapDF)
+
     return(overlapDF)
 }

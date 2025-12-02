@@ -85,9 +85,9 @@ cellDistribution <- function(cellSets, allCells){
 #'
 #' @param p A ggplot object.
 #' @param palType Palette type: color or fill, continuous or discrete. Accepted
-#' values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
-#' a warning and does not change the color scheme if a different value is passed
-#' here.
+#' values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function
+#' shows a warning and does not change the color scheme if a different value
+#' is passed here.
 #' @param wesPal A wesanderson palette.
 #' @param wesLow Index of color marking low values.
 #' @param wesHigh Index of color marking high values.

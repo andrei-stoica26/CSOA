@@ -42,7 +42,7 @@
 runCSOA <- function(scObj,
                     geneSets,
                     percentile = 90,
-                    mtMethod = c('by', 'bh', 'bf'),
+                    mtMethod = c('BY', 'BH'),
                     jaccardCutoff = NULL,
                     osMethod = c('log', 'minmax'),
                     overlapFileName = NULL,
@@ -50,10 +50,13 @@ runCSOA <- function(scObj,
                     keepOverlapOrder = FALSE,
                     ...){
 
-    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
+    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
     if (is.null(names(geneSets)))
         stop('The gene sets must have names.')
+    for (geneSet in geneSets)
+        if(length(geneSet) > length(unique(geneSet)))
+            stop('A gene set cannot contain repeated genes.')
     geneSets <- lapply(geneSets, sort)
     setPairs <- lapply(geneSets, getPairs)
     pairs <- Reduce(union, setPairs)

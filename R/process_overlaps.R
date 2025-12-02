@@ -35,6 +35,27 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
     return(mat)
 }
 
+#' Prefilter overlaps based on adjusted p-value
+#'
+#' This function computes adjusted p-value and prefilters overlaps based on it.
+#'
+#' @param overlapDF Overlap data frame.
+#' @param mtMethod Multiple testing correction method. Choose between
+#' Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').
+#'
+#' @return A prefiltered overlap data frame.
+#'
+#' @keywords internal
+#'
+prefilterOverlaps <- function(overlapDF, mtMethod = c('BY', 'BH')){
+    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
+    if (nrow(overlapDF) > 1)
+        overlapDF$pvalAdj <- p.adjust(overlapDF$pval, mtMethod) else
+            overlapDF$pvalAdj <- overlapDF$pval
+        overlapDF <- overlapDF[overlapDF$pvalAdj < 0.05, ]
+    return(overlapDF)
+}
+
 #' Rank cell set overlaps
 #'
 #' This function ranks cell set overlaps.
@@ -67,8 +88,8 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 rankOverlaps <- function(overlapDF){
     if (!nrow(overlapDF))
         return(overlapDF)
-    overlapDF <- overlapDF[order(overlapDF$pval), ]
-    overlapDF$pvalRank <- rankFun(overlapDF$pval)
+    overlapDF <- overlapDF[order(overlapDF$pvalAdj), ]
+    overlapDF$pvalRank <- rankFun(overlapDF$pvalAdj)
     overlapDF <- overlapDF[order(overlapDF$ratio,
                                  decreasing=TRUE), ]
     overlapDF$ratioRank <- rankFun(-overlapDF$ratio)
@@ -224,11 +245,9 @@ scoreOverlaps <- function(overlapDF,
 #'
 #' If \code{jaccardCutoff} is not \code{NULL}, it also calls
 #' \code{breakWeakTies} between \code{filterOverlaps} and \code{scoreOverlaps}.
-#'
+#' @inheritParams prefilterOverlaps
+
 #' @param overlapDF Overlap data frame.
-#' @param mtMethod Multiple testing correction method. Options are
-#' Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
-#' Benjamini-Yekutieli ('by').
 #' @param jaccardCutoff A cutoff used in the filtering of edges with low
 #' Jaccard scores. If \code{NULL} (as default), no filtering of such edges
 #' will be performed.
@@ -251,21 +270,13 @@ scoreOverlaps <- function(overlapDF,
 #' @export
 #'
 processOverlaps <- function(overlapDF,
-                            mtMethod = c('by', 'bh', 'bf'),
+                            mtMethod = c('BY', 'BH'),
                             jaccardCutoff = NULL,
                             osMethod = c('log', 'minmax'),
                             ...){
-
-    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
 
-    if (nrow(overlapDF) > 1)
-        overlapDF <- mtCorrectDF(overlapDF, mtMethod, ...) else
-            overlapDF$pval_adj <- overlapDF$pval
-
-    if (!nrow(overlapDF))
-        return(overlapDF)
-
+    overlapDF <- prefilterOverlaps(overlapDF, mtMethod)
     overlapDF <- rankOverlaps(overlapDF)
     firstOutRawRank <- prepareFiltering(overlapDF)
     overlapDF <- filterOverlaps(overlapDF, firstOutRawRank)

@@ -4,7 +4,12 @@
 \alias{breakWeakTies}
 \title{Remove overlap pairs with low Jaccard scores}
 \usage{
-breakWeakTies(overlapDF, cutoff = 1/3, doConnComp = FALSE)
+breakWeakTies(
+  overlapDF,
+  cutoff = 1/3,
+  doConnComp = FALSE,
+  mtMethod = c("BY", "BH")
+)
 }
 \arguments{
 \item{overlapDF}{An overlap data frame.}
@@ -13,6 +18,9 @@ breakWeakTies(overlapDF, cutoff = 1/3, doConnComp = FALSE)
 scores.}
 
 \item{doConnComp}{Whether to calculate the connected components.}
+
+\item{mtMethod}{Multiple testing correction method. Choose between
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
 }
 \value{
 An overlap data frame in which edges with low Jaccard scores have

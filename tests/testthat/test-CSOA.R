@@ -112,18 +112,13 @@ test_that("runCSOA works", {
     expect_equal(mean(sceObj$CSOA_acinar[sceObj$label == 'acinar']), 0.5220412,
                  tolerance=0.001)
 
-    sceObj <- runCSOA(sceObj, list(CSOA_acinar = acinarMarkers), pvalThr=1e-15)
-    expect_equal(mean(sceObj$CSOA_acinar[sceObj$label == 'acinar']), 0.5050577,
-                 tolerance=0.001)
-
-    expect_warning(sceObj <- runCSOA(sceObj,
+    expect_error(sceObj <- runCSOA(sceObj,
                                      list(CSOA_null =
                                               rownames(sceObj)[c(3,
                                                                  17,
                                                                  210,
                                                                  333,
                                                                  422)])))
-    expect_equal(unique(sceObj$CSOA_null), 0)
 
     sceObj <- runCSOA(sceObj, list(CSOA_acinar = acinarMarkers),
                       pairFileTemplate='pairs')

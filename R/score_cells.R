@@ -15,7 +15,7 @@
 scoreCellsCore <- function(geneSetExp,
                            overlapDF,
                            colStr = 'CSOA',
-                           mtMethod = c('by', 'bh', 'bf'),
+                           mtMethod = c('BY', 'BH'),
                            jaccardCutoff = NULL,
                            osMethod = c('log', 'minmax'),
                            pairFileName = NULL,
@@ -97,14 +97,14 @@ scoreCells <- function(geneSetExp,
                        overlapDF,
                        setPairs,
                        geneSetNames,
-                       mtMethod = c('by', 'bh', 'bf'),
+                       mtMethod = c('BY', 'BH'),
                        jaccardCutoff = NULL,
                        osMethod = c('log', 'minmax'),
                        pairFileTemplate = NULL,
                        keepOverlapOrder = FALSE,
                        ...){
 
-    mtMethod <- match.arg(mtMethod, c('by', 'bh', 'bf'))
+    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
     osMethod <- match.arg(osMethod, c('log', 'minmax'))
 
     message('Processing overlaps...')

@@ -1,3 +1,18 @@
+Changes in version 1.1.1 (2025-11-11)
+-------------------------------------------------------------------------------
+- Changed the implementation of multiple correction testing methods and the
+default to Benjamini-Hochberg.
+- Added an error check for gene signatures containing repeated genes
+
+Changes in version 0.99.3 (2025-10-22)
+-------------------------------------------------------------------------------
+- Simplified some visualization functions by converting them into wrappers
+around functions from the henna package
+
+Changes in version 0.99.2 (2025-09-20)
+-------------------------------------------------------------------------------
+- Minor testing fixes
+
 Changes in version 0.99.1 (2025-08-13)
 -------------------------------------------------------------------------------
 - Refactoring and extended testing after Bioconductor review

@@ -8,7 +8,7 @@ scoreCellsCore(
   geneSetExp,
   overlapDF,
   colStr = "CSOA",
-  mtMethod = c("by", "bh", "bf"),
+  mtMethod = c("BY", "BH"),
   jaccardCutoff = NULL,
   osMethod = c("log", "minmax"),
   pairFileName = NULL,
@@ -24,9 +24,8 @@ restricted to the genes for which cell sets will be computed.}
 
 \item{colStr}{Name of column where CSOA scores will be stored.}
 
-\item{mtMethod}{Multiple testing correction method. Options are
-Bonferroni ('bf'), Benjamini-Hochberg('bh'), and the default
-Benjamini-Yekutieli ('by').}
+\item{mtMethod}{Multiple testing correction method. Choose between
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges

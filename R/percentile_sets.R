@@ -1,4 +1,4 @@
-#' @importFrom stats phyper quantile runif setNames
+#' @importFrom stats p.adjust phyper quantile runif setNames
 #'
 NULL
 

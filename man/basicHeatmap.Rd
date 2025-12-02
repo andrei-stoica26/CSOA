@@ -27,9 +27,9 @@ aes elements.}
 \item{axisTextSize}{Axis text size.}
 
 \item{palType}{Palette type: color or fill, continuous or discrete. Accepted
-values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function shows
-a warning and does not change the color scheme if a different value is passed
-here.}
+values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function
+shows a warning and does not change the color scheme if a different value
+is passed here.}
 
 \item{wesPal}{A wesanderson palette.}
 
