@@ -74,9 +74,9 @@ computePairScores <- function(overlapDF, pcPairScores, pairFileName = 'pairs',
     if (keepOverlapOrder)
         df <- df[order(df$overlapScore, decreasing=TRUE), ]
 
-    pairFile <- paste0(pairFileName, '.qs')
+    pairFile <- paste0(pairFileName, '.qs2')
     message('Saving pair scores file: ', pairFile, '...')
-    qsave(df, pairFile)
+    qs_save(df, pairFile)
 
     return(df)
 }

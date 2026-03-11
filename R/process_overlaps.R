@@ -176,10 +176,10 @@ prepareFiltering <- function(overlapDF){
 #' @noRd
 #'
 filterOverlaps <- function(overlapDF, firstOutRawRank = NULL){
+    if(is.null(firstOutRawRank) | nrow(overlapDF) < 2)
+        return(overlapDF)
     if(!'rawAggRank' %in% colnames(overlapDF))
         stop('Column `rawAggRank` must exist in the data frame.')
-    if(is.null(firstOutRawRank) | !nrow(overlapDF))
-        return(overlapDF)
     return(overlapDF[overlapDF$rawAggRank < firstOutRawRank, , drop=FALSE])
 }
 

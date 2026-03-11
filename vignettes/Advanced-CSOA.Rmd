@@ -69,10 +69,10 @@ seuratObj <- runCSOA(seuratObj, list(CSOA_acinar = acinarMarkers),
 ```
 
 Next, we inspect the resulting data frame using `qGrab`, a wrapper around
-`qread` from the `qs` package which deletes the file after reading it:
+`qs_read` from the `qs2` package which deletes the file after reading it:
 
 ```{r}
-acinarPairs <- qGrab('pairsCSOA_acinar.qs')
+acinarPairs <- qGrab('pairsCSOA_acinar.qs2')
 head(acinarPairs)
 ```
 
@@ -194,7 +194,7 @@ VlnPlot(seuratObj, newCol, group.by='label') + NoLegend()
 The noise introduced by random genes did not directly affect CSOA results at all. Using the `overlapGenes` function, we can verify that none of the random genes participated in the `23` top overlaps:
 
 ```{r}
-length(setdiff(overlapGenes(qGrab('pairsCSOA_replace12.qs')), genes90))
+length(setdiff(overlapGenes(qGrab('pairsCSOA_replace12.qs2')), genes90))
 ```
 
 We now replace all but `2` of the top `24` acinar markers with random genes and run CSOA again. The mean, median and minimum absolute differences remain very small, and  the correlation with the original results remains very high. However, the maximum absolute difference has become substantial, indicating that an additional small number of cells could no longer be detected as acinar cells. Noise now makes an effect, though a small one: a single random gene (`PTGR1`) introduces two overlaps into CSOA scoring, which together account for `27.8%` of the total CSOA score.
@@ -205,7 +205,7 @@ seuratObj <- runCSOAReplace(seuratObj, genes90, nReplacedGenes)
 
 newCol <- paste0('CSOA_replace', nReplacedGenes)
 printStats(seuratObj, 'CSOA_acinar3', newCol)
-dfReplace <- qGrab('pairsCSOA_replace22.qs')
+dfReplace <- qGrab('pairsCSOA_replace22.qs2')
 dfReplace
 setdiff(overlapGenes(dfReplace), genes90)
 VlnPlot(seuratObj, newCol, group.by='label') + NoLegend()
@@ -242,7 +242,7 @@ VlnPlot(seuratObj, 'CSOA_mixed', group.by='label') + NoLegend()
 We can interpret the overlap data frame as a graph, with genes as vertices and overlaps as edges. We can build and visualize the graph as follows:
 
 ```{r, out.height='80%', out.width='80%', fig.height=5, fig.width=5}
-dfNetwork <- qGrab('pairsCSOA_mixed.qs')
+dfNetwork <- qGrab('pairsCSOA_mixed.qs2')
 overlapNetworkPlot(dfNetwork, rankCol='overlapRank')
 ```
 
@@ -291,7 +291,7 @@ mixedMarkers <- union(acinarMarkers, ductalMarkers)
 seuratObj <- runCSOA(seuratObj, list(CSOA_mixed = mixedMarkers), 
                      pairFileTemplate='pairs')
 VlnPlot(seuratObj, 'CSOA_mixed', group.by='label') + NoLegend()
-dfNetwork <- qGrab('pairsCSOA_mixed.qs')
+dfNetwork <- qGrab('pairsCSOA_mixed.qs2')
 dfNetwork <- connectedComponents(dfNetwork)
 dplyr::count(dfNetwork, component)
 ```
@@ -310,7 +310,7 @@ removing overlaps for which the neighbors of the corresponding genes overlapped
 little, as calculated using the Jaccard score. The resulting graph has two connected components:
 
 ```{r, out.height='80%', out.width='80%', fig.height=5, fig.width=5}
-dfNetwork <- qGrab('pairsCSOA_mixed.qs')
+dfNetwork <- qGrab('pairsCSOA_mixed.qs2')
 overlapNetworkPlot(dfNetwork, rankCol='overlapRank')
 ```
 These correspond to acinar and ductal cells, respectively:
@@ -360,7 +360,7 @@ names(geneSets) <- c('CSOA_acinar', 'CSOA_alpha', 'CSOA_ductal', 'CSOA_gamma')
 seuratObj <- runCSOA(seuratObj, geneSets, pairFileTemplate='pairs', 
                              keepOverlapOrder=TRUE)
 
-geneRadialPlot(lapply(paste0('pairs', names(geneSets), '.qs'), qGrab),
+geneRadialPlot(lapply(paste0('pairs', names(geneSets), '.qs2'), qGrab),
                groupLegendTitle='Gene set',
                groupNames=str_remove(names(geneSets), 'CSOA_'),
                cutoff=15,

@@ -74,9 +74,9 @@ cellSetsOverlaps <- function(cellSets,
         pairs <- getPairs(genes)
     df <- pairOverlap(cellSets, pairs, nCells)
     if (!is.null(overlapFileName)){
-        overlapFile <- paste0(overlapFileName, '.qs')
+        overlapFile <- paste0(overlapFileName, '.qs2')
         message('Saving overlap file: ', overlapFile, '...')
-        qsave(df, overlapFile)
+        qs_save(df, overlapFile)
     }
     return(df)
 }

@@ -112,17 +112,16 @@ test_that("runCSOA works", {
     expect_equal(mean(sceObj$CSOA_acinar[sceObj$label == 'acinar']), 0.5220412,
                  tolerance=0.001)
 
-    expect_error(sceObj <- runCSOA(sceObj,
+    expect_warning(sceObj <- runCSOA(sceObj,
                                      list(CSOA_null =
                                               rownames(sceObj)[c(3,
                                                                  17,
                                                                  210,
                                                                  333,
                                                                  422)])))
-
     sceObj <- runCSOA(sceObj, list(CSOA_acinar = acinarMarkers),
                       pairFileTemplate='pairs')
-    pairDF <- qGrab('pairsCSOA_acinar.qs')
+    pairDF <- qGrab('pairsCSOA_acinar.qs2')
     expect_equal(pairDF$pairScore[[1]], 1.643546,
                  tolerance=0.001)
 

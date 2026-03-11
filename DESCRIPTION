@@ -20,7 +20,7 @@ Imports:
     henna,
     kerntools,
     methods,
-    qs,
+    qs2,
     reshape2,
     rlang,
     Seurat,

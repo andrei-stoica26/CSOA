@@ -2,22 +2,22 @@
 % Please edit documentation in R/utils.R
 \name{qGrab}
 \alias{qGrab}
-\title{Read and delete a .qs file}
+\title{Read and delete a .qs2 file}
 \usage{
-qGrab(qsFile)
+qGrab(qs2File)
 }
 \arguments{
-\item{qsFile}{Name of .qs file with path.}
+\item{qs2File}{Name of .qs2 file with path.}
 }
 \value{
-The content of the .qs file.
+The content of the .qs2 file.
 }
 \description{
-This functions reads a .qs file, deletes it, and returns its content.
+This functions reads a .qs2 file, deletes it, and returns its content.
 }
 \examples{
-library(qs)
-qsave(c(1, 2, 3), 'temp.qs')
-qGrab('temp.qs')
+library(qs2)
+qs_save(c(1, 2, 3), 'temp.qs2')
+qGrab('temp.qs2')
 
 }

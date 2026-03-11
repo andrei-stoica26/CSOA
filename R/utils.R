@@ -1,6 +1,6 @@
 #' @importFrom methods is
 #' @importFrom kerntools minmax
-#' @importFrom qs qread qsave
+#' @importFrom qs2 qs_read qs_save
 #' @importFrom SeuratObject LayerData
 #'
 NULL
@@ -130,24 +130,24 @@ overlapPairs <- function(overlapDF)
 overlapSlice <- function(overlapDF, pairs)
     return(overlapDF[overlapPairs(overlapDF) %in% pairs,])
 
-#' Read and delete a .qs file
+#' Read and delete a .qs2 file
 #'
-#' This functions reads a .qs file, deletes it, and returns its content.
+#' This functions reads a .qs2 file, deletes it, and returns its content.
 #'
-#' @param qsFile Name of .qs file with path.
+#' @param qs2File Name of .qs2 file with path.
 #'
-#' @return The content of the .qs file.
+#' @return The content of the .qs2 file.
 #'
 #' @examples
-#' library(qs)
-#' qsave(c(1, 2, 3), 'temp.qs')
-#' qGrab('temp.qs')
+#' library(qs2)
+#' qs_save(c(1, 2, 3), 'temp.qs2')
+#' qGrab('temp.qs2')
 #'
 #' @export
 #'
-qGrab <- function(qsFile){
-    res <- qread(qsFile)
-    file.remove(qsFile)
+qGrab <- function(qs2File){
+    res <- qs_read(qs2File)
+    file.remove(qs2File)
     return(res)
 }
 
