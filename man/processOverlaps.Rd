@@ -16,7 +16,7 @@ processOverlaps(
 \item{overlapDF}{Overlap data frame.}
 
 \item{mtMethod}{Multiple testing correction method. Choose between
-Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH'). Default is 'BY'.}
 
 \item{jaccardCutoff}{A cutoff used in the filtering of edges with low
 Jaccard scores. If \code{NULL} (as default), no filtering of such edges

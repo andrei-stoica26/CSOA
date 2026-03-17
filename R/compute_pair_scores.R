@@ -7,8 +7,8 @@
 #' min-max-normalized expression of the two corresponding genes.
 #'
 #' @param overlapDF An overlap data frame.
-#' @param normExp A min-max normalized expression matrix of the genes involved in
-#' top overlaps.
+#' @param normExp A min-max-normalized expression matrix of the genes involved
+#' in top overlaps.
 #'
 #' @return A data frame with gene pairs as rows and cells as columns.
 #'

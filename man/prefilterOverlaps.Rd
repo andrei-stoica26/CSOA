@@ -10,7 +10,7 @@ prefilterOverlaps(overlapDF, mtMethod = c("BY", "BH"))
 \item{overlapDF}{Overlap data frame.}
 
 \item{mtMethod}{Multiple testing correction method. Choose between
-Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH'). Default is 'BY'.}
 }
 \value{
 A prefiltered overlap data frame.

@@ -41,14 +41,14 @@ geneBestEdgeRank <- function(overlapDF, asRanks = TRUE){
 #'
 #' @param overlapDF Overlap data frame.
 #' @param mtMethod Multiple testing correction method. Choose between
-#' Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').
+#' Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH'). Default is 'BY'.
 #'
 #' @return A prefiltered overlap data frame.
 #'
 #' @keywords internal
 #'
 prefilterOverlaps <- function(overlapDF, mtMethod = c('BY', 'BH')){
-    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
+    mtMethod <- match.arg(mtMethod)
     if (nrow(overlapDF) > 1)
         overlapDF$pvalAdj <- p.adjust(overlapDF$pval, mtMethod) else
             overlapDF$pvalAdj <- overlapDF$pval
@@ -138,7 +138,7 @@ findRankCutoff <- function(freqDF){
 #'
 #' @param overlapDF A ranked overlap data frame.
 #'
-#' @return A numeric value
+#' @return A numeric value.
 #'
 #' @noRd
 #'
@@ -274,7 +274,7 @@ processOverlaps <- function(overlapDF,
                             jaccardCutoff = NULL,
                             osMethod = c('log', 'minmax'),
                             ...){
-    osMethod <- match.arg(osMethod, c('log', 'minmax'))
+    osMethod <- match.arg(osMethod)
 
     overlapDF <- prefilterOverlaps(overlapDF, mtMethod)
     overlapDF <- rankOverlaps(overlapDF)

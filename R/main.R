@@ -50,8 +50,8 @@ runCSOA <- function(scObj,
                     keepOverlapOrder = FALSE,
                     ...){
 
-    mtMethod <- match.arg(mtMethod, c('BY', 'BH'))
-    osMethod <- match.arg(osMethod, c('log', 'minmax'))
+    mtMethod <- match.arg(mtMethod)
+    osMethod <- match.arg(osMethod)
     if (is.null(names(geneSets)))
         stop('The gene sets must have names.')
     for (geneSet in geneSets)

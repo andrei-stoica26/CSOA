@@ -5,10 +5,10 @@ NULL
 #' Compute all the neighbors of all genes in an overlap data frame
 #'
 #' This function computes all the neighbors of all genes in an overlap data
-#' frame
+#' frame.
 #'
-#' @param overlapDF An overlap data frame
-#' @return A numeric value
+#' @param overlapDF An overlap data frame.
+#' @return A numeric value.
 #'
 #' @noRd
 #'
@@ -26,11 +26,12 @@ geneNeighbors <- function(overlapDF){
 #' Compute the Jaccard score of the neighbor sets of each gene in an overlap
 #'
 #' This function computes the Jaccard score of the neighbor sets of each gene
-#' in an overlap for all overlap pairs in a data frame
+#' in an overlap for all overlap pairs in a data frame.
 #'
-#' @param overlapDF An overlap data frame
+#' @param overlapDF An overlap data frame.
 #'
-#' @return An overlap data frame with an added column of neighbor Jaccard scores
+#' @return An overlap data frame with an added column of neighbor
+#' Jaccard scores.
 #'
 #' @noRd
 #'
@@ -49,8 +50,8 @@ neighborJaccard <- function(overlapDF){
 #' Subsequently, overlap ranks are recalculated.
 #'
 #' @details The functions removes overlaps for which the two involved genes
-#' record too few shared neighbors—genes whose cell set significantly overlaps with
-#' those of both overlap genes.
+#' record too few shared neighbors—genes whose cell set significantly overlaps
+#' with those of both overlap genes.
 #'
 #' @inheritParams prefilterOverlaps
 #'
@@ -94,8 +95,7 @@ breakWeakTies <- function(overlapDF,
         nRemovedEdges <- prevNEdges - nEdges
         if(nRemovedEdges > 0){
             message(nRemovedEdges, ' edge', rep('s', nRemovedEdges != 1),
-                    paste(' with low neighbor Jaccard',
-                          ' scores have been removed.'))
+                    ' with low neighbor Jaccard scores have been removed.')
         }
     }
 

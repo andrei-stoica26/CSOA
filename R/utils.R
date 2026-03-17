@@ -28,12 +28,12 @@ getPairs <- function(v)
 #'
 #' This function calls LayerData from Seurat and
 #' returns an error when the requested layer
-#' does not exist
+#' does not exist.
 #'
-#' @param seuratObj A Seurat object
-#' @param layer Layer
+#' @param seuratObj A Seurat object.
+#' @param layer Layer.
 #'
-#' @return The output of LayerData if layer exists
+#' @return The output of LayerData if layer exists.
 #'
 #' @noRd
 #'
@@ -50,10 +50,10 @@ safeLayerData <- function(seuratObj, layer){
 #' matrix in sorted name order. If rows is set to NULL,
 #' it selects all rows.
 #'
-#' @param matObj Matrix object
-#' @param rows Rows
+#' @param matObj Matrix object.
+#' @param rows Rows.
 #'
-#' @return A non-sparse matrix
+#' @return A non-sparse matrix.
 #'
 #' @noRd
 #'
@@ -116,14 +116,13 @@ overlapPairs <- function(overlapDF)
 #' Extract subset defined using gene pairs from overlap matrix
 #'
 #' This function extracts the subset determined by input
-#' gene pairs from an
-#' overlap matrix
+#' gene pairs from an overlap matrix.
 #'
 #' @inheritParams rankOverlaps
-#' @param pairs Gene pairs corresponding to the extracted overlaps
+#' @param pairs Gene pairs corresponding to the extracted overlaps.
 #'
 #' @return An overlap data frame corresponding to the
-#' selected gene pairs
+#' selected gene pairs.
 #'
 #' @noRd
 #'
@@ -157,9 +156,9 @@ qGrab <- function(qs2File){
 #' This function controls the choice of rank functions
 #' everywhere in the package.
 #'
-#' @param v Vector
+#' @param v Vector.
 #'
-#' @return Ranked vector
+#' @return Ranked vector.
 #'
 #' @noRd
 #'
@@ -169,16 +168,15 @@ rankFun <- function(v)
 #' Replace a column by its rank
 #'
 #' This functions orders a data frame by the values
-#' in a column and replaces
-#' them by the resulting rank.
+#' in a column and replaces them by the resulting rank.
 #'
-#' @param df A data frame
-#' @param colName The name of a numeric column
+#' @param df A data frame.
+#' @param colName The name of a numeric column.
 #' @param rankSign 1 to rank the column increasingly, -1
-#' to rank it decreasingly
+#' to rank it decreasingly.
 #'
 #' @return The data frame ordered by colName (decreasingly by default),
-#' in which the original values of colName have been replaced by ranks
+#' in which the original values of colName have been replaced by ranks.
 #'
 #' @noRd
 #'
@@ -188,44 +186,19 @@ rankReplace <- function(df, colName, rankSign = 1){
     return(df)
 }
 
-#' Applies kerntools minmax-normalization on a vector using
+#' Applies kerntools minmax-normalization on a vector
 #'
-#' This functions applies kerntools::minmax on a vector
+#' This functions applies kerntools::minmax on a vector.
 #'
-#' @param v Numeric vector
+#' @param v Numeric vector.
 #'
-#' @return A minmax-normalized vector
+#' @return A minmax-normalized vector.
 #'
 #' @noRd
 #'
 vMinmax <- function(v)
     return(as.numeric(kerntools::minmax(as.matrix(v))))
 
-#' Raise a warning that the overlap data frame may have
-#' been not filtered.
-#'
-#' This function raises a warning that the overlap data
-#' frame may have been not
-#' filtered based on the number of overlaps.
-#'
-#' @inheritParams computeCellScores
-#' @param raiseWarning If the data frame contains more
-#' overlaps than this number, users will be warned that
-#' they may have introduced the raw overlap data frame
-#' as input.
-#'
-#' @return No value. This function is called for its
-#' side effect (issuing a warning if needed).
-#'
-#' @noRd
-#'
-warnUnfiltered <- function(overlapDF, raiseWarning = 1500)
-    if (nrow(overlapDF) > raiseWarning)
-        warning('The number of overlaps in the',
-                ' data frame is very large (',
-                nrow(overlapDF),
-                '). Are you sure you filtered',
-                ' the overlap data frame?')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics

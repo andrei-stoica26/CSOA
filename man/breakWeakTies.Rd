@@ -20,7 +20,7 @@ scores.}
 \item{doConnComp}{Whether to calculate the connected components.}
 
 \item{mtMethod}{Multiple testing correction method. Choose between
-Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH').}
+Benjamini-Yekutieli ('BY') and Benjamini-Hochberg('BH'). Default is 'BY'.}
 }
 \value{
 An overlap data frame in which edges with low Jaccard scores have
@@ -33,8 +33,8 @@ Subsequently, overlap ranks are recalculated.
 }
 \details{
 The functions removes overlaps for which the two involved genes
-record too few shared neighbors—genes whose cell set significantly overlaps with
-those of both overlap genes.
+record too few shared neighbors—genes whose cell set significantly overlaps
+with those of both overlap genes.
 }
 \examples{
 overlapDF <- data.frame(gene1=paste0('G', c(1, 3, 7, 6, 8, 2, 4, 3, 4, 5)),
