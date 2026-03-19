@@ -4,7 +4,7 @@
 #' @importFrom reshape2 melt
 #' @importFrom rlang .data
 #' @importFrom textshape cluster_matrix
-#' @importFrom wesanderson wes_palette
+#' @importFrom paletteer paletteer_c paletteer_d
 #'
 NULL
 
@@ -17,7 +17,7 @@ NULL
 #' aes elements.
 #' @param title Plot title.
 #' @param axisTextSize Axis text size.
-#' @inheritParams wesBinaryGradient
+#' @param palette Color palette.
 #' @param ... Other arguments passed to \code{henna::centerTitle}.
 #'
 #' @return A ggplot object.
@@ -33,10 +33,7 @@ basicHeatmap <- function(mat,
                          aesNames = c('x', 'y', 'Score'),
                          title = 'Heatmap',
                          axisTextSize = 7,
-                         palType = 'fillCont',
-                         wesPal = 'Royal1',
-                         wesLow = 3,
-                         wesHigh = 2,
+                         palette = paletteer_c("grDevices::Plasma", 30),
                          ...){
     df <- heatmapDF(mat, aesNames)
     p <- ggplot(df, aes(x=.data[[aesNames[2]]],
@@ -48,7 +45,7 @@ basicHeatmap <- function(mat,
               axis.ticks.y=element_blank(),
               axis.text.y=element_text(size = axisTextSize),
               axis.title=element_blank())
-    p <- wesBinaryGradient(p, palType, wesPal, wesLow, wesHigh)
+    p <- p + scale_fill_gradientn(colors=palette)
     p <- centerTitle(p, title, ...)
     return(p)
 }
@@ -65,7 +62,7 @@ basicHeatmap <- function(mat,
 #' labels will be generated.
 #' @param labelSize Size of labels. Ignored if idClass is NULL.
 #' @param titleSize Title size.
-#' @inheritParams wesBinaryGradient
+#' @inheritParams basicHeatmap
 #' @param ... Additional arguments passed to \code{Seurat::FeaturePlot}.
 #'
 #' @return A ggplot object.
@@ -89,9 +86,8 @@ featureWes <- function(seuratObj, feature,
                        idClass = NULL,
                        labelSize = 3.5,
                        titleSize = 12,
-                       wesPal = 'Royal1',
-                       wesLow = 3,
-                       wesHigh = 2,
+                       palette = paletteer_d("wesanderson::Royal1")[c(3,
+                                                                      2)],
                        ...){
     if(is.null(idClass))
         p <- FeaturePlot(seuratObj, feature) else{
@@ -103,7 +99,7 @@ featureWes <- function(seuratObj, feature,
                              label.size=labelSize, ...)
         }
     p <- centerTitle(p, title, size=titleSize)
-    p <- wesBinaryGradient(p, 'colorCont', wesPal, wesLow, wesHigh)
+    p <- p + scale_color_gradientn(colours=palette)
     return(p)
 }
 

@@ -11,9 +11,7 @@ featureWes(
   idClass = NULL,
   labelSize = 3.5,
   titleSize = 12,
-  wesPal = "Royal1",
-  wesLow = 3,
-  wesHigh = 2,
+  palette = paletteer_d("wesanderson::Royal1")[c(3, 2)],
   ...
 )
 }
@@ -31,11 +29,7 @@ labels will be generated.}
 
 \item{titleSize}{Title size.}
 
-\item{wesPal}{A wesanderson palette.}
-
-\item{wesLow}{Index of color marking low values.}
-
-\item{wesHigh}{Index of color marking high values.}
+\item{palette}{Color palette.}
 
 \item{...}{Additional arguments passed to \code{Seurat::FeaturePlot}.}
 }

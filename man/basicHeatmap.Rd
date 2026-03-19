@@ -9,10 +9,7 @@ basicHeatmap(
   aesNames = c("x", "y", "Score"),
   title = "Heatmap",
   axisTextSize = 7,
-  palType = "fillCont",
-  wesPal = "Royal1",
-  wesLow = 3,
-  wesHigh = 2,
+  palette = paletteer_c("grDevices::Plasma", 30),
   ...
 )
 }
@@ -26,16 +23,7 @@ aes elements.}
 
 \item{axisTextSize}{Axis text size.}
 
-\item{palType}{Palette type: color or fill, continuous or discrete. Accepted
-values are 'colorCont', 'fillCont', 'colDis' and 'fillDis'. The function
-shows a warning and does not change the color scheme if a different value
-is passed here.}
-
-\item{wesPal}{A wesanderson palette.}
-
-\item{wesLow}{Index of color marking low values.}
-
-\item{wesHigh}{Index of color marking high values.}
+\item{palette}{Color palette.}
 
 \item{...}{Other arguments passed to \code{henna::centerTitle}.}
 }

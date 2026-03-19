@@ -20,6 +20,7 @@ Imports:
     henna,
     kerntools,
     methods,
+    paletteer,
     qs2,
     reshape2,
     rlang,
@@ -28,8 +29,7 @@ Imports:
     SummarizedExperiment,
     spatstat.utils,
     stats,
-    textshape,
-    wesanderson
+    textshape
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 Suggests: 
