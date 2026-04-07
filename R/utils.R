@@ -199,6 +199,20 @@ rankReplace <- function(df, colName, rankSign = 1){
 vMinmax <- function(v)
     return(as.numeric(kerntools::minmax(as.matrix(v))))
 
+#' Compute the Jaccard index of two sets
+#'
+#' This functions computes the Jaccard index of two sets.
+#'
+#' @param a A character vector.
+#' @param b A character vector.
+#'
+#' @return A numeric value in [0, 1].
+#'
+#' @noRd
+#'
+jaccardSets <- function(a, b)
+    return(length(intersect(a, b)) / length(union(a, b)))
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Methods for CSOA-defined generics

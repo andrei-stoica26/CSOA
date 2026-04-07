@@ -1,7 +1,3 @@
-#' @importFrom bayesbio jaccardSets
-#'
-NULL
-
 #' Compute all the neighbors of all genes in an overlap data frame
 #'
 #' This function computes all the neighbors of all genes in an overlap data

@@ -11,7 +11,7 @@ two involved genes.
 
 To install CSOA, run the following R code:
 
-```
+```r
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
     
@@ -22,7 +22,7 @@ BiocManager::install("CSOA")
 
 The basic command to run CSOA is:
 
-```
+```r
 runCSOA(scObj, geneSets)
 ```
 

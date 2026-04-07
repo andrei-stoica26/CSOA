@@ -14,7 +14,6 @@ Description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell
     object, a SingleCellExperiment object, a matrix and a dgCMatrix.
 License: MIT + file LICENSE
 Imports: 
-    bayesbio,
     dplyr,
     ggplot2,
     henna,
