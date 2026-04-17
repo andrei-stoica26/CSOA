@@ -2,7 +2,7 @@
 title: "The CSOA algorithm"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: October 21, 2025
+date: April 17, 2025
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{The CSOA algorithm}
@@ -78,8 +78,7 @@ We can now visualize the distribution of the cell sets among all the cells:
 ```{r, out.height='90%', out.width='90%', fig.height=6, fig.width=5}
 mat <- cellDistribution(cellSets, allCells = colnames(seuratObj))
 basicHeatmap(mat, c('Gene', 'Cell', 'Presence'), 
-             title='Distribution of cell sets among all cells',
-             palType='fillDis')
+             title='Distribution of cell sets among all cells') + NoLegend()
 ```
 
 The cell sets strongly cluster in a small region of the heatmap, 
