@@ -1,7 +1,7 @@
 Package: CSOA
 Type: Package
 Title: Calculate per-cell gene signature scores in scRNA-seq data using cell set overlaps
-Version: 1.1.7
+Version: 1.2.0
 Authors@R: person('Andrei-Florian', 'Stoica', 
     email='andreistoica@foxmail.com',
     role=c('aut','cre'),
