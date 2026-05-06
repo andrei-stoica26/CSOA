@@ -22,7 +22,7 @@ attachCellScores.default <- function(scObj, scoreDF, ...)
 attachCellScores.Seurat <- function(scObj, scoreDF, ...){
     for (colName in colnames(scoreDF))
         if (colName %in% colnames(scObj[[]]))
-            scObj[[]][[colName]] <- c()
+            scObj[[colName]] <- c()
     scObj[[]] <- cbind(scObj[[]], scoreDF)
     return(scObj)
 }
