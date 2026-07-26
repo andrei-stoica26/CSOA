@@ -2,7 +2,7 @@
 title: "The CSOA algorithm"
 author: "Andrei-Florian Stoica"
 package: CSOA
-date: April 17, 2025
+date: July 26, 2026
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{The CSOA algorithm}
